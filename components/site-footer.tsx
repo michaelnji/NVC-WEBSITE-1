@@ -1,0 +1,107 @@
+"use client"
+
+import Link from "next/link"
+import { motion } from "framer-motion"
+import { useLanguage } from "@/contexts/language-context"
+
+export default function SiteFooter() {
+  const { t } = useLanguage()
+  return (
+    <footer
+      className="w-full font-sans overflow-hidden"
+      style={{ backgroundColor: "#FCDBCF" }}
+    >
+      <div className="max-w-7xl mx-auto px-4 md:px-0 py-12 md:py-16  lg:py-30">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 lg:gap-20 place-items-center lg:place-items-start">
+          <div className="flex flex-col gap-5 items-center lg:items-start">
+            <FooterLogo />
+            <p className="text-[#1e1e1e] text-sm md:text-base font-medium text-center lg:text-left">{t.footer.tagline}</p>
+          </div>
+          <div className="flex flex-col gap-3 items-center lg:items-start">
+            <h4 className="text-[#1e1e1e] text-base md:text-lg font-semibold text-center lg:text-left">{t.footer.expertise.title}</h4>
+            <nav className="flex flex-col gap-2 text-[#1e1e1e] text-sm md:text-base text-center lg:text-left">
+              {t.footer.expertise.items.map((label, i) => (
+                <Link key={`expertise-${i}`} href="#" className="group inline-block relative transition-colors duration-200 hover:text-[#F15A25]">
+                  <span className="relative">{label}
+                    <span className="absolute left-0 -bottom-0.5 h-[2px] w-full bg-[#F15A25] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                  </span>
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className="flex flex-col gap-3 items-center lg:items-start">
+            <h4 className="text-[#1e1e1e] text-base md:text-lg font-semibold text-center lg:text-left">{t.footer.about.title}</h4>
+            <nav className="flex flex-col gap-2 text-[#1e1e1e] text-sm md:text-base text-center lg:text-left">
+              {t.footer.about.items.map((label, i) => (
+                <Link key={`about-${i}`} href="#" className="group inline-block relative transition-colors duration-200 hover:text-[#F15A25]">
+                  <span className="relative">{label}
+                    <span className="absolute left-0 -bottom-0.5 h-[2px] w-full bg-[#F15A25] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                  </span>
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className="flex flex-col gap-3 items-center lg:items-start">
+            <h4 className="text-[#1e1e1e] text-base md:text-lg font-semibold text-center lg:text-left">{t.footer.social.title}</h4>
+            <nav className="flex flex-col gap-2 text-[#1e1e1e] text-sm md:text-base text-center lg:text-left">
+              {t.footer.social.items.map((label, i) => (
+                <Link key={`social-${i}`} href="#" className="group inline-block relative transition-colors duration-200 hover:text-[#F15A25]">
+                  <span className="relative">{label}
+                    <span className="absolute left-0 -bottom-0.5 h-[2px] w-full bg-[#F15A25] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                  </span>
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div className="w-full select-none">
+        <div>
+          <div className="relative group w-full flex justify-center overflow-hidden -mb-2 sm:-mb-6 lg:-mb-6 pt-10">
+            <div className="relative block w-full select-none">
+              <h2
+                className="w-full text-center font-extrabold uppercase leading-[0.88] tracking-wide"
+                style={{
+                  fontFamily: 'Bigger, var(--font-montserrat), sans-serif',
+                  fontSize: 'clamp(3.25rem, 8vw + 0.5rem, 9rem)',
+                  color: '#0f0f0f',
+                  marginBottom: '-0.5rem',
+                }}
+              >
+                {t.footer.bottomTitle}
+              </h2>
+
+              <motion.div
+                className="absolute inset-0 overflow-hidden"
+                initial={{ width: 0 }}
+                whileHover={{ width: '100%' }}
+                transition={{ duration: 0.9, ease: 'easeInOut' }}
+              >
+                <h2
+                  className="w-full text-center font-extrabold uppercase leading-[0.88] tracking-wide text-primary"
+                  style={{
+                    fontFamily: 'Bigger, var(--font-montserrat), sans-serif',
+                    fontSize: 'clamp(3.25rem, 8vw + 0.5rem, 9rem)',
+                    marginBottom: '-0.5rem',
+                  }}
+                >
+                  {t.footer.bottomTitle}
+                </h2>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+function FooterLogo() {
+  return (
+    <div className="relative w-[220px] md:w-[260px] overflow-hidden">
+      <img src="/Wordmark.svg" alt="New Vision Creatives" className="relative w-full h-auto" />
+    </div>
+  )
+}
