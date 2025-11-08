@@ -90,7 +90,7 @@ export function FlipCountdown() {
   }, [])
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8">
+    <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 md:gap-8 lg:gap-10">
       <TimeUnit value={days} label={t.common.countdown.days} />
       <Separator />
       <TimeUnit value={hours} label={t.common.countdown.hours} />
@@ -104,12 +104,12 @@ function TimeUnit({ value, label }: { value: number; label: string }) {
   const digits = String(value).padStart(2, "0").split("")
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="flex gap-2 md:gap-3">
+    <div className="flex flex-col items-center gap-2 sm:gap-3 md:gap-4">
+      <div className="flex gap-1.5 sm:gap-2 md:gap-3">
         <FlipCard digit={digits[0]} />
         <FlipCard digit={digits[1]} />
       </div>
-      <span className="text-2xl md:text-3xl font-black text-[#F15A25]">{label}</span>
+      <span className="text-sm sm:text-base md:text-xl lg:text-2xl font-black text-[#F15A25]">{label}</span>
     </div>
   )
 }
@@ -136,11 +136,11 @@ function FlipCard({ digit }: { digit: string }) {
   }, [digit, currentDigit])
 
   return (
-    <div className="relative w-16 h-20 md:w-24 md:h-32 perspective-1000">
+    <div className="relative w-14 h-18 sm:w-20 sm:h-28 md:w-24 md:h-32 lg:w-28 lg:h-40 perspective-1000">
       {/* Static upper half (shows currentDigit) */}
       <div className="absolute top-0 left-0 right-0 h-1/2 bg-black rounded-t-xl md:rounded-t-2xl overflow-hidden z-10">
         <div className="absolute inset-0 flex justify-center items-start">
-          <span className="text-6xl md:text-9xl font-black text-[#F15A25] leading-none">{currentDigit}</span>
+          <span className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-[#F15A25] leading-none">{currentDigit}</span>
         </div>
         <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
       </div>
@@ -148,7 +148,7 @@ function FlipCard({ digit }: { digit: string }) {
       {/* Static lower half (shows nextDigit) */}
       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-black rounded-b-xl md:rounded-b-2xl overflow-hidden z-0">
         <div className="absolute top-0 left-0 right-0 flex justify-center -translate-y-1/2">
-          <span className="text-6xl md:text-9xl font-black text-[#F15A25] leading-none">{nextDigit}</span>
+          <span className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-[#F15A25] leading-none">{nextDigit}</span>
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
       </div>
@@ -159,7 +159,7 @@ function FlipCard({ digit }: { digit: string }) {
           <div className="preserve-3d origin-bottom bg-black rounded-t-xl md:rounded-t-2xl flip-top">
             <div className="h-1/2" />
             <div className="absolute inset-0 flex justify-center items-start">
-              <span className="text-6xl md:text-9xl font-black text-[#F15A25] leading-none">{currentDigit}</span>
+              <span className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-[#F15A25] leading-none">{currentDigit}</span>
             </div>
             <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
           </div>
@@ -171,7 +171,7 @@ function FlipCard({ digit }: { digit: string }) {
         <div className="absolute bottom-0 left-0 right-0 h-1/2 overflow-hidden z-30">
           <div className="preserve-3d origin-top bg-black rounded-b-xl md:rounded-b-2xl flip-bottom">
             <div className="absolute top-0 left-0 right-0 flex justify-center -translate-y-1/2">
-              <span className="text-6xl md:text-9xl font-black text-[#F15A25] leading-none">{nextDigit}</span>
+              <span className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-[#F15A25] leading-none">{nextDigit}</span>
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
           </div>
