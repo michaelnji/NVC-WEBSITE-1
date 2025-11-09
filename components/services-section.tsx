@@ -7,13 +7,13 @@ export default function ServicesSection() {
 
   return (
     <div
-      className="relative rounded-[28px] md:rounded-[40px] md:p-10 lg:p-14 xl:p-16 -mt-6 sm:-mt-8 md:-mt-10 pt-10 pb-20 md:py-30 lg:py-32 mb16- md:mb-24 lg:mb-28 overflow-hidden"
+      className="relative rounded-[28px] md:rounded-[40px]  md:p-10 lg:p-14 xl:p-16 -mt-8 md:-mt-12 lg:-mt-16 pt-10 pb-40 md:py-30 lg:py-32 mb-16 md:mb-24 lg:mb-28 overflow-hidden"
       style={{
         backgroundImage: `url('/background-section.png')`,
         backgroundSize: "100% 100%",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-        zIndex: 30,
+        zIndex: 2,
       }}
     >
       {/* Header Section */}

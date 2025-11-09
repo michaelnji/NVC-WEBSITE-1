@@ -127,9 +127,7 @@
   }
 }
 
-/* Adding custom animations for flip clock effect */
 @layer utilities {
-  /* Simplified to only page-falling animation */
   .flip-card-container {
     perspective: 1000px;
   }
@@ -153,7 +151,6 @@
   }
 }
 
-/* Page falling animation - like mechanical flip clock */
 @keyframes pageFall {
   0% {
     transform: rotateX(0deg);
@@ -165,7 +162,6 @@
   }
 }
 
-/* Shadow that intensifies as page falls */
 @keyframes fallingShadow {
   0% {
     background-color: rgba(0, 0, 0, 0);
@@ -178,7 +174,6 @@
   }
 }
 
-/* Page rising animation - bottom half rotates from -180deg to 0deg */
 @keyframes pageRise {
   0% {
     transform: rotateX(180deg);

@@ -4,7 +4,7 @@ import { Montserrat } from "next/font/google"
 import "./globals.css"
 import { ClientLayout } from "./client-layout"
 import { AnimatedBackground } from "@/components/animated-background"
-import { bigger } from "./fonts" 
+import { bigger } from "./fonts" // Importez votre police Bigger
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="fr" className="dark scroll-smooth">
+    <html lang="fr" className="scroll-smooth">
       <body
         className={`${montserrat.variable} ${bigger.variable} font-sans antialiased bg-background text-foreground`}
       >

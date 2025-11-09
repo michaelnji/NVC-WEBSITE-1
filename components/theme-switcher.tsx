@@ -9,7 +9,6 @@ export function ThemeSwitcher() {
 
   return (
     <motion.button
-      // onClick={toggleTheme}
       className="relative w-10 h-10 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 transition-colors duration-300 hover:bg-white/10 flex items-center justify-center cursor-not-allowed opacity-50"
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
@@ -33,7 +32,6 @@ export function ThemeSwitcher() {
         }}
       >
         {isDark ? (
-          // Moon icon for dark mode
           <motion.path
             d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
             initial={{ pathLength: 0, opacity: 0 }}
@@ -44,7 +42,6 @@ export function ThemeSwitcher() {
             stroke="currentColor"
           />
         ) : (
-          // Sun icon for light mode
           <>
             <motion.circle
               cx="12"

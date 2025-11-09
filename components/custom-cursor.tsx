@@ -19,22 +19,18 @@ export function CustomCursor() {
   const outerX = useSpring(cursorX, outerCursorConfig)
   const outerY = useSpring(cursorY, outerCursorConfig)
 
-  // Détecte si on est sur mobile/tablette (< 1024px = breakpoint lg)
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024)
     }
 
-    // Vérification initiale
     checkMobile()
 
-    // Écoute les changements de taille d'écran
     window.addEventListener("resize", checkMobile)
     return () => window.removeEventListener("resize", checkMobile)
   }, [])
 
   useEffect(() => {
-    // Ne pas ajouter les listeners si on est sur mobile
     if (isMobile) return
 
     const moveCursor = (e: MouseEvent) => {
@@ -67,14 +63,12 @@ export function CustomCursor() {
     }
   }, [cursorX, cursorY, isMobile])
 
-  // Ne rien afficher sur mobile
   if (isMobile) return null
 
   return (
     <>
-      {/* Main cursor dot - suit instantanément */}
       <motion.div
-        className="fixed top-0 left-0 w-2 h-2 bg-[#F15A25] rounded-full pointer-events-none z-[9999] mix-blend-difference"
+        className="fixed top-0 left-0 w-2 h-2 bg-[#ff6b35] rounded-full pointer-events-none z-[9999] mix-blend-difference"
         style={{
           x: cursorXSpring,
           y: cursorYSpring,
@@ -88,7 +82,7 @@ export function CustomCursor() {
       />
       
       <motion.div
-        className="fixed top-0 left-0 w-10 h-10 border-2 border-[#F15A25]/40 rounded-full pointer-events-none z-[9998]"
+        className="fixed top-0 left-0 w-10 h-10 border-2 border-[#ff6b35]/40 rounded-full pointer-events-none z-[9998]"
         style={{
           x: outerX,
           y: outerY,
@@ -102,10 +96,9 @@ export function CustomCursor() {
         transition={{ duration: 0.3, ease: "easeOut" }}
       />
 
-      {/* Glow effect on hover */}
       {isHovering && (
         <motion.div
-          className="fixed top-0 left-0 w-20 h-20 bg-[#F15A25]/10 rounded-full pointer-events-none z-[9997] blur-xl"
+          className="fixed top-0 left-0 w-20 h-20 bg-[#ff6b35]/10 rounded-full pointer-events-none z-[9997] blur-xl"
           style={{
             x: outerX,
             y: outerY,
