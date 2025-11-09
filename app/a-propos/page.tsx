@@ -1,12 +1,19 @@
-import PendingSection from "@/components/pending-section"
+"use client"
+
+import { FlipCountdownSection } from "@/components/flipcountdown-section"
 
 export default function AProposPage() {
   return (
-    <div className="min-h-screen pt-32">
-      <PendingSection
-        title="À propos"
-        subtitle="Cette page est en préparation. Revenez bientôt pour en savoir plus sur l’agence."
-      />
-    </div>
+  <main className="min-h-screen flex items-center justify-center  px-4 py-8"
+     style={{
+        backgroundColor: "#0f0f0f",
+        backgroundImage: "url('/background%20temoignages.svg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      <FlipCountdownSection />
+    </main>
   )
 }

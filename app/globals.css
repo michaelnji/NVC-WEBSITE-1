@@ -116,6 +116,8 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -123,13 +125,80 @@
   body {
     @apply bg-background text-foreground;
   }
-  html {
-    scroll-behavior: smooth;
+}
+
+/* Adding custom animations for flip clock effect */
+@layer utilities {
+  /* Simplified to only page-falling animation */
+  .flip-card-container {
+    perspective: 1000px;
+  }
+
+  /* New animation for page falling down */
+  .flip-top-fall {
+    animation: pageFall 1s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+  }
+
+  .falling-shadow {
+    animation: fallingShadow 1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  }
+
+  /* Adding bottom flip animation that rises up */
+  .flip-bottom-rise {
+    animation: pageRise 1s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+  }
+
+  .rising-shadow {
+    animation: risingShadow 1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
   }
 }
 
-@supports (backdrop-filter: blur(10px)) {
-  .backdrop-blur-xl {
-    backdrop-filter: blur(20px);
+/* Page falling animation - like mechanical flip clock */
+@keyframes pageFall {
+  0% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateX(-180deg);
+    opacity: 1;
+  }
+}
+
+/* Shadow that intensifies as page falls */
+@keyframes fallingShadow {
+  0% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  50% {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+}
+
+/* Page rising animation - bottom half rotates from -180deg to 0deg */
+@keyframes pageRise {
+  0% {
+    transform: rotateX(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+/* Shadow for bottom half animation */
+@keyframes risingShadow {
+  0% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  50% {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0);
   }
 }

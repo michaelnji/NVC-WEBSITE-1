@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { WhatsAppButton } from "./cta-buttons"
+import { WhatsAppButton } from "@/components/cta-buttons"
 
 export default function CtaVisualSection() {
   return (

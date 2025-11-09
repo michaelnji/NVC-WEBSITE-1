@@ -6,7 +6,7 @@ import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useLanguage } from "@/contexts/language-context"
 import { ArrowUpRight } from "lucide-react"
-import { WhatsAppButton, SecondaryCTAButton } from "./cta-buttons"
+import { WhatsAppButton, SecondaryCTAButton } from "@/components/cta-buttons"
 
 gsap.registerPlugin(ScrollTrigger)
 

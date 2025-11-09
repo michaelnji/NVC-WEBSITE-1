@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useLanguage } from "@/contexts/language-context"
-import { SecondaryCTAButton } from "./cta-buttons"
+import { SecondaryCTAButton } from "@/components/cta-buttons"
 import { ArrowUpRight } from "lucide-react"
 
 // Cache des images déjà chargées (persiste tant que la page est ouverte)

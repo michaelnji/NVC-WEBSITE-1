@@ -12,9 +12,14 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import Particles, { initParticlesEngine } from "@tsparticles/react"
 import { loadSlim } from "@tsparticles/slim"
 import NextTopLoader from "nextjs-toploader"
+import { usePathname } from "next/navigation"
 
 export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
   const [init, setInit] = useState(false)
+  const pathname = usePathname()
+  const hideChrome = ["/projets", "/a-propos", "/contact"].some((route) =>
+    pathname?.startsWith(route)
+  )
 
   useEffect(() => {
     // Register GSAP plugins once on mount
@@ -168,9 +173,9 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
 
         <div className="relative z-10">
           <CustomCursor />
-          <Navbar />
+          {!hideChrome && <Navbar />}
           {children}
-          <SiteFooter />
+          {!hideChrome && <SiteFooter />}
         </div>
       </LanguageProvider>
     </ThemeProvider>
