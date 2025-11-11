@@ -157,7 +157,7 @@ function ScrollingGallery() {
               y: ["0%", "-50%"],
             }}
             transition={{
-              duration: 45,
+              duration: 120,
               repeat: Number.POSITIVE_INFINITY,
               ease: "linear",
             }}
@@ -196,7 +196,7 @@ function ScrollingGallery() {
               y: ["-50%", "0%"],
             }}
             transition={{
-              duration: 45,
+              duration: 120,
               repeat: Number.POSITIVE_INFINITY,
               ease: "linear",
             }}
@@ -278,7 +278,7 @@ function MobileCarousel({
           x: direction === "left" ? [0, -((mobileWidth + 12) * 6)] : [-((mobileWidth + 12) * 6), 0],
         }}
         transition={{
-          duration: 25,
+          duration: 60,
           repeat: Number.POSITIVE_INFINITY,
           ease: "linear",
         }}

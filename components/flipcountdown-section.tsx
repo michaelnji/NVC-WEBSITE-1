@@ -23,7 +23,7 @@ export function FlipCountdownSection() {
 
   return (
     <div ref={containerRef} className="w-full max-w-6xl text-center py-12 px-6 sm:py-16 sm:px-8 md:py-20 md:px-10 bg-white rounded-3xl">
-      <h1 className="heading text-3xl text-black sm:text-4xl md:text-5xl lg:text-7xl font-black font-display mb-4 sm:mb-6 leading-wide tracking-wide px-2">
+      <h1 className="heading text-3xl text-black sm:text-4xl md:text-5xl lg:text-7xl font-black font-display mb-4 sm:mb-10 leading-wide tracking-wide px-2">
         WE'RE STILL COOKING <span className="text-[#F15A25]">THE GOOD STUFF</span>
       </h1>
 
