@@ -14,33 +14,6 @@ export default function ServicesSection() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<(HTMLDivElement | null)[]>([])
 
-  useEffect(() => {
-    const isMobile = window.innerWidth < 768
-
-    if (isMobile && cardsRef.current.length > 0) {
-      cardsRef.current.forEach((card, index) => {
-        if (!card || index === 0) return
-
-        gsap.to(card, {
-          scale: 1,
-          y: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: card,
-            start: "top bottom-=100",
-            end: "top center",
-            scrub: 1,
-            markers: false,
-          },
-        })
-      })
-    }
-
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
-    }
-  }, [t.services.items.length])
-
   return (
     <div
       ref={sectionRef}
@@ -119,7 +92,7 @@ function ServiceCard({ service }: { service: any }) {
         <p className="font-sans text-[#404040] text-xs sm:text-sm leading-relaxed">{service.description}</p>
       </div>
 
-      <div className="flex-1 relative overflow-hidden rounded-b-[18px] md:rounded-t-[18px]">
+      <div className="flex-1 relative overflow-hidden rounded-b-[18px] md:rounded-t-[18px] min-h-[200px] md:min-h-0">
         <div
           className={`absolute inset-0 transition-all duration-500 ease-out ${
             service.isLight ? "bg-[#f5f5f5]" : "bg-black"
@@ -129,7 +102,7 @@ function ServiceCard({ service }: { service: any }) {
             src={service.image || "/placeholder.svg"}
             alt={service.title}
             className={`w-full h-full transition-all duration-500 ease-out ${
-              isHovered ? "md:object-cover md:scale-110" : "object-contain object-center md:object-cover md:scale-100"
+              isHovered ? "md:object-cover md:scale-110" : "object-cover object-center md:scale-100"
             }`}
           />
         </div>

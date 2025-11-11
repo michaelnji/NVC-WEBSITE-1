@@ -9,7 +9,7 @@ import Reveal from "@/components/reveal"
 export default function TeamIntroSection() {
   const { t } = useLanguage()
   return (
-    <section className="relative z-10 py-20 md:py-28 lg:py-32 px-0 md:px-12 lg:px-16 xl:px-24  2xl:px-32 overflow-hidden bg-[url('/background-section.png')] bg-[length:100%_100%] bg-center bg-no-repeat">
+    <section className="relative z-40 py-20 md:py-28 lg:py-32 px-0 md:px-12 lg:px-16 xl:px-24  2xl:px-32 overflow-hidden bg-[url('/background-section.png')] bg-[length:100%_100%] bg-center bg-no-repeat">
       <div className="relative z-30 max-w-6xl mx-auto text-center">
         <Reveal>
           <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl font-bold leading-[1.05] tracking-wide text-balance">

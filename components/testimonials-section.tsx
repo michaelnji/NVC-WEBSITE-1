@@ -162,9 +162,25 @@ export default function TestimonialsSection() {
         <div className="text-white/80 text-xs sm:text-sm mb-3 sm:mb-4">
           Designing with <span className="text-[#ff6b35]">❤</span> from our HQ in
         </div>
-        <div className="relative">
-          <img src="/Layer_1.svg" alt="DAMAS" className="w-36 sm:w-44 md:w-48 h-auto object-cover rounded-[12px]" />
-        </div>
+        <motion.div 
+          className="relative cursor-pointer"
+          whileHover={{
+            scale: 1.30,
+            rotate: 8,
+            transition: {
+              type: "spring",
+              stiffness: 300,
+              damping: 20,
+            }
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 20,
+          }}
+        >
+          <img src="/Layer_1.svg" alt="DAMAS" className="w-36 sm:w-44 md:w-48 h-auto object-cover rounded-[12px] shadow-lg hover:shadow-xl transition-shadow" />
+        </motion.div>
       </div>
     </section>
   )

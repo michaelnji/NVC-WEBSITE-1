@@ -172,7 +172,7 @@ function ScrollingGallery() {
             ].map((img, i) => (
               <div
                 key={i}
-                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 backdrop-blur-sm border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/1 before:z-10 before:transition-opacity before:duration-300 group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300"
+                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 backdrop-blur-sm border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/40 before:z-10 before:transition-opacity before:duration-300 group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300"
                 style={{
                   height: `${img.height}px`,
                 }}
@@ -181,7 +181,7 @@ function ScrollingGallery() {
                   src={img.src || "/placeholder.svg"}
                   alt="Project showcase"
                   wrapperClassName="w-full h-full"
-                  className="w-full h-full object-cover opacity-30 group-hover:opacity-100 transition-opacity duration-300"
+                  className="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-opacity duration-300"
                 />
               </div>
             ))}
@@ -211,7 +211,7 @@ function ScrollingGallery() {
             ].map((img, i) => (
               <div
                 key={i}
-                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 backdrop-blur-sm border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/1 before:z-10 before:transition-opacity before:duration-300 group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300"
+                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 backdrop-blur-sm border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/40 before:z-10 before:transition-opacity before:duration-300 group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300"
                 style={{
                   height: `${img.height}px`,
                 }}
@@ -220,7 +220,7 @@ function ScrollingGallery() {
                   src={img.src || "/placeholder.svg"}
                   alt="Project showcase"
                   wrapperClassName="w-full h-full"
-                  className="w-full h-full object-cover opacity-30 group-hover:opacity-100 transition-opacity duration-300"
+                  className="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-opacity duration-300"
                 />
               </div>
             ))}
@@ -270,9 +270,8 @@ function MobileCarousel({
       className="w-full overflow-hidden relative max-w-full"
       style={{ height: `${mobileHeight}px` }}
     >
-      <div className="absolute top-0 left-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-background via-background/80 to-transparent z-10 pointer-events-none" />
-      <div className="absolute top-0 right-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-background via-background/80 to-transparent z-10 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 right-0 h-12 sm:h-16 bg-gradient-to-t from-background via-background/50 to-transparent z-10 pointer-events-none" />
+      <div className="absolute top-0 left-0 bottom-0 w-12 sm:w-16 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+      <div className="absolute top-0 right-0 bottom-0 w-12 sm:w-16 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
       <motion.div
         className="flex items-center h-full"
         animate={{
