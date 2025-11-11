@@ -1,13 +1,50 @@
 "use client"
 
 import { useLanguage } from "@/contexts/language-context"
+import { useRef, useState, useEffect } from "react"
+import { gsap } from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger)
+}
 
 export default function ServicesSection() {
   const { t } = useLanguage()
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const cardsRef = useRef<(HTMLDivElement | null)[]>([])
+
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768
+
+    if (isMobile && cardsRef.current.length > 0) {
+      cardsRef.current.forEach((card, index) => {
+        if (!card || index === 0) return
+
+        gsap.to(card, {
+          scale: 1,
+          y: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: card,
+            start: "top bottom-=100",
+            end: "top center",
+            scrub: 1,
+            markers: false,
+          },
+        })
+      })
+    }
+
+    return () => {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
+    }
+  }, [t.services.items.length])
 
   return (
     <div
-      className="relative rounded-[28px] md:rounded-[40px]  md:p-10 lg:p-14 xl:p-16 -mt-8 md:-mt-12 lg:-mt-16 pt-10 pb-40 md:py-30 lg:py-32 mb-16 md:mb-24 lg:mb-28 overflow-hidden"
+      ref={sectionRef}
+      className="relative rounded-[28px] md:rounded-[40px] md:p-10 lg:p-14 xl:p-16 -mt-8 md:-mt-12 lg:-mt-16 pt-10 pb-40 md:py-30 lg:py-32 mb-16 md:mb-24 lg:mb-28 overflow-hidden"
       style={{
         backgroundImage: `url('/background-section.png')`,
         backgroundSize: "100% 100%",
@@ -32,37 +69,70 @@ export default function ServicesSection() {
         </div>
       </div>
 
-      {/* Services Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-8 justify-items-stretch px-4 sm:px-4 md:px-8">
-        {t.services.items.map((service, index) => (
-          <div
-            key={index}
-            className="bg-[#EDEDED] rounded-[18px] overflow-hidden flex flex-col w-full  shadow-sm"
-          >
-            {/* Text section */}
-            <div className="pl-5 py-5 sm:pl-7 sm:pt-7 flex-shrink-0">
-              <h2 className="text-sm sm:text-base md:text-lg mb-1.5 font-sans font-bold text-[#1e1e1e] leading-tight tracking-wide">
-                {service.title}
-              </h2>
-              <p className="font-sans text-[#404040] text-xs sm:text-sm leading-relaxed">
-                {service.description}
-              </p>
+      <div className="px-4 sm:px-4 md:px-8">
+        <div className="block md:hidden space-y-0">
+          {t.services.items.map((service, index) => (
+            <div
+              key={index}
+              ref={(el) => {
+                cardsRef.current[index] = el
+              }}
+              className="sticky top-16"
+              style={{
+                zIndex: t.services.items.length - index,
+                transform: index > 0 ? `scale(${0.95 - index * 0.02}) translateY(${index * 20}px)` : "none",
+              }}
+            >
+              <ServiceCard service={service} />
             </div>
+          ))}
+        </div>
 
-            {/* Image section: always sticks to the bottom and fills width/height */}
-            <div className="w-full mt-auto">
-              <div className={`relative w-full overflow-hidden ${service.isLight ? "bg-[#f5f5f5]" : "bg-black"}`}>
-                <div className="w-full h-[180px] sm:h-[220px] lg:h-[260px]">
-                  <img
-                    src={service.image || "/placeholder.svg"}
-                    alt={service.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+        {/* Sur desktop: grille classique */}
+        <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-8">
+          {t.services.items.map((service, index) => (
+            <ServiceCard key={index} service={service} />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ServiceCard({ service }: { service: any }) {
+  const [isHovered, setIsHovered] = useState(false)
+
+  return (
+    <div
+      className="bg-[#EDEDED] rounded-[18px] overflow-hidden flex flex-col w-full shadow-sm group cursor-pointer mb-4 md:mb-0 h-[350px] md:h-auto md:min-h-[350px] lg:min-h-[350px]"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div
+        className={`pl-5 py-5 sm:pl-7 sm:pt-7 flex-shrink-0 transition-all duration-300 ease-out ${
+          isHovered ? "md:opacity-0 md:max-h-0 md:py-0 md:overflow-hidden" : "opacity-100 max-h-[200px]"
+        }`}
+      >
+        <h2 className="text-sm sm:text-base md:text-lg mb-1.5 font-sans font-bold text-[#1e1e1e] leading-tight tracking-wide">
+          {service.title}
+        </h2>
+        <p className="font-sans text-[#404040] text-xs sm:text-sm leading-relaxed">{service.description}</p>
+      </div>
+
+      <div className="flex-1 relative overflow-hidden rounded-b-[18px] md:rounded-t-[18px]">
+        <div
+          className={`absolute inset-0 transition-all duration-500 ease-out ${
+            service.isLight ? "bg-[#f5f5f5]" : "bg-black"
+          }`}
+        >
+          <img
+            src={service.image || "/placeholder.svg"}
+            alt={service.title}
+            className={`w-full h-full transition-all duration-500 ease-out ${
+              isHovered ? "md:object-cover md:scale-110" : "object-contain object-center md:object-cover md:scale-100"
+            }`}
+          />
+        </div>
       </div>
     </div>
   )

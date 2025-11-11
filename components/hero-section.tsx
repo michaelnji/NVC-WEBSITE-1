@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useLanguage } from "@/contexts/language-context"
 import { ArrowUpRight } from "lucide-react"
 import { WhatsAppButton, SecondaryCTAButton } from "@/components/cta-buttons"
+import ImageWithSkeleton from "@/components/image-with-skeleton"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -37,14 +38,14 @@ export function HeroSection() {
   }, [])
 
   return (
-    <div className="relative min-h-screen flex flex-col items-start overflow-hidden pb-20 max-w-full ">
+    <div className="relative min-h-screen flex flex-col items-start overflow-hidden  px-6 md:px-12 lg:px-16 xl:px-24 2xl:px-32 pb-20 max-w-full ">
       <div className="relative w-full max-w-full min-h-screen overflow-hidden">
         {/* Hero content */}
         <div
           ref={heroContentRef}
           className="relative z-10 w-full max-w-full min-h-screen flex flex-col lg:flex-row pt-20 overflow-hidden"
         >
-          <div className="font-500 w-full lg:w-1/2 flex items-center justify-center lg:justify-start px-6 md:px-12 lg:px-16 xl:px-24 2xl:px-32 pt-10 lg:pt-0">
+          <div className="font-500 w-full lg:w-1/2 flex items-center justify-center lg:justify-start  pt-10 lg:pt-0">
             <div className="text-center lg:text-left max-w-full">
               <h1 className="font-display text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold leading-[1.1] text-balance tracking-wide">
                 <span className="text-foreground">{t.hero.title}</span>
@@ -54,8 +55,7 @@ export function HeroSection() {
                 <br />
                 <span className="text-[#F15A25]">{t.hero.line3ThatStick}</span>
               </h1>
-
-              <p className="font-sans text-sm sm:text-base md:text-lg lg:text-xl text-foreground/80 max-w-xl  lg:mx-0 text-balance leading-relaxed">
+              <p className="font-sans  tracking-tight text-sm sm:text-base md:text-lg lg:text-xl text-foreground/80 max-w-xl  lg:mx-0 text-balance leading-relaxed">
                 {t.hero.subtitle}
               </p>
 
@@ -79,7 +79,6 @@ export function HeroSection() {
               </div>
             </div>
           </div>
-
           <ScrollingGallery />
         </div>
       </div>
@@ -140,19 +139,18 @@ function ScrollingGallery() {
   ]
 
   const allImages = [...column1Images.slice(0, 3), ...column2Images.slice(0, 3)]
-return (
+  return (
     <>
       {/* Desktop only (>=1024) - Vertical scrolling columns */}
       <div
         ref={galleryRef}
         className="hidden lg:flex w-full lg:w-5/12 gap-3 xl:gap-5 lg:absolute lg:-top-32 lg:right-4 xl:right-8 2xl:right-16 bottom-0 overflow-hidden lg:pr-4 will-change-transform max-w-full"
       >
-
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent z-10 pointer-events-none" />
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
 
         {/* Column 1 - scrolls down */}
-        <div className="flex-1 flex flex-col gap-3 xl:gap-5 relative min-w-0">
+        <div className="flex-1 relative min-w-0 group hover:z-20 transition-all duration-300">
           <motion.div
             className="flex flex-col gap-3 xl:gap-5"
             animate={{
@@ -174,15 +172,16 @@ return (
             ].map((img, i) => (
               <div
                 key={i}
-                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm border border-white/10 w-full"
+                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 backdrop-blur-sm border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/1 before:z-10 before:transition-opacity before:duration-300 group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300"
                 style={{
                   height: `${img.height}px`,
                 }}
               >
-                <img
+                <ImageWithSkeleton
                   src={img.src || "/placeholder.svg"}
                   alt="Project showcase"
-                  className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity duration-300"
+                  wrapperClassName="w-full h-full"
+                  className="w-full h-full object-cover opacity-30 group-hover:opacity-100 transition-opacity duration-300"
                 />
               </div>
             ))}
@@ -190,7 +189,7 @@ return (
         </div>
 
         {/* Column 2 - scrolls up */}
-        <div className="flex-1 flex flex-col gap-3 xl:gap-5 relative min-w-0">
+        <div className="flex-1 relative min-w-0 group hover:z-20 transition-all duration-300">
           <motion.div
             className="flex flex-col gap-3 xl:gap-5"
             animate={{
@@ -212,15 +211,16 @@ return (
             ].map((img, i) => (
               <div
                 key={i}
-                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm border border-white/10 w-full"
+                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 backdrop-blur-sm border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/1 before:z-10 before:transition-opacity before:duration-300 group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300"
                 style={{
                   height: `${img.height}px`,
                 }}
               >
-                <img
+                <ImageWithSkeleton
                   src={img.src || "/placeholder.svg"}
                   alt="Project showcase"
-                  className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity duration-300"
+                  wrapperClassName="w-full h-full"
+                  className="w-full h-full object-cover opacity-30 group-hover:opacity-100 transition-opacity duration-300"
                 />
               </div>
             ))}
@@ -228,7 +228,7 @@ return (
         </div>
       </div>
 
-         {/* Mobile & Tablet (<1024) - Two horizontal carousels with opposite scroll */}
+      {/* Mobile & Tablet (<1024) - Two horizontal carousels with opposite scroll */}
       <div className="lg:hidden w-full mt-8 flex flex-col gap-4">
         <MobileCarousel images={column1Images} direction="left" />
         <MobileCarousel images={column2Images} direction="right" />
@@ -242,7 +242,7 @@ function MobileCarousel({
   direction = "left",
 }: {
   images: Array<{ src: string; height: number }>
-    direction?: "left" | "right"
+  direction?: "left" | "right"
 }) {
   const carouselRef = useRef<HTMLDivElement>(null)
   const extendedImages = [...images, ...images, ...images, ...images, ...images, ...images]
@@ -267,12 +267,12 @@ function MobileCarousel({
   return (
     <div
       ref={carouselRef}
-      className="w-full overflow-hidden relative max-w-full"      style={{ height: `${mobileHeight}px` }}
+      className="w-full overflow-hidden relative max-w-full"
+      style={{ height: `${mobileHeight}px` }}
     >
       <div className="absolute top-0 left-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-background via-background/80 to-transparent z-10 pointer-events-none" />
       <div className="absolute top-0 right-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-background via-background/80 to-transparent z-10 pointer-events-none" />
       <div className="absolute bottom-0 left-0 right-0 h-12 sm:h-16 bg-gradient-to-t from-background via-background/50 to-transparent z-10 pointer-events-none" />
-
       <motion.div
         className="flex items-center h-full"
         animate={{
@@ -293,7 +293,12 @@ function MobileCarousel({
               height: `${mobileHeight}px`,
             }}
           >
-            <img src={img.src || "/placeholder.svg"} alt="Project showcase" className="w-full h-full object-cover" />
+            <ImageWithSkeleton
+              src={img.src || "/placeholder.svg"}
+              alt="Project showcase"
+              wrapperClassName="w-full h-full"
+              className="w-full h-full object-cover"
+            />
           </div>
         ))}
       </motion.div>

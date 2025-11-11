@@ -88,9 +88,9 @@ function FlipCard({ digit }: { digit: string }) {
   return (
     <div className="relative w-9 h-12 sm:w-16 sm:h-20 md:w-20 md:h-28 lg:w-24 lg:h-32 flip-card-container">
       <div className="absolute inset-0 z-10">
-        <div className="absolute top-0 left-0 right-0 h-1/2 bg-black rounded-t-md sm:rounded-t-xl  pt-5 sm:pt-0 md:rounded-t-2xl overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 flex justify-center  translate-y-[28%] sm:translate-y-0 ">
-            <span className="text-3xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-[#ff5722] leading-none">
+        <div className="absolute top-0 left-0 right-0 h-1/2 bg-black rounded-t-md sm:rounded-t-xl md:rounded-t-2xl overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="font-display text-3xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-[#ff5722] leading-none">
               {isFlipping ? nextDigit : currentDigit}
             </span>
           </div>
@@ -98,8 +98,8 @@ function FlipCard({ digit }: { digit: string }) {
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-black rounded-b-md sm:rounded-b-xl md:rounded-b-2xl overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 flex justify-center -translate-y-[50%] sm:-translate-y-1/2 ">
-            <span className="text-3xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-[#ff5722] leading-none">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="font-display text-3xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-[#ff5722] leading-none">
               {bottomDigit}
             </span>
           </div>
@@ -118,8 +118,8 @@ function FlipCard({ digit }: { digit: string }) {
         >
           <div className="relative w-full h-full">
             <div className="absolute top-0 left-0 right-0 h-full bg-black rounded-t-lg sm:rounded-t-xl md:rounded-t-2xl overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 flex justify-center">
-                <span className="text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-[#ff5722] leading-none">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-[#ff5722] leading-none">
                   {currentDigit}
                 </span>
               </div>
@@ -141,8 +141,8 @@ function FlipCard({ digit }: { digit: string }) {
         >
           <div className="relative w-full h-full">
             <div className="absolute top-0 left-0 right-0 h-full bg-black rounded-b-lg sm:rounded-b-xl md:rounded-b-2xl overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 flex justify-center -translate-y-1/2">
-                <span className="text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-[#ff5722] leading-none">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-[#ff5722] leading-none">
                   {nextDigit}
                 </span>
               </div>

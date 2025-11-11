@@ -20,7 +20,7 @@ export default function CtaVisualSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5 }}
-          className="font-display text-white font-extrabold tracking-wide leading-tight text-6xl sm:text-7xl md:text-8xl lg:text-9xl uppercase"
+          className="font-display text-white font-extrabold tracking-wide leading-tight text-5xl sm:text-6xl md:text-7xl lg:text-8xl uppercase"
           style={{ fontFamily: 'Bigger, sans-serif' }}
         >
           READY TO TELL YOUR NEXT

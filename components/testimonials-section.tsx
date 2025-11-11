@@ -1,12 +1,15 @@
 "use client"
 
 import { motion, useAnimationFrame, useMotionValue } from "framer-motion"
-import { useRef } from "react"
+import { useRef, useEffect } from "react"
 import { useLanguage } from "@/contexts/language-context"
+import { gsap } from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
 
 export default function TestimonialsSection() {
   const { t } = useLanguage()
   const testimonials = t.testimonials.items
+  const sectionRef = useRef<HTMLElement>(null)
 
   const Star = ({ filled }: { filled: boolean }) => (
     <svg
@@ -35,10 +38,35 @@ export default function TestimonialsSection() {
     trackX.set(next)
   })
 
+  useEffect(() => {
+    if (!sectionRef.current) return
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    if (prefersReduced) return
+
+    gsap.registerPlugin(ScrollTrigger)
+    const ctx = gsap.context(() => {
+      gsap.from(".testimonials-title", {
+        opacity: 0,
+        y: 40,
+        duration: 0.8,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
+          end: "top 40%",
+          toggleActions: "play none none none",
+        },
+      })
+    }, sectionRef)
+
+    return () => ctx.revert()
+  }, [])
+
   return (
     <section
+      ref={sectionRef}
       id="testimonials"
-      className="relative z-10 py-14 sm:py-18 md:py-24 lg:py-28 -mt-8 md:-mt-12 lg:-mt-14"
+      className="relative z-10 pt-20 sm:pt-24 md:pt-32 lg:pt-40 pb-20 sm:pb-24 md:pb-32 lg:pb-40 -mt-8 md:-mt-12 lg:-mt-14"
       style={{
         backgroundColor: "#0f0f0f",
         backgroundImage: "url('/background%20temoignages.svg')",
@@ -49,7 +77,7 @@ export default function TestimonialsSection() {
     >
       {/* decorative layer */}
       <div className="relative mx-auto text-center">
-        <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-wide leading-tight text-white uppercase text-balance">
+        <h2 className="testimonials-title font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-wide leading-tight text-white uppercase text-balance">
           {t.testimonials.headingLine1}
           <br />
           <span className="text-[#ff6b35]">{t.testimonials.headingLine2}</span>
@@ -57,12 +85,12 @@ export default function TestimonialsSection() {
 
         {/* Cards row - auto-scrolling marquee (seamless) */}
         <div className="mt-8 sm:mt-10 relative overflow-hidden">
-          <motion.div ref={trackRef} className="flex will-change-transform" style={{ x: trackX }}>
-            <div ref={seqRef} className="flex gap-6 sm:gap-6 md:gap-7">
+          <motion.div ref={trackRef} className="flex gap-5 sm:gap-6 md:gap-7 lg:gap-8 will-change-transform" style={{ x: trackX }}>
+            <div ref={seqRef} className="flex gap-5 sm:gap-6 md:gap-7 lg:gap-8">
               {testimonials.map((t, i) => (
                 <div
                   key={`a-${i}`}
-                  className=" mr-5 w-[280px] sm:w-[300px] md:w-[320px] lg:w-[340px] min-h-[340px] sm:min-h-[360px] md:min-h-[380px] lg:min-h-[400px] flex-shrink-0 rounded-2xl sm:rounded-3xl bg-[#efefef] p-4 sm:p-5 md:p-6 shadow-[0_6px_24px_rgba(0,0,0,0.15)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.2)] transition-all flex flex-col overflow-visible"
+                  className="w-[280px] sm:w-[300px] md:w-[320px] lg:w-[340px] min-h-[340px] sm:min-h-[360px] md:min-h-[380px] lg:min-h-[400px] flex-shrink-0 rounded-2xl sm:rounded-3xl bg-[#efefef] p-4 sm:p-5 md:p-6 shadow-[0_6px_24px_rgba(0,0,0,0.15)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.2)] transition-all flex flex-col overflow-visible"
                 >
                   <div className="flex items-center justify-center gap-1 sm:gap-1.5 mb-2">
                     {Array.from({ length: 5 }).map((_, s) => (
@@ -83,7 +111,7 @@ export default function TestimonialsSection() {
                 </div>
               ))}
             </div>
-            <div className="flex gap-6 sm:gap-6 md:gap-7">
+            <div className="flex gap-5 sm:gap-6 md:gap-7 lg:gap-8">
               {testimonials.map((t, i) => (
                 <div
                   key={`b-${i}`}
@@ -135,7 +163,7 @@ export default function TestimonialsSection() {
           Designing with <span className="text-[#ff6b35]">❤</span> from our HQ in
         </div>
         <div className="relative">
-          <img src="/layer_1.svg" alt="DAMAS" className="w-36 sm:w-44 md:w-48 h-auto object-cover rounded-[12px]" />
+          <img src="/Layer_1.svg" alt="DAMAS" className="w-36 sm:w-44 md:w-48 h-auto object-cover rounded-[12px]" />
         </div>
       </div>
     </section>
