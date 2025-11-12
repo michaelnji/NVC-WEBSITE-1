@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import ImageWithSkeleton from "@/components/image-with-skeleton"
 
 import { useState, useEffect } from "react"
 import type { Service, Project } from "@/lib/types"
@@ -205,10 +206,11 @@ export function ServicesManager() {
                 <Label>Image/GIF</Label>
                 <ImageUploader onUpload={(url) => setServiceForm({ ...serviceForm, image_url: url })} />
                 {serviceForm.image_url && (
-                  <img
+                  <ImageWithSkeleton
                     src={serviceForm.image_url || "/placeholder.svg"}
                     alt="Preview"
-                    className="mt-2 h-32 w-32 object-cover rounded"
+                    wrapperClassName="mt-2 h-32 w-32"
+                    className="w-full h-full object-cover rounded"
                   />
                 )}
               </div>
@@ -246,10 +248,11 @@ export function ServicesManager() {
                 <Label>Image</Label>
                 <ImageUploader onUpload={(url) => setProjectForm({ ...projectForm, image_url: url })} />
                 {projectForm.image_url && (
-                  <img
+                  <ImageWithSkeleton
                     src={projectForm.image_url || "/placeholder.svg"}
                     alt="Preview"
-                    className="mt-2 h-32 w-32 object-cover rounded"
+                    wrapperClassName="mt-2 h-32 w-32"
+                    className="w-full h-full object-cover rounded"
                   />
                 )}
               </div>
@@ -263,10 +266,11 @@ export function ServicesManager() {
               {projects.map((project) => (
                 <Card key={project.id} className="p-4">
                   <div className="flex gap-4">
-                    <img
+                    <ImageWithSkeleton
                       src={project.image_url || "/placeholder.svg"}
                       alt={project.title}
-                      className="h-24 w-24 object-cover rounded"
+                      wrapperClassName="h-24 w-24"
+                      className="w-full h-full object-cover rounded"
                     />
                     <div className="flex-1">
                       <p className="font-semibold">{project.title}</p>

@@ -2,6 +2,7 @@
 
 import { useLanguage } from "@/contexts/language-context"
 import { useRef, useState, useEffect } from "react"
+import ImageWithSkeleton from "@/components/image-with-skeleton"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
@@ -98,9 +99,10 @@ function ServiceCard({ service }: { service: any }) {
             service.isLight ? "bg-[#f5f5f5]" : "bg-black"
           }`}
         >
-          <img
+          <ImageWithSkeleton
             src={service.image || "/placeholder.svg"}
             alt={service.title}
+            wrapperClassName="w-full h-full"
             className={`w-full h-full transition-all duration-500 ease-out ${
               isHovered ? "md:object-cover md:scale-110" : "object-cover object-center md:scale-100"
             }`}

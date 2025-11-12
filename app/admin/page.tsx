@@ -6,6 +6,7 @@ import { AdminProjectsPage } from "@/components/admin/pages/projects"
 import { AdminAboutPage } from "@/components/admin/pages/about"
 import { AdminContactPage } from "@/components/admin/pages/contact"
 import Link from "next/link"
+import Image from "next/image"
 import { useEffect, useState } from "react"
 import { LanguageSelector } from "@/components/language-selector"
 import { useLanguage } from "@/contexts/language-context"
@@ -60,7 +61,7 @@ export default function AdminPage() {
         <div className="w-full px-4 lg:px-6 py-3">
           <div className={`h-14 items-center ${sidebarOpen ? "lg:grid lg:grid-cols-[210px_1fr]" : "lg:grid lg:grid-cols-[0px_1fr]"}`}>
             <div className="hidden lg:flex items-center relative ">
-               <img src="/logo-dark.svg" alt="Logo" className="h-9 w-auto" />
+               <Image src="/logo-dark.svg" alt="Logo" width={140} height={36} className="h-9 w-auto" />
             </div>
             <div className="relative flex items-center justify-end">
               <h1 className="absolute left-1/2 -translate-x-1/2 translate-y-[2px] text-xl md:text-[40px] font-display uppercase tracking-wider leading-none">{L.title}</h1>
@@ -243,7 +244,7 @@ function LoginInline() {
     <div className="min-h-screen grid place-items-center bg-background/60 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60 p-4">
       <div className="w-full max-w-sm rounded-xl border-2 border-border bg-card p-6 shadow-sm">
         <div className="mb-5 flex items-center gap-3">
-          <img src="/logo-dark.svg" alt="Logo" className="h-8 w-auto" />
+          <Image src="/logo-dark.svg" alt="Logo" width={128} height={32} className="h-8 w-auto" />
           <div className="h-6 w-px bg-border" />
           <h1 className="text-xl font-semibold tracking-tight">Connexion</h1>
         </div>

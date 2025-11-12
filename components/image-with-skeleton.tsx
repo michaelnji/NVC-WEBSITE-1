@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useMemo, useState } from "react"
+import Image from "next/image"
 
 type Props = {
   src: string
@@ -24,9 +25,12 @@ export default function ImageWithSkeleton({ src, alt, className = "", wrapperCla
           loaded || errored ? "opacity-0" : "opacity-100"
         }`}
       />
-      <img
+      <Image
         src={src || "/placeholder.svg"}
         alt={alt}
+        fill
+        sizes="100vw"
+        priority={false}
         onLoad={() => {
           loadedImagesGlobal.add(src)
           setLoaded(true)
@@ -35,7 +39,8 @@ export default function ImageWithSkeleton({ src, alt, className = "", wrapperCla
           setErrored(true)
           setLoaded(true)
         }}
-        className={`block transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
+        className={`object-cover transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
+        unoptimized={false}
       />
     </div>
   )

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import Image from "next/image"
+
 import { useLanguage } from "@/contexts/language-context"
 import { SecondaryCTAButton } from "@/components/cta-buttons"
 import { ArrowUpRight } from "lucide-react"
@@ -13,9 +15,11 @@ function ImageWithSkeleton({ src, alt, className }: { src: string; alt: string; 
   const [loaded, setLoaded] = useState(loadedImages.has(src))
   return (
     <div className={`relative overflow-hidden rounded-2xl bg-white ${className || ""}`}>
-      <img
+      <Image
         src={src || "/placeholder.svg"}
         alt={alt}
+        fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         className={`w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110 ${
           loaded ? "" : ""
         }`}
@@ -23,6 +27,7 @@ function ImageWithSkeleton({ src, alt, className }: { src: string; alt: string; 
           loadedImages.add(src)
           setLoaded(true)
         }}
+        priority={false}
       />
     </div>
   )

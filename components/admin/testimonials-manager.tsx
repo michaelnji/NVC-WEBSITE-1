@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import ImageWithSkeleton from "@/components/image-with-skeleton"
 
 import { useState, useEffect } from "react"
 import type { Testimonial } from "@/lib/types"
@@ -136,10 +137,11 @@ export function TestimonialsManager() {
             <Label>Photo</Label>
             <ImageUploader onUpload={(url) => setFormData({ ...formData, photo_url: url })} />
             {formData.photo_url && (
-              <img
+              <ImageWithSkeleton
                 src={formData.photo_url || "/placeholder.svg"}
                 alt="Preview"
-                className="mt-2 h-32 w-32 object-cover rounded-full"
+                wrapperClassName="mt-2 h-32 w-32"
+                className="w-full h-full object-cover rounded-full"
               />
             )}
           </div>
@@ -155,10 +157,11 @@ export function TestimonialsManager() {
           <Card key={testimonial.id} className="p-4">
             <div className="flex gap-4">
               {testimonial.photo_url && (
-                <img
+                <ImageWithSkeleton
                   src={testimonial.photo_url || "/placeholder.svg"}
                   alt={testimonial.author_name}
-                  className="h-24 w-24 object-cover rounded-full"
+                  wrapperClassName="h-24 w-24"
+                  className="w-full h-full object-cover rounded-full"
                 />
               )}
               <div className="flex-1">

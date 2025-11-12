@@ -178,7 +178,7 @@ function ScrollingGallery() {
               y: ["0%", "-50%"],
             }}
             transition={{
-              duration: 120,
+              duration: 90,
               repeat: Number.POSITIVE_INFINITY,
               ease: "linear",
             }}
@@ -187,13 +187,10 @@ function ScrollingGallery() {
               ...col1,
               ...col1,
               ...col1,
-              ...col1,
-              ...col1,
-              ...col1,
             ].map((img, i) => (
               <div
                 key={i}
-                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 backdrop-blur-sm border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/40 before:z-10 before:transition-opacity before:duration-300 group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300"
+                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/40 before:z-10 before:transition-opacity before:duration-300 group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300"
                 style={{
                   height: `${img.height}px`,
                 }}
@@ -217,7 +214,7 @@ function ScrollingGallery() {
               y: ["-50%", "0%"],
             }}
             transition={{
-              duration: 120,
+              duration: 90,
               repeat: Number.POSITIVE_INFINITY,
               ease: "linear",
             }}
@@ -226,13 +223,10 @@ function ScrollingGallery() {
               ...col2,
               ...col2,
               ...col2,
-              ...col2,
-              ...col2,
-              ...col2,
             ].map((img, i) => (
               <div
                 key={i}
-                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 backdrop-blur-sm border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/40 before:z-10 before:transition-opacity before:duration-300 group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300"
+                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/40 before:z-10 before:transition-opacity before:duration-300 group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300"
                 style={{
                   height: `${img.height}px`,
                 }}
@@ -296,10 +290,10 @@ function MobileCarousel({
       <motion.div
         className="flex items-center h-full"
         animate={{
-          x: direction === "left" ? [0, -((mobileWidth + 12) * 6)] : [-((mobileWidth + 12) * 6), 0],
+          x: direction === "left" ? [0, -((mobileWidth + 12) * 3)] : [-((mobileWidth + 12) * 3), 0],
         }}
         transition={{
-          duration: 60,
+          duration: 45,
           repeat: Number.POSITIVE_INFINITY,
           ease: "linear",
         }}
@@ -307,7 +301,7 @@ function MobileCarousel({
         {extendedImages.map((img, i) => (
           <div
             key={i}
-            className="relative rounded-lg overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm border border-white/10 mr-3"
+            className="relative rounded-lg overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/10 to-white/5 border border-white/10 mr-3 before:absolute before:inset-0 before:bg-black/20 before:pointer-events-none"
             style={{
               width: `${mobileWidth}px`,
               height: `${mobileHeight}px`,

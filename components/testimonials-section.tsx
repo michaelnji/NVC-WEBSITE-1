@@ -1,6 +1,9 @@
 "use client"
 
 import { motion, useAnimationFrame, useMotionValue } from "framer-motion"
+import ImageWithSkeleton from "@/components/image-with-skeleton"
+import Image from "next/image"
+
 import { useRef, useEffect } from "react"
 import { useLanguage } from "@/contexts/language-context"
 import { gsap } from "gsap"
@@ -103,7 +106,7 @@ export default function TestimonialsSection() {
                   <p className="text-[#1e1e1e]/80 text-xs sm:text-sm md:text-base leading-relaxed mb-2">{t.text}</p>
                   <div className="flex flex-col items-center justify-center mt-auto">
                     <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-[#d9d9d9] shadow-inner flex items-center justify-center ring-1 ring-black/10 mb-2">
-                      <img src="/avatar.svg" alt={t.name} className="w-full h-full rounded-full object-cover" />
+                      <ImageWithSkeleton src="/avatar.svg" alt={t.name} wrapperClassName="w-full h-full" className="w-full h-full rounded-full object-cover" />
                     </div>
                     <p className="text-[#1e1e1e] font-semibold leading-tight">{t.name}</p>
                     <p className="text-[#ff6b35] text-xs sm:text-sm leading-tight">{t.role}</p>
@@ -128,7 +131,7 @@ export default function TestimonialsSection() {
                   <p className="text-[#1e1e1e]/80 text-xs sm:text-sm md:text-base leading-relaxed mb-2">{t.text}</p>
                   <div className="flex flex-col items-center justify-center mt-auto">
                     <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-[#d9d9d9] shadow-inner flex items-center justify-center ring-1 ring-black/10 mb-2">
-                      <img src="/avatar.svg" alt={t.name} className="w-full h-full rounded-full object-cover" />
+                      <ImageWithSkeleton src="/avatar.svg" alt={t.name} wrapperClassName="w-full h-full" className="w-full h-full rounded-full object-cover" />
                     </div>
                     <p className="text-[#1e1e1e] font-semibold leading-tight">{t.name}</p>
                     <p className="text-[#ff6b35] text-xs sm:text-sm leading-tight">{t.role}</p>
@@ -179,7 +182,7 @@ export default function TestimonialsSection() {
             damping: 20,
           }}
         >
-          <img src="/Layer_1.svg" alt="DAMAS" className="w-36 sm:w-44 md:w-48 h-auto object-cover rounded-[12px] shadow-lg hover:shadow-xl transition-shadow" />
+          <Image src="/Layer_1.svg" alt="DAMAS" width={192} height={192} className="w-36 sm:w-44 md:w-48 h-auto object-cover rounded-[12px] shadow-lg hover:shadow-xl transition-shadow" />
         </motion.div>
       </div>
     </section>

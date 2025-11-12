@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import ImageWithSkeleton from "@/components/image-with-skeleton"
 
 import { useState, useEffect } from "react"
 import type { HeroImage } from "@/lib/types"
@@ -129,10 +130,11 @@ export function HeroManager() {
                     }`}
                   >
                     <div className="flex gap-3">
-                      <img
+                      <ImageWithSkeleton
                         src={image.image_url || "/placeholder.svg"}
                         alt={image.title || "Hero"}
-                        className="h-20 w-20 object-cover rounded"
+                        wrapperClassName="h-20 w-20"
+                        className="w-full h-full object-cover rounded"
                       />
                       <div className="min-w-0 flex-1">
                         <p className="font-medium truncate">{image.title || "Sans titre"}</p>
@@ -202,10 +204,11 @@ export function HeroManager() {
                 }}
               />
               {formData.image_url && (
-                <img
+                <ImageWithSkeleton
                   src={formData.image_url || "/placeholder.svg"}
                   alt="Preview"
-                  className="mt-2 h-32 w-32 object-cover rounded"
+                  wrapperClassName="mt-2 h-32 w-32"
+                  className="w-full h-full object-cover rounded"
                 />
               )}
             </div>
