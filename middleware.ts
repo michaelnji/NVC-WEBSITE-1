@@ -3,11 +3,14 @@ import { createServerClient } from "@supabase/ssr"
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (!url || !anon) {
+    return res
+  }
   // Initialize Supabase with cookie adapters for middleware
-  createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  try {
+    createServerClient(url, anon, {
       cookies: {
         get(name: string) {
           return req.cookies.get(name)?.value
@@ -19,8 +22,10 @@ export async function middleware(req: NextRequest) {
           res.cookies.set({ name, value: "", expires: new Date(0), ...options })
         },
       },
-    }
-  )
+    })
+  } catch (_e) {
+    return res
+  }
 
   // Example: protect deep admin paths server-side (keep /admin root public for inline login)
   // const { data: { session } } = await supabase.auth.getSession()
