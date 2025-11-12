@@ -338,16 +338,9 @@ export function Navbar() {
                 <LanguageSelector />
               </motion.div>
 
-              <motion.div 
-                className="lg:hidden"
-                animate={{
-                  opacity: isMobileMenuOpen ? 0 : 1,
-                  pointerEvents: isMobileMenuOpen ? "none" : "auto",
-                }}
-                transition={{ duration: 0.3 }}
-              >
+              <div className={`lg:hidden ${isMobileMenuOpen ? 'invisible' : ''}`}>
                 <HamburgerButton isOpen={isMobileMenuOpen} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
-              </motion.div>
+              </div>
             </div>
           </div>
         </div>

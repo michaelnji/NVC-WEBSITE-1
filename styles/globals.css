@@ -201,39 +201,3 @@
     background-color: rgba(0, 0, 0, 0);
   }
 }
-
-/* Hero gallery vertical scroll animations (CSS-driven so speed is consistent) */
-@keyframes scroll-col-down {
-  from {
-    transform: translateY(0%);
-  }
-  to {
-    transform: translateY(-50%);
-  }
-}
-
-@keyframes scroll-col-up {
-  from {
-    transform: translateY(-50%);
-  }
-  to {
-    transform: translateY(0%);
-  }
-}
-
-.scroll-col-down {
-  animation-name: scroll-col-down;
-  animation-duration: 300s; /* large default, you can tweak */
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  will-change: transform;
-}
-
-.scroll-col-up {
-  animation-name: scroll-col-up;
-  animation-duration: 300s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  will-change: transform;
-}
-

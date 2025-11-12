@@ -33,59 +33,49 @@ export function HamburgerButton({ isOpen, onClick }: HamburgerButtonProps) {
         transition={{ duration: 0.4 }}
       />
 
-      {/* Hamburger state */}
-      {!isOpen && (
-        <motion.div
-          className="relative w-6 h-5 flex flex-col justify-between"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <motion.span
-            className="w-full h-0.5 bg-white rounded-full origin-center"
-            animate={{
-              rotate: 0,
-              y: 0,
-            }}
-            transition={{ duration: 0.3, ease: [0.76, 0, 0.24, 1] }}
-          />
-
-          <motion.span
-            className="w-full h-0.5 bg-white rounded-full"
-            animate={{
-              opacity: 1,
-              x: 0,
-            }}
-            transition={{ duration: 0.2 }}
-          />
-
-          <motion.span
-            className="w-full h-0.5 bg-white rounded-full origin-center"
-            animate={{
-              rotate: 0,
-              y: 0,
-            }}
-            transition={{ duration: 0.3, ease: [0.76, 0, 0.24, 1] }}
-          />
-        </motion.div>
-      )}
-
-      {/* Close button state */}
-      {isOpen && (
-        <motion.div
-          className="relative w-6 h-5"
-          initial={{ opacity: 0, rotate: -90 }}
-          animate={{ opacity: 1, rotate: 0 }}
-          exit={{ opacity: 0, rotate: 90 }}
+      <div className="relative w-6 h-5 flex flex-col justify-between">
+        <motion.span
+          className="w-full h-0.5 bg-white rounded-full origin-center"
+          animate={{
+            rotate: isOpen ? 45 : 0,
+            y: isOpen ? 9 : 0,
+            backgroundColor: "#ffffff",
+          }}
           transition={{ duration: 0.3, ease: [0.76, 0, 0.24, 1] }}
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full text-white">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </motion.div>
-      )}
+        />
+
+        <motion.span
+          className="w-full h-0.5 bg-white rounded-full"
+          animate={{
+            opacity: isOpen ? 0 : 1,
+            x: isOpen ? -20 : 0,
+          }}
+          transition={{ duration: 0.2 }}
+        />
+
+        <motion.span
+          className="w-full h-0.5 bg-white rounded-full origin-center"
+          animate={{
+            rotate: isOpen ? -45 : 0,
+            y: isOpen ? -9 : 0,
+            backgroundColor: "#ffffff",
+          }}
+          transition={{ duration: 0.3, ease: [0.76, 0, 0.24, 1] }}
+        />
+      </div>
+
+      <motion.div
+        animate={{
+          rotate: isOpen ? 180 : 0,
+          scale: isOpen ? 1.3 : 1,
+          opacity: isOpen ? 0 : 1,
+        }}
+        whileHover={{
+          rotate: 90,
+          scale: 1.2,
+        }}
+        transition={{ duration: 0.4 }}
+      />
     </motion.button>
   )
 }
