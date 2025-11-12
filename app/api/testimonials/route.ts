@@ -1,9 +1,9 @@
-import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET() {
   try {
-    const supabase = await createClient()
+    const supabase = createAdminClient()
     const { data, error } = await supabase.from("testimonials").select("*").order("order_index")
 
     if (error) throw error
@@ -16,7 +16,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     const { data, error } = await supabase.from("testimonials").insert([body]).select()
 

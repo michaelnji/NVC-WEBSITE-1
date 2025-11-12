@@ -1,10 +1,10 @@
-import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
   try {
     const serviceId = request.nextUrl.searchParams.get("service_id")
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     let query = supabase.from("projects").select("*")
 
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     const { data, error } = await supabase.from("projects").insert([body]).select()
 

@@ -1,11 +1,14 @@
-import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { type NextRequest, NextResponse } from "next/server"
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = params
+    const { id } = await context.params
     const body = await request.json()
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     const { data, error } = await supabase.from("testimonials").update(body).eq("id", id).select()
 
@@ -16,10 +19,13 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = params
-    const supabase = await createClient()
+    const { id } = await context.params
+    const supabase = createAdminClient()
 
     const { error } = await supabase.from("testimonials").delete().eq("id", id)
 
