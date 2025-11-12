@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useLanguage } from "@/contexts/language-context"
@@ -90,6 +90,8 @@ export function HeroSection() {
 
 function ScrollingGallery() {
   const galleryRef = useRef<HTMLDivElement>(null)
+  const [images, setImages] = useState<Array<{ src: string; height: number }>>([])
+  const [isFetching, setIsFetching] = useState(true)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -116,29 +118,48 @@ function ScrollingGallery() {
     return () => ctx.revert()
   }, [])
 
-  const column1Images = [
+  // Fetch images managed by admin HeroManager API
+  useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        const res = await fetch("/api/hero-images", { cache: "no-store" })
+        if (!res.ok) throw new Error("Failed to fetch hero images")
+        const data = await res.json()
+        const mapped: Array<{ src: string; height: number }> = Array.isArray(data)
+          ? data.map((it: any) => ({ src: it.image_url || "/placeholder.svg", height: 300 }))
+          : []
+        if (mounted) setImages(mapped)
+      } catch (_e) {
+        if (mounted) setImages([])
+      } finally {
+        if (mounted) setIsFetching(false)
+      }
+    })()
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  const placeholders: Array<{ src: string; height: number }> = [
     { src: "/hero-images/image1.png", height: 300 },
+    { src: "/hero-images/image2.png", height: 300 },
     { src: "/hero-images/image3.png", height: 300 },
+    { src: "/hero-images/image4.png", height: 300 },
     { src: "/hero-images/image5.png", height: 300 },
-    { src: "/hero-images/image1.png", height: 300 },
-    { src: "/hero-images/image3.png", height: 300 },
-    { src: "/hero-images/image5.png", height: 300 },
-    { src: "/hero-images/image1.png", height: 300 },
-    { src: "/hero-images/image3.png", height: 300 },
+    { src: "/hero-images/image6.png", height: 300 },
   ]
 
-  const column2Images = [
-    { src: "/hero-images/image2.png", height: 300 },
-    { src: "/hero-images/image4.png", height: 300 },
-    { src: "/hero-images/image6.png", height: 300 },
-    { src: "/hero-images/image2.png", height: 300 },
-    { src: "/hero-images/image4.png", height: 300 },
-    { src: "/hero-images/image6.png", height: 300 },
-    { src: "/hero-images/image2.png", height: 300 },
-    { src: "/hero-images/image4.png", height: 300 },
-  ]
+  const MAX_TILES = 8
+  const real = images.slice(0, MAX_TILES)
+  const tiles: Array<{ src: string; height: number }> = [...real]
+  while (tiles.length < MAX_TILES) {
+    tiles.push({ src: "/placeholder.svg", height: 300 })
+  }
+  const col1 = tiles.filter((_, i) => i % 2 === 0)
+  const col2 = tiles.filter((_, i) => i % 2 === 1)
 
-  const allImages = [...column1Images.slice(0, 3), ...column2Images.slice(0, 3)]
+  const allImages = [...col1.slice(0, 3), ...col2.slice(0, 3)]
   return (
     <>
       {/* Desktop only (>=1024) - Vertical scrolling columns */}
@@ -163,12 +184,12 @@ function ScrollingGallery() {
             }}
           >
             {[
-              ...column1Images,
-              ...column1Images,
-              ...column1Images,
-              ...column1Images,
-              ...column1Images,
-              ...column1Images,
+              ...col1,
+              ...col1,
+              ...col1,
+              ...col1,
+              ...col1,
+              ...col1,
             ].map((img, i) => (
               <div
                 key={i}
@@ -202,12 +223,12 @@ function ScrollingGallery() {
             }}
           >
             {[
-              ...column2Images,
-              ...column2Images,
-              ...column2Images,
-              ...column2Images,
-              ...column2Images,
-              ...column2Images,
+              ...col2,
+              ...col2,
+              ...col2,
+              ...col2,
+              ...col2,
+              ...col2,
             ].map((img, i) => (
               <div
                 key={i}
@@ -230,8 +251,8 @@ function ScrollingGallery() {
 
       {/* Mobile & Tablet (<1024) - Two horizontal carousels with opposite scroll */}
       <div className="lg:hidden w-full mt-8 flex flex-col gap-4">
-        <MobileCarousel images={column1Images} direction="left" />
-        <MobileCarousel images={column2Images} direction="right" />
+        <MobileCarousel images={col1} direction="left" />
+        <MobileCarousel images={col2} direction="right" />
       </div>
     </>
   )

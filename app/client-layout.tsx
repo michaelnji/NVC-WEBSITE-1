@@ -17,9 +17,10 @@ import { usePathname } from "next/navigation"
 export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
   const [init, setInit] = useState(false)
   const pathname = usePathname()
-  const hideChrome = ["/projets", "/a-propos", "/contact"].some((route) =>
+  const hideChrome = ["/projets", "/a-propos", "/contact", "/admin"].some((route) =>
     pathname?.startsWith(route)
   )
+  const isAdmin = pathname?.startsWith("/admin")
 
   useEffect(() => {
     // Register GSAP plugins once on mount
@@ -171,7 +172,7 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
           />
         )}
 
-        <div className="relative z-10">
+        <div className={`relative z-10 ${isAdmin ? "h-screen overflow-hidden" : ""}`}>
           <CustomCursor />
           {!hideChrome && <Navbar />}
           {children}
