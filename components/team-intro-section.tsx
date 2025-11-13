@@ -36,7 +36,7 @@ export default function TeamIntroSection() {
         </Reveal>
       </div>
 
-      <div className="relative  mx-auto pb-0">
+      <div className="relative  mx-auto lg:-my-10 pb-0">
         {(() => {
           // Base card sizes
           const CARD_W = 180

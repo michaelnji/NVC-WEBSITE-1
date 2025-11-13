@@ -45,7 +45,7 @@ export function HeroSection() {
           ref={heroContentRef}
           className="relative z-10 w-full max-w-full min-h-screen flex flex-col lg:flex-row pt-20 overflow-hidden"
         >
-          <div className="font-500 w-full  flex items-center justify-center lg:justify-start  pt-10 lg:pt-0">
+          <div className="font-500 w-full lg:w-1/2 flex items-center justify-center lg:justify-start  pt-10 lg:pt-0">
             <div className="text-center lg:text-left max-w-full">
               <h1 className="font-display text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.1] text-balance tracking-wide">
                 <span className="text-foreground">{t.hero.title}</span>

@@ -150,7 +150,7 @@ const translations: Record<Language, Translations> = {
       line3Emotions: "DES EMOTIONS",
       line3ThatStick: "QUI RESTENT",
       subtitle:
-        "Chez New Vision Creatives, nous pensons que chaque pixel, chaque mot et chaque idée doivent avoir un sens. Nous sommes une équipe jeune, passionnée et un peu obsessionnelle quand il s'agit de bien faire les choses.",
+        "Une équipe jeune, passionnée, et perfectionniste dans tout ce qu’elle entreprend.",
       cta: "Appel d'intro",
       ctaSecondary: "Notre portfolio",
     },
@@ -334,7 +334,7 @@ const translations: Record<Language, Translations> = {
       line3Emotions: "EMOTIONS",
       line3ThatStick: "THAT STICK",
       subtitle:
-        "At New Vision Creatives, we believe every pixel, every word, and every idea should have a purpose. We're a young, passionate, and slightly obsessive team when it comes to doing things right.",
+        "We're a young, passionate, and slightly obsessive team when it comes to doing things right.",
       cta: "Intro Call",
       ctaSecondary: "Our Portfolio",
     },
