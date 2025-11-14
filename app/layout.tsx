@@ -31,6 +31,42 @@ export default function RootLayout({
       >
         {/* Background image - fixed */}
         <AnimatedBackground />
+        {/* Structured Data: Organization */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'New Vision Creatives',
+              url: 'https://newvcreatives.com',
+              logo: 'https://newvcreatives.com/favicon.png',
+              sameAs: [
+                'https://www.linkedin.com',
+                'https://www.instagram.com',
+                'https://twitter.com',
+                'https://facebook.com',
+              ],
+            }),
+          }}
+        />
+        {/* Structured Data: WebSite */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'New Vision Creatives',
+              url: 'https://newvcreatives.com',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: 'https://newvcreatives.com/search?q={search_term_string}',
+                'query-input': 'required name=search_term_string',
+              },
+            }),
+          }}
+        />
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
@@ -38,16 +74,46 @@ export default function RootLayout({
 }
 
 export const metadata: Metadata = {
-  title: "New Vision Creatives",
+  metadataBase: new URL('https://newvcreatives.com'),
+  title: {
+    default: 'New Vision Creatives',
+    template: '%s | New Vision Creatives',
+  },
+  description:
+    "Agence créative spécialisée en contenus visuels qui suscitent des émotions et qui marquent. Production photo/vidéo, social content, branding.",
+  openGraph: {
+    type: 'website',
+    url: 'https://newvcreatives.com',
+    siteName: 'New Vision Creatives',
+    title: 'New Vision Creatives',
+    description:
+      "Agence créative spécialisée en contenus visuels qui suscitent des émotions et qui marquent.",
+    images: [
+      {
+        url: '/favicon.png',
+        width: 1200,
+        height: 630,
+        alt: 'New Vision Creatives',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'New Vision Creatives',
+    description:
+      "Agence créative spécialisée en contenus visuels qui suscitent des émotions et qui marquent.",
+    images: ['/favicon.png'],
+  },
+  alternates: {
+    canonical: '/',
+    languages: {
+      fr: '/fr',
+      en: '/en',
+    },
+  },
   icons: {
-    icon: [
-      { url: "/favicon.png", type: "image/png", sizes: "32x32" },
-    ],
-    apple: [
-      { url: "/favicon.png", type: "image/png", sizes: "180x180" },
-    ],
-    shortcut: [
-      { url: "/favicon.png", type: "image/png" },
-    ],
+    icon: [{ url: '/favicon.png', type: 'image/png', sizes: '32x32' }],
+    apple: [{ url: '/favicon.png', type: 'image/png', sizes: '180x180' }],
+    shortcut: [{ url: '/favicon.png', type: 'image/png' }],
   },
 }
