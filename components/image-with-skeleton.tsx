@@ -8,11 +8,15 @@ type Props = {
   alt: string
   className?: string
   wrapperClassName?: string
+  priority?: boolean
+  eager?: boolean
+  unoptimized?: boolean
+  sizes?: string
 }
 
 const loadedImagesGlobal = new Set<string>()
 
-export default function ImageWithSkeleton({ src, alt, className = "", wrapperClassName = "" }: Props) {
+export default function ImageWithSkeleton({ src, alt, className = "", wrapperClassName = "", priority = false, eager = false, unoptimized, sizes = "100vw" }: Props) {
   const wasLoaded = useMemo(() => loadedImagesGlobal.has(src), [src])
   const [loaded, setLoaded] = useState<boolean>(wasLoaded)
   const [errored, setErrored] = useState<boolean>(false)
@@ -21,7 +25,7 @@ export default function ImageWithSkeleton({ src, alt, className = "", wrapperCla
     <div className={`relative overflow-hidden ${wrapperClassName}`}>
       <div
         aria-hidden
-        className={`absolute inset-0 animate-pulse bg-gradient-to-br from-white/10 to-white/5 transition-opacity duration-300 ${
+        className={`absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/20 to-transparent rotate-12 transition-opacity duration-200 ${
           loaded || errored ? "opacity-0" : "opacity-100"
         }`}
       />
@@ -29,8 +33,9 @@ export default function ImageWithSkeleton({ src, alt, className = "", wrapperCla
         src={src || "/placeholder.svg"}
         alt={alt}
         fill
-        sizes="100vw"
-        priority={false}
+        sizes={sizes}
+        priority={priority}
+        loading={eager ? "eager" : undefined}
         onLoad={() => {
           loadedImagesGlobal.add(src)
           setLoaded(true)
@@ -39,8 +44,8 @@ export default function ImageWithSkeleton({ src, alt, className = "", wrapperCla
           setErrored(true)
           setLoaded(true)
         }}
-        className={`object-cover transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
-        unoptimized={false}
+        className={`object-cover transition-opacity duration-200 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
+        unoptimized={unoptimized}
       />
     </div>
   )

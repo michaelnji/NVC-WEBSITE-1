@@ -21,10 +21,10 @@ export function WhatsAppButton({ href, target = "_blank", rel = "noopener norefe
       href={href}
       target={target}
       rel={rel}
-      className={`group relative inline-flex items-center gap-2 sm:gap-3 bg-[#1e1e1e] text-white font-semibold rounded-full text-sm sm:text-base transition-colors duration-500 shadow-lg whitespace-nowrap justify-center w-[260px] h-12 sm:h-14 overflow-hidden ${className}`}
+      className={`group relative inline-flex items-center gap-2 sm:gap-3 bg-[#e09e00] text-[#1e1e1e] font-semibold rounded-full text-sm sm:text-base transition-colors duration-500 shadow-lg whitespace-nowrap justify-center w-[260px] h-12 sm:h-14 overflow-hidden ${className}`}
     >
-      <div className="pointer-events-none absolute -top-full -left-full w-[300%] h-[300%] bg-[#F15A25] transform rotate-45 -translate-x-full -translate-y-full group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-700 ease-out" />
-      <span className="relative z-10 inline-flex items-center gap-2 sm:gap-3 group-hover:text-white transition-colors duration-500">
+      <div className="pointer-events-none absolute -top-full -left-full w-[300%] h-[300%] bg-[#FFBA00] transform rotate-45 -translate-x-full -translate-y-full group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-700 ease-out" />
+      <span className="relative z-10 inline-flex items-center gap-2 sm:gap-3 transition-colors duration-500">
         {children}
       </span>
     </motion.a>

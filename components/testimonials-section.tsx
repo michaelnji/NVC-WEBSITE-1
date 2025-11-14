@@ -1,10 +1,10 @@
 "use client"
 
-import { motion, useAnimationFrame, useMotionValue } from "framer-motion"
+import { motion, useAnimationFrame, useMotionValue, type Variants } from "framer-motion"
 import ImageWithSkeleton from "@/components/image-with-skeleton"
 import Image from "next/image"
 
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useMemo } from "react"
 import { useLanguage } from "@/contexts/language-context"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -31,8 +31,31 @@ export default function TestimonialsSection() {
   const trackRef = useRef<HTMLDivElement>(null)
   const seqRef = useRef<HTMLDivElement>(null)
   const speed = 60 // px per second
+  const containerRef = useRef<HTMLDivElement>(null)
+  const holdUntilRef = useRef<number>(0)
+  const prefersReduced = useMemo(() =>
+    typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+  , [])
+
+  // Hover variants for card and stars cascade
+  const cardVariants = prefersReduced
+    ? { initial: { y: 0 }, hovered: { y: -2 } }
+    : { initial: { y: 0 }, hovered: { y: -6 } }
+  const starVariants: Variants = {
+    initial: { scale: 1, rotateY: 0, y: 0 },
+    hovered: (i: number) => ({
+      // progressive enlargement and subtle pop by index
+      scale: 1.08 + i * 0.06,
+      rotateY: 8 + i * 1.2,
+      y: -i * 1,
+      transition: { duration: 0.3, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] },
+    }),
+  }
 
   useAnimationFrame((t, delta) => {
+    if (prefersReduced) return
+    // pause auto-scroll while user is interacting
+    if (Date.now() < holdUntilRef.current) return
     const dx = (speed * delta) / 1000
     const seqW = seqRef.current?.getBoundingClientRect().width || 0
     if (!seqW) return
@@ -40,6 +63,89 @@ export default function TestimonialsSection() {
     if (next <= -seqW) next += seqW
     trackX.set(next)
   })
+
+  // Enable manual scroll: wheel (horizontal/vertical) and drag
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+
+    const HOLD_DRAG_MS = 1500
+    const HOLD_WHEEL_MS = 150
+
+    const onWheel = (e: WheelEvent) => {
+      const absX = Math.abs(e.deltaX)
+      const absY = Math.abs(e.deltaY)
+      const H_DEADZONE = 4 // px minimal horizontal intent to intercept
+
+      // Let the page scroll when vertical clearly dominates, unless user forces horizontal with Shift
+      if (!e.shiftKey && (absY > absX * 1.2 || absX < H_DEADZONE)) {
+        // ensure no stale pause remains during vertical scroll
+        if (holdUntilRef.current > Date.now()) holdUntilRef.current = Date.now() - 1
+        return
+      }
+
+      // Otherwise, treat as horizontal intent
+      e.preventDefault()
+      const delta = e.deltaX !== 0 ? e.deltaX : e.deltaY
+      const seqW = seqRef.current?.getBoundingClientRect().width || 0
+      if (!seqW) return
+      let next = trackX.get() - delta
+      if (next <= -seqW) next += seqW
+      if (next >= 0) next -= seqW
+      trackX.set(next)
+      // brief pause only for horizontal wheel interactions
+      holdUntilRef.current = Date.now() + HOLD_WHEEL_MS
+    }
+
+    let dragging = false
+    let dragged = false
+    let lastX = 0
+    let startX = 0
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.button !== 0) return // primary button only
+      dragging = true
+      dragged = false
+      startX = lastX = e.clientX
+      ;(e.target as Element).setPointerCapture?.(e.pointerId)
+      // don't pause yet; wait for actual movement
+    }
+    const onPointerMove = (e: PointerEvent) => {
+      if (!dragging) return
+      const dx = e.clientX - lastX
+      lastX = e.clientX
+      if (!dragged && Math.abs(e.clientX - startX) > 4) {
+        dragged = true
+        holdUntilRef.current = Date.now() + HOLD_DRAG_MS
+      }
+      const seqW = seqRef.current?.getBoundingClientRect().width || 0
+      if (!seqW) return
+      let next = trackX.get() + dx
+      if (next <= -seqW) next += seqW
+      if (next >= 0) next -= seqW
+      trackX.set(next)
+      if (dragged) holdUntilRef.current = Date.now() + HOLD_DRAG_MS
+    }
+    const onPointerUp = (e: PointerEvent) => {
+      dragging = false
+      if (dragged) holdUntilRef.current = Date.now() + HOLD_DRAG_MS
+    }
+    const onPointerCancel = (e: PointerEvent) => {
+      dragging = false
+    }
+
+    el.addEventListener('wheel', onWheel, { passive: false })
+    el.addEventListener('pointerdown', onPointerDown)
+    window.addEventListener('pointermove', onPointerMove)
+    window.addEventListener('pointerup', onPointerUp)
+    window.addEventListener('pointercancel', onPointerCancel)
+    return () => {
+      el.removeEventListener('wheel', onWheel as any)
+      el.removeEventListener('pointerdown', onPointerDown as any)
+      window.removeEventListener('pointermove', onPointerMove as any)
+      window.removeEventListener('pointerup', onPointerUp as any)
+      window.removeEventListener('pointercancel', onPointerCancel as any)
+    }
+  }, [])
 
   useEffect(() => {
     if (!sectionRef.current) return
@@ -69,7 +175,7 @@ export default function TestimonialsSection() {
     <section
       ref={sectionRef}
       id="testimonials"
-      className="relative z-10 pt-20 sm:pt-24 md:pt-32 lg:pt-40 pb-20 sm:pb-24 md:pb-32 lg:pb-40 -mt-8 md:-mt-12 lg:-mt-14"
+      className="relative z-10 pt-20 sm:pt-24 md:pt-32 lg:pt-40 pb-20 sm:pb-24 md:pb-32 lg:pb-40 -mt-8 md:-mt-12 lg:-mt-14 overflow-x-hidden"
       style={{
         backgroundColor: "#0f0f0f",
         backgroundImage: "url('/background%20temoignages.svg')",
@@ -86,57 +192,75 @@ export default function TestimonialsSection() {
           <span className="text-[#ff6b35]">{t.testimonials.headingLine2}</span>
         </h2>
 
-        {/* Cards row - auto-scrolling marquee (seamless) */}
-        <div className="mt-8 sm:mt-10 relative overflow-hidden">
+        {/* Cards row - auto-scrolling marquee (seamless) with manual user control */}
+        <div ref={containerRef} className="mt-8 sm:mt-10 relative overflow-visible z-10 cursor-grab active:cursor-grabbing select-none touch-pan-y md:touch-auto">
           <motion.div ref={trackRef} className="flex gap-5 sm:gap-6 md:gap-7 lg:gap-8 will-change-transform" style={{ x: trackX }}>
             <div ref={seqRef} className="flex gap-5 sm:gap-6 md:gap-7 lg:gap-8">
               {testimonials.map((t, i) => (
-                <div
+                <motion.div
                   key={`a-${i}`}
-                  className="w-[280px] sm:w-[300px] md:w-[320px] lg:w-[340px] min-h-[340px] sm:min-h-[360px] md:min-h-[380px] lg:min-h-[400px] flex-shrink-0 rounded-2xl sm:rounded-3xl bg-[#efefef] p-4 sm:p-5 md:p-6 shadow-[0_6px_24px_rgba(0,0,0,0.15)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.2)] transition-all flex flex-col overflow-visible"
+                  className="group relative w-[280px] sm:w-[300px] md:w-[320px] lg:w-[340px] min-h-[340px] sm:min-h-[360px] md:min-h-[380px] lg:min-h-[400px] flex-shrink-0 rounded-2xl sm:rounded-3xl bg-[#efefef] p-4 sm:p-5 md:p-6 shadow-[0_6px_24px_rgba(0,0,0,0.15)] transition-all flex flex-col overflow-visible hover:z-20"
+                  variants={cardVariants}
+                  initial="initial"
+                  whileHover="hovered"
+                  transition={{ type: 'spring', stiffness: 180, damping: 22, mass: 0.7 }}
                 >
-                  <div className="flex items-center justify-center gap-1 sm:gap-1.5 mb-2">
-                    {Array.from({ length: 5 }).map((_, s) => (
-                      <Star key={s} filled={s < t.rating} />
-                    ))}
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl overflow-hidden">
+                    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                   </div>
-                  <h3 className="font-display text-lg sm:text-xl md:text-2xl text-[#1e1e1e] leading-tight mb-2 whitespace-pre-line uppercase font-extrabold tracking-wider">
+                  <motion.div className="flex items-center justify-center gap-1 sm:gap-1.5 mb-2" style={{ perspective: 600 }}>
+                    {Array.from({ length: 5 }).map((_, s) => (
+                      <motion.div key={s} variants={starVariants} custom={s} className="origin-center">
+                        <Star filled={s < t.rating} />
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                  <h3 className="font-display text-lg sm:text-xl md:text-2xl text-[#1e1e1e] leading-tight mb-2 whitespace-pre-line uppercase font-extrabold tracking-wider transition-transform duration-500 group-hover:translate-x-1">
                     {t.title}
                   </h3>
-                  <p className="text-[#1e1e1e]/80 text-xs sm:text-sm md:text-base leading-relaxed mb-2">{t.text}</p>
-                  <div className="flex flex-col items-center justify-center mt-auto">
+                  <p className="text-[#1e1e1e]/80 text-xs sm:text-sm md:text-base leading-relaxed mb-2 transition-transform duration-500 group-hover:translate-x-[2px]">{t.text}</p>
+                  <div className="flex flex-col items-center justify-center mt-auto transition-transform duration-500 group-hover:-translate-y-1">
                     <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-[#d9d9d9] shadow-inner flex items-center justify-center ring-1 ring-black/10 mb-2">
                       <ImageWithSkeleton src="/avatar.svg" alt={t.name} wrapperClassName="w-full h-full" className="w-full h-full rounded-full object-cover" />
                     </div>
                     <p className="text-[#1e1e1e] font-semibold leading-tight">{t.name}</p>
                     <p className="text-[#ff6b35] text-xs sm:text-sm leading-tight">{t.role}</p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
             <div className="flex gap-5 sm:gap-6 md:gap-7 lg:gap-8">
               {testimonials.map((t, i) => (
-                <div
+                <motion.div
                   key={`b-${i}`}
-                  className="w-[280px] sm:w-[300px] md:w-[320px] lg:w-[340px] min-h-[340px] sm:min-h-[360px] md:min-h-[380px] lg:min-h-[400px] flex-shrink-0 rounded-2xl sm:rounded-3xl bg-[#efefef] p-4 sm:p-5 md:p-6 shadow-[0_6px_24px_rgba(0,0,0,0.15)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.2)] transition-all flex flex-col overflow-visible"
+                  className="group relative w-[280px] sm:w-[300px] md:w-[320px] lg:w-[340px] min-h-[340px] sm:min-h-[360px] md:min-h-[380px] lg:min-h-[400px] flex-shrink-0 rounded-2xl sm:rounded-3xl bg-[#efefef] p-4 sm:p-5 md:p-6 shadow-[0_6px_24px_rgba(0,0,0,0.15)] transition-all flex flex-col overflow-visible hover:z-20"
+                  variants={cardVariants}
+                  initial="initial"
+                  whileHover="hovered"
+                  transition={{ type: 'spring', stiffness: 180, damping: 22, mass: 0.7 }}
                 >
-                  <div className="flex items-center justify-center gap-1 sm:gap-1.5 mb-2">
-                    {Array.from({ length: 5 }).map((_, s) => (
-                      <Star key={s} filled={s < t.rating} />
-                    ))}
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl overflow-hidden">
+                    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                   </div>
-                  <h3 className="font-display text-lg sm:text-xl md:text-2xl text-[#1e1e1e] leading-tight mb-2 whitespace-pre-line uppercase font-extrabold tracking-wider">
+                  <motion.div className="flex items-center justify-center gap-1 sm:gap-1.5 mb-2">
+                    {Array.from({ length: 5 }).map((_, s) => (
+                      <motion.div key={s} variants={starVariants} custom={s} className="origin-center">
+                        <Star filled={s < t.rating} />
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                  <h3 className="font-display text-lg sm:text-xl md:text-2xl text-[#1e1e1e] leading-tight mb-2 whitespace-pre-line uppercase font-extrabold tracking-wider transition-transform duration-500 group-hover:translate-x-1">
                     {t.title}
                   </h3>
-                  <p className="text-[#1e1e1e]/80 text-xs sm:text-sm md:text-base leading-relaxed mb-2">{t.text}</p>
-                  <div className="flex flex-col items-center justify-center mt-auto">
+                  <p className="text-[#1e1e1e]/80 text-xs sm:text-sm md:text-base leading-relaxed mb-2 transition-transform duration-500 group-hover:translate-x-[2px]">{t.text}</p>
+                  <div className="flex flex-col items-center justify-center mt-auto transition-transform duration-500 group-hover:-translate-y-1">
                     <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-[#d9d9d9] shadow-inner flex items-center justify-center ring-1 ring-black/10 mb-2">
                       <ImageWithSkeleton src="/avatar.svg" alt={t.name} wrapperClassName="w-full h-full" className="w-full h-full rounded-full object-cover" />
                     </div>
                     <p className="text-[#1e1e1e] font-semibold leading-tight">{t.name}</p>
                     <p className="text-[#ff6b35] text-xs sm:text-sm leading-tight">{t.role}</p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </motion.div>

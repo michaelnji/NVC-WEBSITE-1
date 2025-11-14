@@ -2,36 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import Image from "next/image"
+import ImageWithSkeleton from "@/components/image-with-skeleton"
 
 import { useLanguage } from "@/contexts/language-context"
 import { SecondaryCTAButton } from "@/components/cta-buttons"
 import { ArrowUpRight } from "lucide-react"
 
-// Cache des images déjà chargées (persiste tant que la page est ouverte)
-const loadedImages = new Set<string>()
-
-function ImageWithSkeleton({ src, alt, className }: { src: string; alt: string; className?: string }) {
-  const [loaded, setLoaded] = useState(loadedImages.has(src))
-  return (
-    <div className={`relative overflow-hidden rounded-2xl bg-white ${className || ""}`}>
-      <Image
-        src={src || "/placeholder.svg"}
-        alt={alt}
-        fill
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        className={`w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110 ${
-          loaded ? "" : ""
-        }`}
-        onLoad={() => {
-          loadedImages.add(src)
-          setLoaded(true)
-        }}
-        priority={false}
-      />
-    </div>
-  )
-}
+// Utilise le composant partagé ImageWithSkeleton avec shimmer global
 
 const mockProjects = [
   {
@@ -263,8 +240,6 @@ export default function ProjectsIntroSection() {
           ))}
         </div>
 
-        
-
         {/* Grille adaptative (cas spécial pour 4 items) */}
         <AnimatePresence mode="wait">
           <motion.div
@@ -285,7 +260,13 @@ export default function ProjectsIntroSection() {
                       whileHover={{ y: -8, transition: { duration: 0.3 } }}
                       className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 aspect-square"
                     >
-                      <ImageWithSkeleton src={it.image || "/placeholder.svg"} alt={it.title} className="w-full h-full" />
+                      <ImageWithSkeleton
+                        src={it.image || "/placeholder.svg"}
+                        alt={it.title}
+                        wrapperClassName="w-full h-full"
+                        className="object-cover transform transition-transform duration-500 group-hover:scale-110"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       <div className="absolute bottom-0 left-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <h3 className="text-white text-sm font-bold mb-1">{it.title}</h3>
@@ -304,7 +285,13 @@ export default function ProjectsIntroSection() {
                       whileHover={{ y: -8, transition: { duration: 0.3 } }}
                       className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 col-span-2 row-span-2"
                     >
-                      <ImageWithSkeleton src={items[0].image || "/placeholder.svg"} alt={items[0].title} className="w-full h-[520px]" />
+                      <ImageWithSkeleton
+                        src={items[0].image || "/placeholder.svg"}
+                        alt={items[0].title}
+                        wrapperClassName="w-full h-[520px]"
+                        className="object-cover transform transition-transform duration-500 group-hover:scale-110"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       <div className="absolute bottom-0 left-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <h3 className="text-white text-2xl font-bold mb-1">{items[0].title}</h3>
@@ -322,7 +309,13 @@ export default function ProjectsIntroSection() {
                         whileHover={{ y: -8, transition: { duration: 0.3 } }}
                         className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
                       >
-                        <ImageWithSkeleton src={items[1].image || "/placeholder.svg"} alt={items[1].title} className="w-full h-[260px]" />
+                        <ImageWithSkeleton
+                          src={items[1].image || "/placeholder.svg"}
+                          alt={items[1].title}
+                          wrapperClassName="w-full h-[260px]"
+                          className="object-cover transform transition-transform duration-500 group-hover:scale-110"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           <h3 className="text-white text-xl font-bold mb-1">{items[1].title}</h3>
@@ -339,7 +332,13 @@ export default function ProjectsIntroSection() {
                           whileHover={{ y: -8, transition: { duration: 0.3 } }}
                           className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
                         >
-                          <ImageWithSkeleton src={items[2].image || "/placeholder.svg"} alt={items[2].title} className="w-full h-[220px]" />
+                          <ImageWithSkeleton
+                            src={items[2].image || "/placeholder.svg"}
+                            alt={items[2].title}
+                            wrapperClassName="w-full h-[220px]"
+                            className="object-cover transform transition-transform duration-500 group-hover:scale-110"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                           <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <h3 className="text-white text-lg font-bold mb-1">{items[2].title}</h3>
@@ -353,7 +352,13 @@ export default function ProjectsIntroSection() {
                           whileHover={{ y: -8, transition: { duration: 0.3 } }}
                           className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
                         >
-                          <ImageWithSkeleton src={items[3].image || "/placeholder.svg"} alt={items[3].title} className="w-full h-[220px]" />
+                          <ImageWithSkeleton
+                            src={items[3].image || "/placeholder.svg"}
+                            alt={items[3].title}
+                            wrapperClassName="w-full h-[220px]"
+                            className="object-cover transform transition-transform duration-500 group-hover:scale-110"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                           <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <h3 className="text-white text-lg font-bold mb-1">{items[3].title}</h3>
@@ -374,7 +379,13 @@ export default function ProjectsIntroSection() {
                     isThree && idx === 2 ? "col-span-2 md:col-span-1 justify-self-center" : ""
                   }`}
                 >
-                  <ImageWithSkeleton src={item.image || "/placeholder.svg"} alt={item.title} className="w-full h-full" />
+                  <ImageWithSkeleton
+                    src={item.image || "/placeholder.svg"}
+                    alt={item.title}
+                    wrapperClassName="w-full h-full"
+                    className="object-cover transform transition-transform duration-500 group-hover:scale-110"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <h3 className="text-white text-lg md:text-xl font-bold mb-1">{item.title}</h3>

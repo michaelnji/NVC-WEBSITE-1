@@ -18,10 +18,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const supabase = createAdminClient()
 
-    const { data, error } = await supabase.from("hero_images").insert([body]).select()
+    const payload = Array.isArray(body) ? body : [body]
+    const { data, error } = await supabase.from("hero_images").insert(payload).select()
 
     if (error) throw error
-    return NextResponse.json(data[0])
+    return NextResponse.json(Array.isArray(body) ? data : data[0])
   } catch (error) {
     return NextResponse.json({ error: "Failed to create" }, { status: 500 })
   }

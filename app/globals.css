@@ -74,6 +74,11 @@
   --sidebar-ring: oklch(0.439 0 0);
 }
 
+html, body {
+  overscroll-behavior: none; /* empêche le glissement / bounce */
+  overflow-x: hidden;         /* empêche le scroll horizontal */
+  min-height: 100%;
+}
 @theme inline {
   /* optional: --font-sans, --font-serif, --font-mono if they are applied in the layout.tsx */
   --font-sans: var(--font-montserrat);
@@ -149,6 +154,11 @@
   .rising-shadow {
     animation: risingShadow 1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
   }
+
+  /* Shimmer utility */
+  .animate-shimmer {
+    animation: shimmer 1.5s infinite;
+  }
 }
 
 @keyframes pageFall {
@@ -195,5 +205,15 @@
   }
   100% {
     background-color: rgba(0, 0, 0, 0);
+  }
+}
+
+/* Shimmer loading effect */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
   }
 }

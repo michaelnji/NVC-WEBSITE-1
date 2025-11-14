@@ -28,6 +28,7 @@ export function ImageUploader({
   multiple = false,
 }: ImageUploaderProps) {
   const [error, setError] = useState<string | null>(null)
+  const [progress, setProgress] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   const uploadOne = async (file: File) => {
@@ -49,15 +50,36 @@ export function ImageUploader({
     if (files.length === 0) return
 
     setError(null)
+    setProgress(null)
     try {
       if (multiple && files.length > 1) {
         const metas: FileMeta[] = []
-        for (const f of files) {
-          const meta = await uploadOne(f)
-          metas.push(meta)
+        const CONCURRENCY = 3
+        let index = 0
+        let completed = 0
+        const total = files.length
+
+        const next = async () => {
+          const i = index++
+          if (i >= total) return
+          try {
+            const meta = await uploadOne(files[i])
+            metas[i] = meta
+          } catch (err) {
+            metas[i] = { url: "", name: files[i].name, size: files[i].size, type: files[i].type }
+          } finally {
+            completed++
+            setProgress(`${completed}/${total}`)
+            await next()
+          }
         }
-        if (onUploadManyMeta) onUploadManyMeta(metas)
-        else if (onUploadMany) onUploadMany(metas.map((m) => m.url))
+
+        const workers = Array.from({ length: Math.min(CONCURRENCY, total) }, () => next())
+        await Promise.all(workers)
+
+        const filtered = metas.filter((m) => m && m.url)
+        if (onUploadManyMeta) onUploadManyMeta(filtered)
+        else if (onUploadMany) onUploadMany(filtered.map((m) => m.url))
       } else {
         const meta = await uploadOne(files[0])
         if (onUploadMeta) onUploadMeta(meta)
@@ -68,6 +90,7 @@ export function ImageUploader({
       console.error("[v0] Upload error:", errorMessage)
       setError(errorMessage)
     } finally {
+      setProgress(null)
       if (inputRef.current) inputRef.current.value = ""
     }
   }
@@ -83,6 +106,7 @@ export function ImageUploader({
         disabled={isLoading}
         className="block w-full cursor-pointer text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#F15A25] file:px-3 file:py-2 file:font-medium file:text-white hover:file:bg-[#F15A25]/90 file:cursor-pointer"
       />
+      {progress && <p className="text-xs text-muted-foreground">Envoi: {progress}</p>}
       {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   )

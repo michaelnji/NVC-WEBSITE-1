@@ -2,15 +2,20 @@
 
 import type React from "react"
 
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 
 export default function Template({ children }: { children: React.ReactNode }) {
+  const prefersReduced = useReducedMotion()
+  const initial = prefersReduced ? false : { opacity: 0, y: 20 }
+  const animate = prefersReduced ? {} : { opacity: 1, y: 0 }
+  const exit = prefersReduced ? {} : { opacity: 0, y: -20 }
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{
+      initial={initial as any}
+      animate={animate}
+      exit={exit}
+      transition={prefersReduced ? undefined : {
         type: "spring",
         stiffness: 260,
         damping: 20,

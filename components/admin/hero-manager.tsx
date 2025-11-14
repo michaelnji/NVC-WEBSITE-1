@@ -135,6 +135,9 @@ export function HeroManager() {
                         alt={image.title || "Hero"}
                         wrapperClassName="h-20 w-20"
                         className="w-full h-full object-cover rounded"
+                        sizes="80px"
+                        eager
+                        unoptimized={(image.image_url || "").includes(".public.blob.vercel-storage.com")}
                       />
                       <div className="min-w-0 flex-1">
                         <p className="font-medium truncate">{image.title || "Sans titre"}</p>
@@ -184,21 +187,20 @@ export function HeroManager() {
                   }
                   const remaining = Math.max(0, MAX_TILES - images.length)
                   const toCreate = files.slice(0, remaining)
-                  for (let i = 0; i < toCreate.length; i++) {
-                    try {
-                      await fetch("/api/hero-images", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          image_url: toCreate[i].url,
-                          title: toCreate[i].name.replace(/\.[^/.]+$/, ""),
-                          description: "",
-                          order_index: images.length + i,
-                        }),
-                      })
-                    } catch (e) {
-                      console.error("Batch upload error", e)
-                    }
+                  try {
+                    const payload = toCreate.map((f, i) => ({
+                      image_url: f.url,
+                      title: f.name.replace(/\.[^/.]+$/, ""),
+                      description: "",
+                      order_index: images.length + i,
+                    }))
+                    await fetch("/api/hero-images", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(payload),
+                    })
+                  } catch (e) {
+                    console.error("Batch upload error", e)
                   }
                   await fetchImages()
                 }}
@@ -209,6 +211,10 @@ export function HeroManager() {
                   alt="Preview"
                   wrapperClassName="mt-2 h-32 w-32"
                   className="w-full h-full object-cover rounded"
+                  sizes="128px"
+                  eager
+                  priority
+                  unoptimized={(formData.image_url || "").includes(".public.blob.vercel-storage.com")}
                 />
               )}
             </div>

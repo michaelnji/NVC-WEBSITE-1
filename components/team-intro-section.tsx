@@ -1,6 +1,7 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, useAnimationFrame, useMotionValue } from "framer-motion"
+import { useRef } from "react"
 import { useLanguage } from "@/contexts/language-context"
 import { SecondaryCTAButton } from "./cta-buttons"
 import { ArrowUpRight } from "lucide-react"
@@ -8,6 +9,22 @@ import Reveal from "@/components/reveal"
 
 export default function TeamIntroSection() {
   const { t } = useLanguage()
+  // Mobile horizontal marquee state
+  const mobileTrackRef = useRef<HTMLDivElement>(null)
+  const mobileTrackX = useMotionValue(0)
+  const MOBILE_SPEED = 30 // px/s
+  useAnimationFrame((_, delta) => {
+    if (typeof window === 'undefined') return
+    if (window.innerWidth >= 768) return // mobile only
+    const el = mobileTrackRef.current
+    if (!el) return
+    const totalW = el.scrollWidth
+    if (!totalW) return
+    const seqW = totalW / 3 // one 3-column sequence
+    let next = mobileTrackX.get() - (MOBILE_SPEED * delta) / 1000
+    if (next <= -seqW) next += seqW
+    mobileTrackX.set(next)
+  })
   return (
     <section className="relative z-40 py-20 md:py-28 lg:py-32 px-0 md:px-12 lg:px-16 xl:px-24  2xl:px-32 overflow-hidden bg-[url('/background-section.png')] bg-[length:100%_100%] bg-center bg-no-repeat">
       <div className="relative z-30 max-w-6xl mx-auto text-center">
@@ -36,7 +53,7 @@ export default function TeamIntroSection() {
         </Reveal>
       </div>
 
-      <div className="relative  mx-auto lg:-my-10 pb-0">
+      <div className="relative   mx-auto lg:-my-10 pb-0">
         {(() => {
           // Base card sizes
           const CARD_W = 180
@@ -72,21 +89,54 @@ export default function TeamIntroSection() {
             </div>
           )
 
+          const YoyoColumn = ({
+            count,
+            shift,
+            cardW,
+            cardH,
+            amp = 180,
+            periodMs = 10000,
+            columnKey,
+          }: {
+            count: number
+            shift: number
+            cardW: number
+            cardH: number
+            amp?: number
+            periodMs?: number
+            columnKey: string | number
+          }) => {
+            const yMv = useMotionValue(0)
+            useAnimationFrame((t) => {
+              const phase = (t % periodMs) / periodMs
+              const y = -amp * (0.5 - 0.5 * Math.cos(phase * Math.PI * 2))
+              yMv.set(y)
+            })
+            return (
+              <div key={columnKey} className="relative overflow-hidden">
+                <motion.div className="flex flex-col items-start gap-3 will-change-transform" style={{ marginTop: shift, y: yMv }}>
+                  {Array.from({ length: count }).map((_, i) => (
+                    <FlipCard key={`${columnKey}-${i}`} width={cardW} height={cardH} />
+                  ))}
+                </motion.div>
+              </div>
+            )
+          }
+
           return (
             <>
-              {/* Mobile only: auto-scrolling 3 columns */}
+              {/* Mobile only: auto-scrolling 3 columns (pixel loop) */}
               <div className="md:hidden relative overflow-hidden mt-10 [mask-image:linear-gradient(to_top,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_10%,rgba(0,0,0,0.25)_22%,rgba(0,0,0,0.55)_38%,rgba(0,0,0,0.8)_50%,#000_62%)] [webkit-mask-image:linear-gradient(to_top,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_10%,rgba(0,0,0,0.25)_22%,rgba(0,0,0,0.55)_38%,rgba(0,0,0,0.8)_50%,#000_62%)] [mask-size:100%_100%] [webkit-mask-size:100%_100%]">
                 <motion.div
-                  className="flex gap-4 pr-0 md:pr-4 will-change-transform"
-                  animate={{ x: ["0%", "-50%"] }}
-                  transition={{ duration: 28, ease: "linear", repeat: Number.POSITIVE_INFINITY }}
-                  initial={false}
+                  ref={mobileTrackRef}
+                  className="flex gap-4 pr-0 md:pr-4 will-change-transform w-max"
+                  style={{ x: mobileTrackX }}
                 >
-                  {[0, 1].flatMap((loop) =>
+                  {[0, 1, 2].flatMap((loop) =>
                     Array.from({ length: mobileCols }).map((_, colIdx) => (
                       <div
                         key={`mcol-${loop}-${colIdx}`}
-                        className={`flex flex-col items-start gap-3 ${colIdx % 2 === 1 ? "pt-20" : "pt-0"} md:pt-0`}
+                        className={`shrink-0 flex flex-col items-start gap-3 ${colIdx % 2 === 1 ? "pt-20" : "pt-0"} md:pt-0`}
                       >
                         {Array.from({ length: mobileCountPerCol[colIdx] }).map((_, i) => (
                           <FlipCard
@@ -101,37 +151,40 @@ export default function TeamIntroSection() {
                 </motion.div>
               </div>
 
-              {/* Tablet static 7 columns (smaller blocks) */}
+              {/* Tablet: 7 columns with vertical back-and-forth (linear yoyo) */}
               <div className="hidden md:grid lg:hidden relative z-10 h-[540px] overflow-hidden grid grid-cols-7 gap-x-2 items-start [mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] [webkit-mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)]">
                 {desktopCounts.map((n, colIdx) => (
-                  <div
-                    key={`tab-${colIdx}`}
-                    className="flex flex-col items-start gap-2"
-                    style={{ marginTop: Math.max(0, desktopShifts[colIdx] - 100) }}
-                  >
-                    {Array.from({ length: n }).map((_, i) => (
-                      <FlipCard
-                        key={`tab-${colIdx}-${i}`}
-                        width={Math.max(120, CARD_W - 40)}
-                        height={Math.max(150, CARD_H - 60)}
-                      />
-                    ))}
+                  <div key={`tab-${colIdx}`} className="relative overflow-hidden">
+                    <motion.div
+                      className="flex flex-col items-start gap-2 will-change-transform"
+                      animate={{ y: [0, -120, 0] }}
+                      transition={{ duration: 8, ease: "linear", repeat: Number.POSITIVE_INFINITY, repeatType: "reverse" }}
+                      initial={false}
+                      style={{ marginTop: Math.max(0, desktopShifts[colIdx] - 100) }}
+                    >
+                      {Array.from({ length: n }).map((_, i) => (
+                        <FlipCard
+                          key={`tab-${colIdx}-${i}`}
+                          width={Math.max(120, CARD_W - 40)}
+                          height={Math.max(150, CARD_H - 60)}
+                        />
+                      ))}
+                    </motion.div>
                   </div>
                 ))}
               </div>
 
-              {/* Desktop static 7 columns */}
-              <div className="hidden lg:grid relative z-10 h-[640px] md:h-[760px] overflow-hidden grid grid-cols-7 gap-x-3 md:gap-x-3 items-start [mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] [webkit-mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)]">
+              {/* Desktop: 7 columns with deterministic yoyo (pixel-driven) */}
+              <div className="hidden lg:grid relative z-10 h-[640px] md:h-[760px] overflow-hidden grid grid-cols-7 gap-x-3 md:gap-x-3 items-start [mask-image:linear-gradient(to_bottom,white_0%,white_85%,transparent_100%)] [webkit-mask-image:linear-gradient(to_bottom,white_0%,white_85%,transparent_100%)]">
                 {desktopCounts.map((n, colIdx) => (
-                  <div
-                    key={colIdx}
-                    className="flex flex-col items-start gap-3"
-                    style={{ marginTop: desktopShifts[colIdx] }}
-                  >
-                    {Array.from({ length: n }).map((_, i) => (
-                      <FlipCard key={i} width={CARD_W} height={CARD_H} />
-                    ))}
-                  </div>
+                  <YoyoColumn
+                    key={`desk-col-${colIdx}`}
+                    columnKey={`desk-${colIdx}`}
+                    count={n}
+                    shift={desktopShifts[colIdx]}
+                    cardW={CARD_W}
+                    cardH={CARD_H}
+                  />
                 ))}
               </div>
             </>

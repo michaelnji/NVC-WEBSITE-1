@@ -190,7 +190,7 @@ function ScrollingGallery() {
             ].map((img, i) => (
               <div
                 key={i}
-                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/40 before:z-10 before:transition-opacity before:duration-300 group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300"
+                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/40 before:z-10 before:transition-opacity before:duration-300 before:rounded-inherit group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300 transform-gpu will-change-[transform,opacity] [backface-visibility:hidden] [clip-path:inset(0_round_1rem)]"
                 style={{
                   height: `${img.height}px`,
                 }}
@@ -199,7 +199,7 @@ function ScrollingGallery() {
                   src={img.src || "/placeholder.svg"}
                   alt="Project showcase"
                   wrapperClassName="w-full h-full"
-                  className="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-opacity duration-300"
+                  className="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-opacity duration-300 rounded-inherit [backface-visibility:hidden] will-change-[opacity,transform]"
                 />
               </div>
             ))}
@@ -226,7 +226,7 @@ function ScrollingGallery() {
             ].map((img, i) => (
               <div
                 key={i}
-                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/40 before:z-10 before:transition-opacity before:duration-300 group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300"
+                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/40 before:z-10 before:transition-opacity before:duration-300 before:rounded-inherit group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300 transform-gpu will-change-[transform,opacity] [backface-visibility:hidden] [clip-path:inset(0_round_1rem)]"
                 style={{
                   height: `${img.height}px`,
                 }}
@@ -235,7 +235,7 @@ function ScrollingGallery() {
                   src={img.src || "/placeholder.svg"}
                   alt="Project showcase"
                   wrapperClassName="w-full h-full"
-                  className="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-opacity duration-300"
+                  className="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-opacity duration-300 rounded-inherit [backface-visibility:hidden] will-change-[opacity,transform]"
                 />
               </div>
             ))}

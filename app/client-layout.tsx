@@ -6,7 +6,7 @@ import { Navbar } from "@/components/navbar"
 import { LanguageProvider } from "@/contexts/language-context"
 import SiteFooter from "@/components/site-footer"
 import { ThemeProvider } from "@/contexts/theme-context"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import Particles, { initParticlesEngine } from "@tsparticles/react"
@@ -16,28 +16,37 @@ import { usePathname } from "next/navigation"
 
 export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
   const [init, setInit] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
+  const [prefersReduced, setPrefersReduced] = useState(false)
   const pathname = usePathname()
   const hideChrome = ["/projets", "/a-propos", "/contact", "/admin"].some((route) =>
     pathname?.startsWith(route)
   )
   const isAdmin = pathname?.startsWith("/admin")
+  const isHome = pathname === "/"
 
   useEffect(() => {
-    // Register GSAP plugins once on mount
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)")
+    setPrefersReduced(mq.matches)
+    const onChange = () => setPrefersReduced(mq.matches)
+    mq.addEventListener?.("change", onChange)
+    return () => mq.removeEventListener?.("change", onChange)
+  }, [])
+
+  useEffect(() => {
+    const onResize = () => setIsDesktop(window.innerWidth >= 1024)
+    onResize()
+    window.addEventListener("resize", onResize)
+    return () => window.removeEventListener("resize", onResize)
+  }, [])
+
+  useEffect(() => {
+    if (prefersReduced || !isDesktop || isAdmin) return
     gsap.registerPlugin(ScrollTrigger)
-
-    // Respect reduced motion
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-
     const ctx = gsap.context(() => {
-      if (prefersReduced) return
-
       const sections = gsap.utils.toArray<HTMLElement>("section")
-
       sections.forEach((el) => {
-        // Skip if element is hidden
         if (!el || el.offsetParent === null) return
-
         gsap.from(el, {
           opacity: 0,
           y: 28,
@@ -53,17 +62,17 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
         })
       })
     })
-
     return () => ctx.revert()
-  }, [])
+  }, [prefersReduced, isDesktop, isAdmin])
 
   useEffect(() => {
+    if (!isHome || isAdmin || prefersReduced || !isDesktop) return
     initParticlesEngine(async (engine) => {
       await loadSlim(engine)
     }).then(() => {
       setInit(true)
     })
-  }, [])
+  }, [isHome, isAdmin, prefersReduced, isDesktop])
 
   return (
     <ThemeProvider>
@@ -80,7 +89,7 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
           shadow="0 0 10px #F15A25,0 0 5px #F15A25"
         />
 
-        {init && (
+        {init && isHome && isDesktop && (
           <Particles
             id="tsparticles"
             className="fixed inset-0 z-[1]"
@@ -90,10 +99,10 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
                   value: "transparent",
                 },
               },
-              fpsLimit: 60,
+              fpsLimit: 48,
               particles: {
                 number: {
-                  value: 100,
+                value: 40,
                   density: {
                     enable: true,
                   },
@@ -105,32 +114,32 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
                   type: ["triangle", "polygon"],
                 },
                 opacity: {
-                  value: { min: 0.3, max: 0.9 },
+                  value: { min: 0.3, max: 0.6 },
                   animation: {
                     enable: true,
-                    speed: 2,
+                    speed: 1.2,
                     sync: false,
                   },
                 },
                 size: {
-                  value: { min: 1, max: 4 },
+                  value: { min: 1, max: 3 },
                   animation: {
                     enable: true,
-                    speed: 4,
+                    speed: 2.5,
                     sync: false,
                   },
                 },
                 rotate: {
                   value: { min: 0, max: 360 },
                   animation: {
-                    enable: true,
-                    speed: 20,
+                    enable: false,
+                    speed: 10,
                     sync: false,
                   },
                 },
                 move: {
                   enable: true,
-                  speed: { min: 0.5, max: 2 },
+                  speed: { min: 0.3, max: 1.2 },
                   direction: "top",
                   random: true,
                   straight: false,
@@ -143,29 +152,17 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
                 links: {
                   enable: false,
                 },
-                shadow: {
-                  enable: true,
-                  color: "#F15A25",
-                  blur: 8,
-                },
+                shadow: { enable: false },
               },
               interactivity: {
                 detectsOn: "window",
                 events: {
-                  onHover: {
-                    enable: true,
-                    mode: "repulse",
-                  },
+                  onHover: { enable: false },
                   resize: {
                     enable: true,
                   },
                 },
-                modes: {
-                  repulse: {
-                    distance: 100,
-                    duration: 0.4,
-                  },
-                },
+                modes: {},
               },
               detectRetina: true,
             }}
@@ -173,7 +170,7 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
         )}
 
         <div className={`relative z-10 ${isAdmin ? "h-screen overflow-hidden" : ""}`}>
-          <CustomCursor />
+          {!isAdmin && <CustomCursor />}
           {!hideChrome && <Navbar />}
           {children}
           {!hideChrome && <SiteFooter />}

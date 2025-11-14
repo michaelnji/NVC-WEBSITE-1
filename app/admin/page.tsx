@@ -46,7 +46,7 @@ export default function AdminPage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen grid place-items-center bg-background/60 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
+      <div className=" min-h-screen grid place-items-center bg-background/60 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
         <div className="text-sm text-muted-foreground">{L.loading}</div>
       </div>
     )
