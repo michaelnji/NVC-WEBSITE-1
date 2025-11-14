@@ -14,6 +14,9 @@ gsap.registerPlugin(ScrollTrigger)
 export function HeroSection() {
   const { t } = useLanguage()
   const heroContentRef = useRef<HTMLDivElement>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const subtitleRef = useRef<HTMLParagraphElement>(null)
+  const buttonsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const hasPlayedEntrance = sessionStorage.getItem("hero-entrance-played")
@@ -21,33 +24,55 @@ export function HeroSection() {
       !window.performance.getEntriesByType("navigation")[0] ||
       (window.performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming).type === "navigate"
 
-    if (!hasPlayedEntrance && isFirstLoad) {
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    const play = () => {
       const ctx = gsap.context(() => {
-        gsap.from(heroContentRef.current, {
-          y: "50vh",
-          opacity: 0,
-          duration: 1.2,
-          ease: "power4.out",
-        })
+        if (prefersReduced) {
+          gsap.set([heroContentRef.current, headingRef.current, subtitleRef.current, buttonsRef.current], { autoAlpha: 1, y: 0 })
+          return
+        }
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+        tl.from(heroContentRef.current, { y: '8vh', autoAlpha: 0, duration: 0.9 })
+          .from(headingRef.current, { y: 40, skewY: 2, autoAlpha: 0, duration: 0.8 }, '-=0.3')
+          .to(headingRef.current, { skewY: 0, duration: 0.4 }, '<')
+          .from(subtitleRef.current, { y: 24, autoAlpha: 0, duration: 0.6 }, '-=0.2')
+          .from(buttonsRef.current, { y: 16, autoAlpha: 0, duration: 0.5 }, '-=0.15')
+          .add(() => {
+            // Safety: ensure all are visible at the end
+            gsap.set([headingRef.current, subtitleRef.current, buttonsRef.current], { autoAlpha: 1 })
+          })
       })
-
       sessionStorage.setItem("hero-entrance-played", "true")
-
       return () => ctx.revert()
+    }
+
+    if (!hasPlayedEntrance && isFirstLoad) {
+      let cleaned = false
+      const cleanupFns: Array<() => void> = []
+      const start = () => { if (!cleaned) cleanupFns.push(play() || (() => {})) }
+      const fontReady = (document as any).fonts?.ready as Promise<any> | undefined
+      const t = window.setTimeout(start, 800)
+      // Safety fallback in case timeline doesn’t run for any reason
+      const safety = window.setTimeout(() => {
+        gsap.set([heroContentRef.current, headingRef.current, subtitleRef.current, buttonsRef.current], { autoAlpha: 1, y: 0 })
+      }, 1600)
+      if (fontReady) fontReady.then(start)
+      return () => { cleaned = true; window.clearTimeout(t); window.clearTimeout(safety); cleanupFns.forEach(fn => fn()) }
     }
   }, [])
 
   return (
-    <div className="relative min-h-screen flex flex-col items-start overflow-hidden  px-6 md:px-12 lg:px-16 xl:px-24 2xl:px-32 pb-20 max-w-full ">
+    <div className="relative min-h-screen flex flex-col items-start overflow-hidden  px-6 md:px-12 lg:px-16 xl:px-24 2xl:px-32 3xl:px-40 pb-20 max-w-full ">
       <div className="relative w-full max-w-full min-h-screen overflow-hidden">
         {/* Hero content */}
         <div
           ref={heroContentRef}
           className="relative z-10 w-full max-w-full min-h-screen flex flex-col lg:flex-row pt-20 overflow-hidden"
         >
-          <div className="font-500 w-full lg:w-7/10 flex items-center justify-center lg:justify-start  pt-10 lg:pt-0">
+          <div className="font-500 w-full lg:w-7/10 2xl:w-6/10 flex items-center justify-center lg:justify-start  pt-10 lg:pt-0">
             <div className="text-center lg:text-left max-w-full">
-              <h1 className="font-display text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.1] text-balance tracking-wide">
+              <h1 ref={headingRef} className="font-display text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-bold leading-[1.1] text-balance tracking-wide">
                 <span className="text-foreground">{t.hero.title}</span>
                 <br />
                 <span className="text-white">{t.hero.line2} </span>
@@ -55,11 +80,11 @@ export function HeroSection() {
                 <br />
                 <span className="text-[#F15A25]">{t.hero.line3ThatStick}</span>
               </h1>
-              <p className="font-sans  tracking-tight text-sm sm:text-base md:text-lg lg:text-xl text-foreground/80 max-w-xl  lg:mx-0 text-balance leading-relaxed">
+              <p ref={subtitleRef} className="font-sans  tracking-tight text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-foreground/80 max-w-xl lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl lg:mx-0 text-balance leading-relaxed">
                 {t.hero.subtitle}
               </p>
 
-              <div className="mt-6 md:mt-8 lg:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center md:items-center md:justify-center lg:items-start lg:justify-start pt-2">
+              <div ref={buttonsRef} className="mt-6 md:mt-8 lg:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center md:items-center md:justify-center lg:items-start lg:justify-start pt-2">
                 <WhatsAppButton href="https://wa.me/YOUR_PHONE_NUMBER">
                   <svg
                     className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0"
@@ -165,7 +190,7 @@ function ScrollingGallery() {
       {/* Desktop only (>=1024) - Vertical scrolling columns */}
       <div
         ref={galleryRef}
-        className="hidden lg:flex w-full lg:w-5/12 gap-3 xl:gap-5 lg:absolute lg:-top-32 lg:right-4 xl:right-8 2xl:right-16 bottom-0 overflow-hidden lg:pr-4 will-change-transform max-w-full"
+        className="hidden lg:flex w-full lg:w-5/12 gap-3 xl:gap-5 2xl:gap-6 lg:absolute lg:-top-32 lg:right-4 xl:right-8 2xl:right-16 3xl:right-24 bottom-0 overflow-hidden lg:pr-4 will-change-transform max-w-full"
       >
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent z-10 pointer-events-none" />
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
