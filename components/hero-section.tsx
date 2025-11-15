@@ -19,47 +19,34 @@ export function HeroSection() {
   const buttonsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const hasPlayedEntrance = sessionStorage.getItem("hero-entrance-played")
-    const isFirstLoad =
-      !window.performance.getEntriesByType("navigation")[0] ||
-      (window.performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming).type === "navigate"
+    const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
-    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const ctx = gsap.context(() => {
+      const targets = [heroContentRef.current, headingRef.current, subtitleRef.current, buttonsRef.current].filter(
+        Boolean,
+      ) as HTMLElement[]
 
-    const play = () => {
-      const ctx = gsap.context(() => {
-        if (prefersReduced) {
-          gsap.set([heroContentRef.current, headingRef.current, subtitleRef.current, buttonsRef.current], { autoAlpha: 1, y: 0 })
-          return
-        }
-        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-        tl.from(heroContentRef.current, { y: '8vh', autoAlpha: 0, duration: 0.9 })
-          .from(headingRef.current, { y: 40, skewY: 2, autoAlpha: 0, duration: 0.8 }, '-=0.3')
-          .to(headingRef.current, { skewY: 0, duration: 0.4 }, '<')
-          .from(subtitleRef.current, { y: 24, autoAlpha: 0, duration: 0.6 }, '-=0.2')
-          .from(buttonsRef.current, { y: 16, autoAlpha: 0, duration: 0.5 }, '-=0.15')
-          .add(() => {
-            // Safety: ensure all are visible at the end
-            gsap.set([headingRef.current, subtitleRef.current, buttonsRef.current], { autoAlpha: 1 })
-          })
-      })
-      sessionStorage.setItem("hero-entrance-played", "true")
-      return () => ctx.revert()
-    }
+      if (!targets.length) return
 
-    if (!hasPlayedEntrance && isFirstLoad) {
-      let cleaned = false
-      const cleanupFns: Array<() => void> = []
-      const start = () => { if (!cleaned) cleanupFns.push(play() || (() => {})) }
-      const fontReady = (document as any).fonts?.ready as Promise<any> | undefined
-      const t = window.setTimeout(start, 800)
-      // Safety fallback in case timeline doesn’t run for any reason
-      const safety = window.setTimeout(() => {
-        gsap.set([heroContentRef.current, headingRef.current, subtitleRef.current, buttonsRef.current], { autoAlpha: 1, y: 0 })
-      }, 1600)
-      if (fontReady) fontReady.then(start)
-      return () => { cleaned = true; window.clearTimeout(t); window.clearTimeout(safety); cleanupFns.forEach(fn => fn()) }
-    }
+      if (prefersReduced) {
+        gsap.set(targets, { autoAlpha: 1, y: 0 })
+        return
+      }
+
+      gsap.fromTo(
+        targets,
+        { autoAlpha: 0, y: 24 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.7,
+          stagger: 0.08,
+          ease: "power3.out",
+        },
+      )
+    })
+
+    return () => ctx.revert()
   }, [])
 
   return (
