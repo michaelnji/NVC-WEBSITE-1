@@ -6,7 +6,7 @@ import { WhatsAppButton } from "@/components/cta-buttons"
 export default function CtaVisualSection() {
   return (
     <section
-      className="relative z-40 -mt-12 py-32 md:py-40 lg:py-48 px-6 md:px-12 lg:px-16 xl:px-24 -mb-10 2xl:px-32 overflow-hidden"
+      className="relative z-40 -mt-12 md:-mt-16 lg:-mt-20 xl:-mt-24 2xl:-mt-28 py-32 md:py-40 lg:py-48 px-6 md:px-12 lg:px-16 xl:px-24 -mb-10 lg:mb-0 2xl:px-32 overflow-hidden lg:min-h-[75vh] xl:min-h-[85vh]"
       style={{
         backgroundImage: "url('/background custom section.png')",
         backgroundSize: "100% 100%",
@@ -20,7 +20,7 @@ export default function CtaVisualSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5 }}
-          className="font-display text-white font-extrabold tracking-wide leading-tight text-5xl sm:text-6xl md:text-7xl lg:text-8xl uppercase"
+          className="font-display text-white font-extrabold tracking-wide leading-tight text-5xl sm:text-6xl md:text-7xl lg:text-8xl uppercase mb-4 sm:mb-5 md:mb-6 lg:mb-7"
           style={{ fontFamily: 'Bigger, sans-serif' }}
         >
           READY TO TELL YOUR NEXT
@@ -33,7 +33,7 @@ export default function CtaVisualSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mt-6 md:mt-8 text-white/90 text-base md:text-lg lg:text-xl max-w-4xl mx-auto"
+          className="mt-4 sm:mt-5 md:mt-6 lg:mt-7 text-white/90 text-base md:text-lg lg:text-xl max-w-4xl mx-auto leading-relaxed"
         >
           Have an idea, a product, or just a spark of ambition? Let's talk.
           <span className="opacity-80"> (We promise we won't bite — unless you say, "Can you make me a quick logo?")</span>

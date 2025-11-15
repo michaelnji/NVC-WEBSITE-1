@@ -175,7 +175,7 @@ export default function TestimonialsSection() {
     <section
       ref={sectionRef}
       id="testimonials"
-      className="relative z-10 pt-20 sm:pt-24 md:pt-32 lg:pt-40 pb-20 sm:pb-24 md:pb-32 lg:pb-40 -mt-8 md:-mt-12 lg:-mt-14 overflow-x-hidden"
+      className="relative z-10 pt-20 sm:pt-24 md:pt-32 lg:pt-40 pb-20 sm:pb-24 md:pb-32 lg:pb-40 -mt-8 md:-mt-10 lg:-mt-12 xl:-mt-14 2xl:-mt-16 overflow-x-hidden lg:min-h-[75vh] xl:min-h-[85vh]"
       style={{
         backgroundColor: "#0f0f0f",
         backgroundImage: "url('/background%20temoignages.svg')",
@@ -186,14 +186,14 @@ export default function TestimonialsSection() {
     >
       {/* decorative layer */}
       <div className="relative mx-auto text-center">
-        <h2 className="testimonials-title font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-wide leading-tight text-white uppercase text-balance">
+        <h2 className="testimonials-title font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-wide leading-tight text-white uppercase text-balance mb-4 sm:mb-5 md:mb-6 lg:mb-7">
           {t.testimonials.headingLine1}
           <br />
           <span className="text-[#ff6b35]">{t.testimonials.headingLine2}</span>
         </h2>
 
         {/* Cards row - auto-scrolling marquee (seamless) with manual user control */}
-        <div ref={containerRef} className="mt-8 sm:mt-10 relative overflow-visible z-10 cursor-grab active:cursor-grabbing select-none touch-pan-y md:touch-auto">
+        <div ref={containerRef} className="mt-6 sm:mt-8 md:mt-9 lg:mt-10 relative overflow-visible z-10 cursor-grab active:cursor-grabbing select-none touch-pan-y md:touch-auto">
           <motion.div ref={trackRef} className="flex gap-5 sm:gap-6 md:gap-7 lg:gap-8 will-change-transform" style={{ x: trackX }}>
             <div ref={seqRef} className="flex gap-5 sm:gap-6 md:gap-7 lg:gap-8">
               {testimonials.map((t, i) => (
@@ -266,22 +266,7 @@ export default function TestimonialsSection() {
           </motion.div>
         </div>
         {/* subtle premium edge haze (hidden on mobile) */}
-        <div
-          className="hidden sm:block pointer-events-none absolute inset-y-0 left-0 w-14 sm:w-20 md:w-24"
-          style={{
-            background:
-              "linear-gradient(to right, #0f0f0f 0%, rgba(15,15,15,0.85) 40%, rgba(15,15,15,0.5) 75%, transparent 100%)",
-            backdropFilter: "blur(1.5px)",
-          }}
-        />
-        <div
-          className="hidden sm:block pointer-events-none absolute inset-y-0 right-0 w-14 sm:w-20 md:w-24"
-          style={{
-            background:
-              "linear-gradient(to left, #0f0f0f 0%, rgba(15,15,15,0.85) 40%, rgba(15,15,15,0.5) 75%, transparent 100%)",
-            backdropFilter: "blur(1.5px)",
-          }}
-        />
+
       </div>
 
       {/* bottom stamp */}

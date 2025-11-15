@@ -22,10 +22,10 @@ export default function ImageWithSkeleton({ src, alt, className = "", wrapperCla
   const [errored, setErrored] = useState<boolean>(false)
 
   return (
-    <div className={`relative overflow-hidden ${wrapperClassName}`}>
+    <div className={`relative overflow-hidden rounded-inherit ${wrapperClassName}`}>
       <div
         aria-hidden
-        className={`absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/20 to-transparent rotate-12 transition-opacity duration-200 ${
+        className={`absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-inherit transition-opacity duration-200 ${
           loaded || errored ? "opacity-0" : "opacity-100"
         }`}
       />

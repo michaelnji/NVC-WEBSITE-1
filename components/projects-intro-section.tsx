@@ -10,7 +10,15 @@ import { ArrowUpRight } from "lucide-react"
 
 // Utilise le composant partagé ImageWithSkeleton avec shimmer global
 
-const mockProjects = [
+type ProjectCard = {
+  id: number | string
+  title: string
+  category: string
+  image: string
+  isPlaceholder?: boolean
+}
+
+const mockProjects: ProjectCard[] = [
   {
     id: 1,
     title: "PARKSPOT",
@@ -157,8 +165,8 @@ export default function ProjectsIntroSection() {
   const [activeCategory, setActiveCategory] = useState<string>(defaultCategory)
 
   const filteredProjects = mockProjects.filter((p) => p.category === activeCategory)
-  const allForCategory = filteredProjects.length ? filteredProjects : mockProjects
-  const [items, setItems] = useState(allForCategory.slice(0, Math.min(4, allForCategory.length)))
+  const allForCategory: ProjectCard[] = filteredProjects.length ? filteredProjects : mockProjects
+  const [items, setItems] = useState<ProjectCard[]>(allForCategory.slice(0, Math.min(4, allForCategory.length)))
 
   // Déterministe par filtre: fixe un nombre d'items par catégorie et prend les N premiers (ordre stable)
   useEffect(() => {
@@ -177,8 +185,21 @@ export default function ProjectsIntroSection() {
     setItems(allForCategory.slice(0, count))
   }, [activeCategory])
 
+  // Toujours forcer un layout 4 cartes en complétant avec des placeholders si besoin
+  const MAX_SLOTS = 4
+  const filledItems: ProjectCard[] = [...items]
+  while (filledItems.length < MAX_SLOTS) {
+    filledItems.push({
+      id: `placeholder-${filledItems.length + 1}`,
+      title: "",
+      category: "",
+      image: "",
+      isPlaceholder: true,
+    })
+  }
+
   // Règles d'agencement: carrés
-  const n = items.length
+  const n = filledItems.length
   const isOne = n === 1
   const isTwo = n === 2
   const isThree = n === 3
@@ -200,7 +221,7 @@ export default function ProjectsIntroSection() {
 
   return (
     <div
-      className="relative py-50 md:py-40 lg:py-50 px-4 md:px-8 lg:px-12 -my-40  xl:px-16"
+      className="relative py-24 sm:py-32 lg:py-40 xl:py-48 px-4 md:px-8 lg:px-12 xl:px-16 -my-24 sm:-my-32 lg:-my-16 lg:min-h-[75vh] xl:min-h-[80vh]"
       style={{
         backgroundColor: "#FCDBCF",
         zIndex: 1,
@@ -208,21 +229,21 @@ export default function ProjectsIntroSection() {
     >
       <div className="max-w-7xl mx-auto">
         {/* Title */}
-        <div className="text-center mb-0">
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold leading-tight tracking-wide uppercase">
+        <div className="text-center mb-4 sm:mb-6 md:mb-8 lg:mb-10">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold leading-tight tracking-wide uppercase mb-2 sm:mb-3 md:mb-4 lg:mb-5">
             <span className="text-[#1e1e1e]">{t.projectsIntro.titlePart1} </span>
             <span className="text-[#F15A25]">{t.projectsIntro.titleHighlight}</span>
             <span className="text-[#1e1e1e]"> {t.projectsIntro.titlePart2}</span>
           </h2>
         </div>
 
-        <div className="text-center mt-2 md:mt-3 mb-6 md:mb-8 max-w-3xl mx-auto">
-          <p className="text-sm md:text-base lg:text-lg text-[#1e1e1e]/80">
+        <div className="text-center mt-1 sm:mt-2 md:mt-3 mb-6 md:mb-8 lg:mb-10 max-w-3xl mx-auto">
+          <p className="text-sm md:text-base lg:text-lg text-[#1e1e1e]/80 leading-relaxed">
             {t.projectsIntro.descriptionPart1}
             <span className="text-[#F15A25] font-semibold">{t.projectsIntro.descriptionHighlight}</span>
           </p>
         </div>
-        <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-8 md:mb-10">
+        <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-8 md:mb-10 lg:mb-12">
           {t.projectsIntro.categories.map((category) => (
             <motion.button
               key={category}
@@ -254,124 +275,175 @@ export default function ProjectsIntroSection() {
               <>
                 {/* Mobile: 2 par ligne (carrés) */}
                 <div className="grid grid-cols-2 gap-4 md:gap-6 lg:hidden">
-                  {items.map((it) => (
+                  {filledItems.map((it) => (
                     <motion.div
                       key={it.id}
                       whileHover={{ y: -8, transition: { duration: 0.3 } }}
                       className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 aspect-square"
                     >
-                      <ImageWithSkeleton
-                        src={it.image || "/placeholder.svg"}
-                        alt={it.title}
-                        wrapperClassName="w-full h-full"
-                        className="object-cover transform transition-transform duration-500 group-hover:scale-110"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="absolute bottom-0 left-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <h3 className="text-white text-sm font-bold mb-1">{it.title}</h3>
-                        <p className="text-white/80 text-xs">{it.category}</p>
-                      </div>
+                      {it.isPlaceholder ? (
+                        <div className="flex h-full w-full items-center justify-center bg-[#111] text-center px-3">
+                          <p className="text-xs sm:text-sm text-white/70 leading-relaxed">
+                            Add a new project for this category in the admin to showcase it here.
+                          </p>
+                        </div>
+                      ) : (
+                        <>
+                          <ImageWithSkeleton
+                            src={it.image || "/placeholder.svg"}
+                            alt={it.title}
+                            wrapperClassName="w-full h-full"
+                            className="object-cover transform transition-transform duration-500 group-hover:scale-110"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <div className="absolute bottom-0 left-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <h3 className="text-white text-sm font-bold mb-1">{it.title}</h3>
+                            <p className="text-white/80 text-xs">{it.category}</p>
+                          </div>
+                        </>
+                      )}
                     </motion.div>
                   ))}
                 </div>
 
                 {/* Desktop: layout spécial */}
-                <div className="hidden lg:grid grid-cols-3 gap-4 md:gap-6 items-stretch w-full">
+            <div className="hidden lg:grid grid-cols-3 gap-4 md:gap-6 items-stretch w-full">
                   {/* Left big (items[0]) */}
-                  {items[0] && (
+                  {filledItems[0] && (
                     <motion.div
-                      key={items[0].id}
+                      key={filledItems[0].id}
                       whileHover={{ y: -8, transition: { duration: 0.3 } }}
                       className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 col-span-2 row-span-2"
                     >
-                      <ImageWithSkeleton
-                        src={items[0].image || "/placeholder.svg"}
-                        alt={items[0].title}
-                        wrapperClassName="w-full h-[520px]"
-                        className="object-cover transform transition-transform duration-500 group-hover:scale-110"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="absolute bottom-0 left-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <h3 className="text-white text-2xl font-bold mb-1">{items[0].title}</h3>
-                        <p className="text-white/80 text-sm">{items[0].category}</p>
-                      </div>
+                      {filledItems[0].isPlaceholder ? (
+                        <div className="flex h-[520px] w-full items-center justify-center bg-[#111] text-center px-6">
+                          <p className="text-base md:text-lg text-white/75 leading-relaxed max-w-md mx-auto">
+                            Add a highlight project for this category in the admin to feature it here.
+                          </p>
+                        </div>
+                      ) : (
+                        <>
+                          <ImageWithSkeleton
+                            src={filledItems[0].image || "/placeholder.svg"}
+                            alt={filledItems[0].title}
+                            wrapperClassName="w-full h-full"
+                            className="object-cover transform transition-transform duration-500 group-hover:scale-110"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <div className="absolute bottom-0 left-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <h3 className="text-white text-2xl font-bold mb-1">{filledItems[0].title}</h3>
+                            <p className="text-white/80 text-sm">{filledItems[0].category}</p>
+                          </div>
+                        </>
+                      )}
                     </motion.div>
                   )}
 
                   {/* Right column container (items[1..3]) */}
-                  <div className="flex flex-col gap-4 md:gap-6">
+                  <div className="flex flex-col gap-4 h-full">
                     {/* Top wide (items[1]) */}
-                    {items[1] && (
+                    {filledItems[1] && (
                       <motion.div
-                        key={items[1].id}
+                        key={filledItems[1].id}
                         whileHover={{ y: -8, transition: { duration: 0.3 } }}
                         className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
                       >
-                        <ImageWithSkeleton
-                          src={items[1].image || "/placeholder.svg"}
-                          alt={items[1].title}
-                          wrapperClassName="w-full h-[260px]"
-                          className="object-cover transform transition-transform duration-500 group-hover:scale-110"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <h3 className="text-white text-xl font-bold mb-1">{items[1].title}</h3>
-                          <p className="text-white/80 text-xs md:text-sm">{items[1].category}</p>
-                        </div>
+                        {filledItems[1].isPlaceholder ? (
+                          <div className="flex h-[260px] w-full items-center justify-center bg-[#111] text-center px-4">
+                            <p className="text-sm md:text-base text-white/75 leading-relaxed max-w-xs mx-auto">
+                              Add another project in the admin to complete this showcase row.
+                            </p>
+                          </div>
+                        ) : (
+                          <>
+                            <ImageWithSkeleton
+                              src={filledItems[1].image || "/placeholder.svg"}
+                              alt={filledItems[1].title}
+                              wrapperClassName="w-full h-[260px]"
+                              className="object-cover transform transition-transform duration-500 group-hover:scale-110"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              <h3 className="text-white text-xl font-bold mb-1">{filledItems[1].title}</h3>
+                              <p className="text-white/80 text-xs md:text-sm">{filledItems[1].category}</p>
+                            </div>
+                          </>
+                        )}
                       </motion.div>
                     )}
 
                     {/* Bottom two small side-by-side (items[2], items[3]) */}
-                    <div className="grid grid-cols-2 gap-4 md:gap-6">
-                      {items[2] && (
+                    <div className="grid grid-cols-2 gap-4 flex-1">
+                      {filledItems[2] && (
                         <motion.div
-                          key={items[2].id}
+                          key={filledItems[2].id}
                           whileHover={{ y: -8, transition: { duration: 0.3 } }}
                           className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
                         >
-                          <ImageWithSkeleton
-                            src={items[2].image || "/placeholder.svg"}
-                            alt={items[2].title}
-                            wrapperClassName="w-full h-[220px]"
-                            className="object-cover transform transition-transform duration-500 group-hover:scale-110"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <h3 className="text-white text-lg font-bold mb-1">{items[2].title}</h3>
-                            <p className="text-white/80 text-xs md:text-sm">{items[2].category}</p>
-                          </div>
+                          {filledItems[2].isPlaceholder ? (
+                            <div className="flex h-[244px] w-full items-center justify-center bg-[#111] text-center px-3">
+                              <p className="text-xs md:text-sm text-white/75 leading-relaxed max-w-xs mx-auto">
+                                Add more projects in the admin to fill this gallery slot.
+                              </p>
+                            </div>
+                          ) : (
+                            <>
+                              <ImageWithSkeleton
+                                src={filledItems[2].image || "/placeholder.svg"}
+                                alt={filledItems[2].title}
+                                wrapperClassName="w-full h-[244px]"
+                                className="object-cover transform transition-transform duration-500 group-hover:scale-110"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                              <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <h3 className="text-white text-lg font-bold mb-1">{filledItems[2].title}</h3>
+                                <p className="text-white/80 text-xs md:text-sm">{filledItems[2].category}</p>
+                              </div>
+                            </>
+                          )}
                         </motion.div>
                       )}
-                      {items[3] && (
+                      {filledItems[3] && (
                         <motion.div
-                          key={items[3].id}
+                          key={filledItems[3].id}
                           whileHover={{ y: -8, transition: { duration: 0.3 } }}
                           className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
                         >
-                          <ImageWithSkeleton
-                            src={items[3].image || "/placeholder.svg"}
-                            alt={items[3].title}
-                            wrapperClassName="w-full h-[220px]"
-                            className="object-cover transform transition-transform duration-500 group-hover:scale-110"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <h3 className="text-white text-lg font-bold mb-1">{items[3].title}</h3>
-                            <p className="text-white/80 text-xs md:text-sm">{items[3].category}</p>
-                          </div>
+                          {filledItems[3].isPlaceholder ? (
+                            <div className="flex h-[244px] w-full items-center justify-center bg-[#111] text-center px-3">
+                              <p className="text-xs md:text-sm text-white/75 leading-relaxed max-w-xs mx-auto">
+                                Add more projects in the admin to fill this gallery slot.
+                              </p>
+                            </div>
+                          ) : (
+                            <>
+                              <ImageWithSkeleton
+                                src={filledItems[3].image || "/placeholder.svg"}
+                                alt={filledItems[3].title}
+                                wrapperClassName="w-full h-[244px]"
+                                className="object-cover transform transition-transform duration-500 group-hover:scale-110"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                              <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <h3 className="text-white text-lg font-bold mb-1">{filledItems[3].title}</h3>
+                                <p className="text-white/80 text-xs md:text-sm">{filledItems[3].category}</p>
+                              </div>
+                            </>
+                          )}
                         </motion.div>
                       )}
                     </div>
                   </div>
                 </div>
+
               </>
             ) : (
-              items.map((item, idx) => (
+              filledItems.map((item, idx) => (
                 <motion.div
                   key={item.id}
                   whileHover={{ y: -8, transition: { duration: 0.3 } }}
@@ -379,18 +451,28 @@ export default function ProjectsIntroSection() {
                     isThree && idx === 2 ? "col-span-2 md:col-span-1 justify-self-center" : ""
                   }`}
                 >
-                  <ImageWithSkeleton
-                    src={item.image || "/placeholder.svg"}
-                    alt={item.title}
-                    wrapperClassName="w-full h-full"
-                    className="object-cover transform transition-transform duration-500 group-hover:scale-110"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <h3 className="text-white text-lg md:text-xl font-bold mb-1">{item.title}</h3>
-                    <p className="text-white/80 text-xs md:text-sm">{item.category}</p>
-                  </div>
+                  {item.isPlaceholder ? (
+                    <div className="flex h-full w-full items-center justify-center bg-[#111] text-center px-4">
+                      <p className="text-xs sm:text-sm text-white/75 leading-relaxed max-w-xs mx-auto">
+                        Add more projects in the admin to fill this gallery.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <ImageWithSkeleton
+                        src={item.image || "/placeholder.svg"}
+                        alt={item.title}
+                        wrapperClassName="w-full h-full"
+                        className="object-cover transform transition-transform duration-500 group-hover:scale-110"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <h3 className="text-white text-lg md:text-xl font-bold mb-1">{item.title}</h3>
+                        <p className="text-white/80 text-xs md:text-sm">{item.category}</p>
+                      </div>
+                    </>
+                  )}
                 </motion.div>
               ))
             )}

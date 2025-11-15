@@ -72,7 +72,7 @@ export function HeroSection() {
         >
           <div className="font-500 w-full lg:w-7/10 2xl:w-6/10 flex items-center justify-center lg:justify-start  pt-10 lg:pt-0">
             <div className="text-center lg:text-left max-w-full">
-              <h1 ref={headingRef} className="font-display text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-bold leading-[1.1] text-balance tracking-wide">
+              <h1 ref={headingRef} className="font-display text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-7xl 2xl:text-8xl font-bold leading-[1.1] text-balance tracking-wide mb-3 sm:mb-4 md:mb-5 lg:mb-6">
                 <span className="text-foreground">{t.hero.title}</span>
                 <br />
                 <span className="text-white">{t.hero.line2} </span>
@@ -80,7 +80,7 @@ export function HeroSection() {
                 <br />
                 <span className="text-[#F15A25]">{t.hero.line3ThatStick}</span>
               </h1>
-              <p ref={subtitleRef} className="font-sans  tracking-tight text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-foreground/80 max-w-xl lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl lg:mx-0 text-balance leading-relaxed">
+              <p ref={subtitleRef} className="font-sans tracking-tight text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-foreground/80 max-w-xl lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl lg:mx-0 text-balance leading-relaxed mt-1 sm:mt-1.5 md:mt-2">
                 {t.hero.subtitle}
               </p>
 

@@ -8,10 +8,10 @@ export default function SiteFooter() {
   const { t } = useLanguage()
   return (
     <footer
-      className="w-full font-sans overflow-hidden"
+      className="w-full font-sans overflow-hidden -mt-8 md:-mt-10 lg:-mt-16 xl:-mt-20 2xl:-mt-24 pt-6 md:pt-8 lg:pt-10"
       style={{ backgroundColor: "#FCDBCF" }}
     >
-      <div className="max-w-7xl mx-auto px-4 md:px-0 py-12 md:py-16  lg:py-30">
+      <div className="w-full px-4 md:px-8 lg:px-12 xl:px-16 py-12 md:py-16 lg:py-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 lg:gap-20 place-items-center lg:place-items-start">
           <div className="flex flex-col gap-5 items-center lg:items-start">
             <FooterLogo />

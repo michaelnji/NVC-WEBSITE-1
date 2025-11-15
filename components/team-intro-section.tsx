@@ -26,10 +26,10 @@ export default function TeamIntroSection() {
     mobileTrackX.set(next)
   })
   return (
-    <section className="relative z-40 py-20 md:py-28 lg:py-32 px-0 md:px-12 lg:px-16 xl:px-24  2xl:px-32 overflow-hidden bg-[url('/background-section.png')] bg-[length:100%_100%] bg-center bg-no-repeat">
+    <section className="relative z-40 py-20 md:py-28 lg:py-32 px-0 md:px-12 lg:px-16 xl:px-24  2xl:px-32 overflow-hidden bg-[url('/background-section.png')] bg-[length:100%_100%] bg-center bg-no-repeat lg:min-h-[70vh] xl:min-h-[80vh]">
       <div className="relative z-30 max-w-6xl mx-auto text-center">
         <Reveal>
-          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl font-bold leading-[1.05] tracking-wide text-balance">
+          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl font-bold leading-[1.05] tracking-wide text-balance mb-3 sm:mb-4 md:mb-5 lg:mb-6">
             <span className="text-[#1e1e1e]">{t.teamIntro.titlePart1} </span>
             <span className="text-[#F15A25]">{t.teamIntro.titleEmphasis}</span>
             <span className="text-[#1e1e1e]"> {t.teamIntro.titlePart2}</span>
@@ -37,14 +37,14 @@ export default function TeamIntroSection() {
         </Reveal>
 
         <Reveal delay={0.08}>
-          <p className="mt-3 md:mt-4 max-w-2xl mx-auto text-sm md:text-base text-[#1e1e1e]/80 text-pretty">
+          <p className="mt-2 md:mt-3 max-w-2xl mx-auto text-sm md:text-base text-[#1e1e1e]/80 text-pretty leading-relaxed">
             {t.teamIntro.descriptionPart1}
             <span className="text-[#F15A25] font-semibold">{t.teamIntro.descriptionEmphasis}</span>
           </p>
         </Reveal>
 
         <Reveal delay={0.14}>
-          <div className="mt-6">
+          <div className="mt-6 sm:mt-7 md:mt-8 lg:mt-9">
             <SecondaryCTAButton href="#teams" variant="dark">
               <span className="text-sm md:text-base">Discover our teams</span>
               <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
