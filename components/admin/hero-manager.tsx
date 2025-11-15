@@ -160,7 +160,6 @@ export function HeroManager() {
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label className="mb-1 block">Image</Label>
               <ImageUploader
                 multiple
                 onUploadMeta={(file) => {
