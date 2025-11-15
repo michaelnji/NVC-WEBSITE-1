@@ -87,10 +87,67 @@ export function TestimonialsManager() {
   }
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-semibold">Témoignages</h3>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <Card className="p-4 min-h-[320px]">
+        <div className="mb-3 flex items-center justify-between">
+          <p className="font-medium">Témoignages existants</p>
+          <span className="text-xs text-muted-foreground">{testimonials.length}</span>
+        </div>
+        {testimonials.length === 0 ? (
+          <div className="h-full min-h-[260px] flex flex-col items-center justify-center text-sm text-muted-foreground">
+            Aucun témoignage pour l’instant.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-3">
+            {testimonials.map((testimonial) => (
+              <button
+                key={testimonial.id}
+                type="button"
+                onClick={() => {
+                  setEditingId(testimonial.id)
+                  setFormData({
+                    author_name: testimonial.author_name,
+                    title: testimonial.title,
+                    description: testimonial.description,
+                    photo_url: testimonial.photo_url || "",
+                    rating: testimonial.rating,
+                  })
+                }}
+                className={`group relative text-left rounded-lg border p-3 transition-all ${
+                  editingId === testimonial.id
+                    ? "border-[#F15A25] ring-1 ring-[#F15A25]/30"
+                    : "border-border hover:border-[#F15A25] hover:ring-1 hover:ring-[#F15A25]/30"
+                }`}
+              >
+                <div className="flex gap-3">
+                  {testimonial.photo_url && (
+                    <ImageWithSkeleton
+                      src={testimonial.photo_url || "/placeholder.svg"}
+                      alt={testimonial.author_name}
+                      wrapperClassName="h-16 w-16"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold truncate">{testimonial.author_name}</p>
+                    <p className="text-xs text-yellow-500">{"⭐".repeat(testimonial.rating)}</p>
+                    <p className="text-xs font-medium mt-1 line-clamp-2">{testimonial.title}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-2">{testimonial.description}</p>
+                  </div>
+                </div>
+                {editingId === testimonial.id && (
+                  <div className="pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset ring-[#F15A25]/30" />
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+      </Card>
 
       <Card className="p-6">
+        <div className="mb-2 text-xs text-muted-foreground">
+          Créez ou modifiez un témoignage. Ces témoignages alimentent la section "Témoignages" du site.
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label>Nom de l'auteur</Label>
@@ -146,55 +203,32 @@ export function TestimonialsManager() {
             )}
           </div>
 
-          <Button type="submit" disabled={isLoading}>
-            {editingId ? "Mettre à jour" : "Ajouter"} Témoignage
-          </Button>
+          <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
+            <Button type="submit" disabled={isLoading}>
+              {editingId ? "Mettre à jour" : "Ajouter"} Témoignage
+            </Button>
+            {editingId && (
+              <Button
+                type="button"
+                variant="ghost"
+                className="text-muted-foreground hover:bg-muted/30 h-9 px-4"
+                onClick={() => {
+                  setEditingId(null)
+                  setFormData({
+                    author_name: "",
+                    title: "",
+                    description: "",
+                    photo_url: "",
+                    rating: 5,
+                  })
+                }}
+              >
+                Annuler
+              </Button>
+            )}
+          </div>
         </form>
       </Card>
-
-      <div className="grid gap-4">
-        {testimonials.map((testimonial) => (
-          <Card key={testimonial.id} className="p-4">
-            <div className="flex gap-4">
-              {testimonial.photo_url && (
-                <ImageWithSkeleton
-                  src={testimonial.photo_url || "/placeholder.svg"}
-                  alt={testimonial.author_name}
-                  wrapperClassName="h-24 w-24"
-                  className="w-full h-full object-cover rounded-full"
-                />
-              )}
-              <div className="flex-1">
-                <p className="font-semibold">{testimonial.author_name}</p>
-                <p className="text-sm text-yellow-500">{"⭐".repeat(testimonial.rating)}</p>
-                <p className="font-medium mt-2">{testimonial.title}</p>
-                <p className="text-sm text-muted-foreground">{testimonial.description}</p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setEditingId(testimonial.id)
-                    setFormData({
-                      author_name: testimonial.author_name,
-                      title: testimonial.title,
-                      description: testimonial.description,
-                      photo_url: testimonial.photo_url || "",
-                      rating: testimonial.rating,
-                    })
-                  }}
-                >
-                  Éditer
-                </Button>
-                <Button variant="destructive" size="sm" onClick={() => handleDelete(testimonial.id)}>
-                  Supprimer
-                </Button>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
     </div>
   )
 }

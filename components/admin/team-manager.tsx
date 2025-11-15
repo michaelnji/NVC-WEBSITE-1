@@ -85,10 +85,70 @@ export function TeamManager() {
   }
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-semibold">Team Members</h3>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <Card className="p-4 min-h-[320px]">
+        <div className="mb-3 flex items-center justify-between">
+          <p className="font-medium">Membres existants</p>
+          <span className="text-xs text-muted-foreground">{members.length}</span>
+        </div>
+        {members.length === 0 ? (
+          <div className="h-full min-h-[260px] flex flex-col items-center justify-center text-sm text-muted-foreground">
+            Aucun membre pour l’instant.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-3">
+            {members.map((member) => {
+              const selected = editingId === member.id
+              return (
+                <button
+                  key={member.id}
+                  type="button"
+                  onClick={() => {
+                    setEditingId(member.id)
+                    setFormData({
+                      name: member.name,
+                      position: member.position,
+                      description: member.description || "",
+                      photo_url: member.photo_url || "",
+                    })
+                  }}
+                  className={`group relative text-left rounded-lg border p-3 transition-all ${
+                    selected
+                      ? "border-[#F15A25] ring-1 ring-[#F15A25]/30"
+                      : "border-border hover:border-[#F15A25] hover:ring-1 hover:ring-[#F15A25]/30"
+                  }`}
+                >
+                  <div className="flex gap-3">
+                    {member.photo_url && (
+                      <ImageWithSkeleton
+                        src={member.photo_url || "/placeholder.svg"}
+                        alt={member.name}
+                        wrapperClassName="h-16 w-16"
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold truncate">{member.name}</p>
+                      <p className="text-xs text-muted-foreground">{member.position}</p>
+                      {member.description && (
+                        <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{member.description}</p>
+                      )}
+                    </div>
+                  </div>
+                  {selected && (
+                    <div className="pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset ring-[#F15A25]/30" />
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        )}
+      </Card>
 
       <Card className="p-6">
+        <div className="mb-2 text-xs text-muted-foreground">
+          Créez ou modifiez un membre de l’équipe. Ces membres alimentent la section "Team" du site.
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label>Nom</Label>
@@ -132,59 +192,26 @@ export function TeamManager() {
             )}
           </div>
 
-          <Button type="submit" disabled={isLoading}>
-            {editingId ? "Mettre à jour" : "Ajouter"} Membre
-          </Button>
+          <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
+            <Button type="submit" disabled={isLoading}>
+              {editingId ? "Mettre à jour" : "Ajouter"} Membre
+            </Button>
+            {editingId && (
+              <Button
+                type="button"
+                variant="ghost"
+                className="text-muted-foreground hover:bg-muted/30 h-9 px-4"
+                onClick={() => {
+                  setEditingId(null)
+                  setFormData({ name: "", position: "", description: "", photo_url: "" })
+                }}
+              >
+                Annuler
+              </Button>
+            )}
+          </div>
         </form>
       </Card>
-
-      <div className="grid gap-4">
-        {members.map((member) => (
-          <Card key={member.id} className="p-4">
-            <div className="flex gap-4">
-              {member.photo_url && (
-                <ImageWithSkeleton
-                  src={member.photo_url || "/placeholder.svg"}
-                  alt={member.name}
-                  wrapperClassName="h-24 w-24"
-                  className="w-full h-full object-cover rounded-full"
-                />
-              )}
-              <div className="flex-1">
-                <p className="font-semibold">{member.name}</p>
-                <p className="text-sm text-muted-foreground">{member.position}</p>
-                <p className="text-sm mt-2">{member.description}</p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="secondary"
-                  className="border border-border text-foreground hover:bg-muted/30"
-                  size="sm"
-                  onClick={() => {
-                    setEditingId(member.id)
-                    setFormData({
-                      name: member.name,
-                      position: member.position,
-                      description: member.description || "",
-                      photo_url: member.photo_url || "",
-                    })
-                  }}
-                >
-                  Éditer
-                </Button>
-                <Button
-                  variant="secondary"
-                  className="border border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
-                  size="sm"
-                  onClick={() => handleDelete(member.id)}
-                >
-                  Supprimer
-                </Button>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
     </div>
   )
 }

@@ -29,6 +29,7 @@ export function ImageUploader({
 }: ImageUploaderProps) {
   const [error, setError] = useState<string | null>(null)
   const [progress, setProgress] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   const uploadOne = async (file: File) => {
@@ -51,6 +52,7 @@ export function ImageUploader({
 
     setError(null)
     setProgress(null)
+    setIsUploading(true)
     try {
       if (multiple && files.length > 1) {
         const metas: FileMeta[] = []
@@ -91,12 +93,13 @@ export function ImageUploader({
       setError(errorMessage)
     } finally {
       setProgress(null)
+      setIsUploading(false)
       if (inputRef.current) inputRef.current.value = ""
     }
   }
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col gap-2">
       <input
         ref={inputRef}
         type="file"
@@ -104,10 +107,41 @@ export function ImageUploader({
         multiple={multiple}
         onChange={handleUpload}
         disabled={isLoading}
-        className="block w-full cursor-pointer text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#F15A25] file:px-3 file:py-2 file:font-medium file:text-white hover:file:bg-[#F15A25]/90 file:cursor-pointer"
+        className="sr-only"
       />
-      {progress && <p className="text-xs text-muted-foreground">Envoi: {progress}</p>}
-      {error && <p className="text-sm text-destructive">{error}</p>}
+
+      <button
+        type="button"
+        disabled={isLoading || isUploading}
+        onClick={() => {
+          if (inputRef.current) {
+            inputRef.current.click()
+          }
+        }}
+        className="inline-flex w-fit items-center justify-center gap-2 rounded-md border border-[#F15A25] bg-[#F15A25] px-3 py-2 text-xs font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        {(isLoading || isUploading) && (
+          <span className="inline-flex h-3 w-3 items-center justify-center">
+            <span className="h-3 w-3 animate-spin rounded-full border-[2px] border-white/70 border-t-transparent" />
+          </span>
+        )}
+        {isLoading || isUploading
+          ? progress
+            ? `Envoi en cours (${progress})`
+            : "Envoi en cours..."
+          : multiple
+          ? "Choisir des images"
+          : "Choisir une image"}
+      </button>
+
+      <p className="text-[11px] text-muted-foreground">
+        Formats acceptés : JPG, PNG, GIF. Taille raisonnable recommandée pour de bonnes performances.
+      </p>
+
+      {progress && (
+        <p className="text-[11px] text-muted-foreground">Téléversement : {progress}</p>
+      )}
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   )
 }

@@ -11,6 +11,7 @@ import { useEffect, useState } from "react"
 import { LanguageSelector } from "@/components/language-selector"
 import { useLanguage } from "@/contexts/language-context"
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser"
+import { ButtonAdmin } from "@/components/admin/button-admin"
 
 export default function AdminPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -114,15 +115,14 @@ export default function AdminPage() {
                 >
                   {L.viewSite}
                 </Link>
-                <button
+                <ButtonAdmin
                   onClick={async () => {
                     const supabase = createSupabaseBrowserClient()
                     await supabase.auth.signOut()
                   }}
-                  className="w-full rounded-md border border-[#F15A25] bg-[#F15A25] text-white px-3 py-2 text-sm hover:opacity-90 transition-opacity"
                 >
                   {L.logout}
-                </button>
+                </ButtonAdmin>
               </div>
             </div>
           </aside>

@@ -2,6 +2,9 @@
 
 import type React from "react"
 import ImageWithSkeleton from "@/components/image-with-skeleton"
+import { AdminItemCard } from "./admin-item-card"
+import { AdminItemsListCard } from "./admin-items-list-card"
+import { ButtonAdmin } from "./button-admin"
 
 import { useState, useEffect } from "react"
 import type { HeroImage } from "@/lib/types"
@@ -97,62 +100,36 @@ export function HeroManager() {
 
   return (
      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="p-4 min-h-[360px]">
-          <div className="mb-3 flex items-center justify-between">
-            <p className="font-medium">Images Hero</p>
-            <span className="text-xs text-muted-foreground">{images.length} / {MAX_TILES}</span>
-          </div>
-          {isFetching ? (
-            <div className="h-full min-h-[320px] flex items-center justify-center">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#F15A25] border-t-transparent" />
-            </div>
-          ) : images.length === 0 ? (
-            <div className="h-full min-h-[320px] flex flex-col items-center justify-center text-sm text-muted-foreground">
-              Aucune image dans la Hero.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {images.map((image) => {
-                const selected = editingId === image.id
-                return (
-                  <button
-                    key={image.id}
-                    onClick={() => {
-                      setEditingId(image.id)
-                      setFormData({
-                        image_url: image.image_url,
-                        title: image.title || "",
-                        description: image.description || "",
-                      })
-                    }}
-                    className={`group relative text-left rounded-lg border p-3 transition-all ${
-                      selected ? "border-[#F15A25] ring-1 ring-[#F15A25]/30" : "border-border hover:border-[#F15A25] hover:ring-1 hover:ring-[#F15A25]/30"
-                    }`}
-                  >
-                    <div className="flex gap-3">
-                      <ImageWithSkeleton
-                        src={image.image_url || "/placeholder.svg"}
-                        alt={image.title || "Hero"}
-                        wrapperClassName="h-20 w-20"
-                        className="w-full h-full object-cover rounded"
-                        sizes="80px"
-                        eager
-                        unoptimized={(image.image_url || "").includes(".public.blob.vercel-storage.com")}
-                      />
-                      <div className="min-w-0 flex-1">
-                        <p className="font-medium truncate">{image.title || "Sans titre"}</p>
-                        <p className="text-xs text-muted-foreground line-clamp-2">{image.description}</p>
-                      </div>
-                    </div>
-                    {selected && (
-                      <div className="pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset ring-[#F15A25]/30" />
-                    )}
-                  </button>
-                )
-              })}
-            </div>
-          )}
-        </Card>
+
+        <AdminItemsListCard
+          title="Images Hero"
+          count={images.length}
+          max={MAX_TILES}
+          isFetching={isFetching}
+          emptyMessage="Aucune image dans la Hero."
+        >
+          {images.map((image) => {
+            const selected = editingId === image.id
+            return (
+              <AdminItemCard
+                key={image.id}
+                imageUrl={image.image_url}
+                title={image.title || "Sans titre"}
+                description={image.description || ""}
+                selected={selected}
+                onSelect={() => {
+                  setEditingId(image.id)
+                  setFormData({
+                    image_url: image.image_url,
+                    title: image.title || "",
+                    description: image.description || "",
+                  })
+                }}
+                onDelete={() => handleDelete(image.id)}
+              />
+            )
+          })}
+        </AdminItemsListCard>
 
         <Card className="p-6">
           <div className="mb-2 text-xs text-muted-foreground">
@@ -237,14 +214,14 @@ export function HeroManager() {
             </div>
 
             <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
-              <Button
+              <ButtonAdmin
                 type="submit"
-                variant="primary"
-                className="bg-[#F15A25] text-white hover:bg-[#F15A25]/90 h-9 px-4"
+                fullWidth={false}
+                className="h-9 px-4"
                 disabled={!formData.image_url || isLoading || (!editingId && images.length >= MAX_TILES)}
               >
                 {editingId ? "Mettre à jour" : images.length >= MAX_TILES ? `Limite atteinte (${MAX_TILES})` : "Ajouter"}
-              </Button>
+              </ButtonAdmin>
               {editingId && (
                 <>
                   <Button
