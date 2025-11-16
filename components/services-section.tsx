@@ -4,6 +4,7 @@ import { useLanguage } from "@/contexts/language-context"
 import { useRef, useState, useEffect } from "react"
 import ImageWithSkeleton from "@/components/image-with-skeleton"
 import Shimmer from "@/components/shimmer"
+import { AvailableSlotCard } from "@/components/available-slot-card"
 import { SectionEyebrow } from "@/components/section-eyebrow"
 import type { Service } from "@/lib/types"
 import { motion } from "framer-motion"
@@ -19,10 +20,36 @@ export default function ServicesSection() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<(HTMLDivElement | null)[]>([])
   const [services, setServices] = useState<Service[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
+  const [hasEntered, setHasEntered] = useState(false)
+
+  // Déclencher le chargement uniquement quand la section entre dans le viewport
+  useEffect(() => {
+    const node = sectionRef.current
+    if (!node) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasEntered(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(node)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
 
   useEffect(() => {
+    if (!hasEntered) return
+
     const fetchServices = async () => {
+      setIsLoading(true)
       try {
         const res = await fetch("/api/services")
         if (!res.ok) {
@@ -41,7 +68,7 @@ export default function ServicesSection() {
     }
 
     fetchServices()
-  }, [])
+  }, [hasEntered])
 
   return (
     <div
@@ -77,6 +104,7 @@ export default function ServicesSection() {
 
       <div className="px-4 sm:px-4 md:px-8">
         <ServicesGrid
+          sectionRef={sectionRef}
           cardsRef={cardsRef}
           services={services}
           isLoading={isLoading}
@@ -92,33 +120,95 @@ type ServiceCardProps = {
 }
 
 function ServicesGrid({
+  sectionRef,
   cardsRef,
   services,
   isLoading,
 }: {
+  sectionRef: React.MutableRefObject<HTMLDivElement | null>
   cardsRef: React.MutableRefObject<(HTMLDivElement | null)[]>
   services: Service[]
   isLoading: boolean
 }) {
   const MAX_SERVICES = 6
 
+  // Suivi du scroll pour l'effet d'empilement mobile (déclenche les re-renders)
+  const [scrollY, setScrollY] = useState(0)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+
+    const handleScroll = () => {
+      if (typeof window === "undefined") return
+
+      // On utilise seulement scrollY pour forcer le recalcul des transforms des cartes
+      setScrollY(window.scrollY)
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
+
   if (isLoading) {
     const skeletons = Array.from({ length: MAX_SERVICES })
     return (
       <>
         <div className="block md:hidden space-y-0">
-          {skeletons.map((_, index) => (
-            <div
-              key={index}
-              className="sticky top-16"
-              style={{
-                zIndex: skeletons.length - index,
-                transform: index > 0 ? `scale(${0.95 - index * 0.02}) translateY(${index * 20}px)` : "none",
-              }}
-            >
-              <ServiceCardSkeleton />
-            </div>
-          ))}
+          {skeletons.map((_, index) => {
+            // Empilement mobile pendant le chargement
+            let scale = 1
+            let yOffset = 0
+
+            if (isMounted && index > 0) {
+              const sectionElement = sectionRef.current
+              if (sectionElement) {
+                const sectionRect = sectionElement.getBoundingClientRect()
+                const sectionTop = sectionRect.top
+                const sectionHeight = sectionRect.height
+                const viewportHeight = window.innerHeight
+
+                const scrollProgress = Math.max(
+                  0,
+                  Math.min(1, -sectionTop / Math.max(1, sectionHeight - viewportHeight))
+                )
+
+                const cardStartProgress = (index - 1) * 0.15
+                const cardEndProgress = cardStartProgress + 0.3
+                const cardProgress = Math.max(
+                  0,
+                  Math.min(1, (scrollProgress - cardStartProgress) / Math.max(0.001, cardEndProgress - cardStartProgress))
+                )
+
+                scale = 0.85 + 0.15 * cardProgress
+                const baseMargin = 40
+                yOffset = index * baseMargin * (1 - cardProgress * 0.7)
+              } else {
+                scale = 0.85
+                yOffset = index * 40
+              }
+            }
+
+            return (
+              <div
+                key={index}
+                className="sticky top-16 sm:top-20"
+                style={{
+                  zIndex: skeletons.length - index,
+                  transform:
+                    index === 0
+                      ? "none"
+                      : `translateY(${yOffset}px) scale(${scale})`,
+                  transformOrigin: "center center",
+                }}
+              >
+                <ServiceCardSkeleton />
+              </div>
+            )
+          })}
         </div>
 
         <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-8">
@@ -140,28 +230,67 @@ function ServicesGrid({
   return (
     <>
       <div className="block md:hidden space-y-0">
-        {cards.map((card, index) => (
-          <div
-            key={index}
-            ref={(el) => {
-              cardsRef.current[index] = el
-            }}
-            className="sticky top-16"
-            style={{
-              zIndex: cards.length - index,
-              transform: index > 0 ? `scale(${0.95 - index * 0.02}) translateY(${index * 20}px)` : "none",
-            }}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.45, delay: index * 0.08, ease: "easeOut" }}
+        {cards.map((card, index) => {
+          let scale = 1
+          let yOffset = 0
+
+          if (isMounted && index > 0) {
+            const sectionElement = sectionRef.current
+            if (sectionElement) {
+              const sectionRect = sectionElement.getBoundingClientRect()
+              const sectionTop = sectionRect.top
+              const sectionHeight = sectionRect.height
+              const viewportHeight = window.innerHeight
+
+              const scrollProgress = Math.max(
+                0,
+                Math.min(1, -sectionTop / Math.max(1, sectionHeight - viewportHeight))
+              )
+
+              // L'effet commence après la pleine présentation du premier bloc (index 0)
+              const cardStartProgress = (index - 1) * 0.15
+              const cardEndProgress = cardStartProgress + 0.3
+              const cardProgress = Math.max(
+                0,
+                Math.min(1, (scrollProgress - cardStartProgress) / Math.max(0.001, cardEndProgress - cardStartProgress))
+              )
+
+              scale = 0.85 + 0.15 * cardProgress
+              const baseMargin = 40
+              yOffset = index * baseMargin * (1 - cardProgress * 0.7)
+            } else {
+              scale = 0.85
+              yOffset = index * 40
+            }
+          }
+
+          return (
+            <div
+              key={index}
+              ref={(el) => {
+                cardsRef.current[index] = el
+              }}
+              className="sticky top-16 sm:top-20"
+              style={{
+                zIndex: cards.length - index,
+                transform:
+                  index === 0
+                    ? "none"
+                    : `translateY(${yOffset}px) scale(${scale})`,
+                transformOrigin: "center center",
+              }}
             >
-              <ServiceCard service={card.service} isPlaceholder={card.isPlaceholder} />
-            </motion.div>
-          </div>
-        ))}
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.45, delay: index * 0.08, ease: "easeOut" }}
+              >
+                <ServiceCard service={card.service} isPlaceholder={card.isPlaceholder} />
+              </motion.div>
+            </div>
+          )
+        })}
       </div>
 
       {/* Sur desktop: grille classique */}
@@ -194,14 +323,10 @@ function ServiceCard({ service, isPlaceholder }: ServiceCardProps) {
       onMouseLeave={() => setIsHovered(false)}
     >
       {isPlaceholder ? (
-        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
-          <h2 className="text-sm sm:text-base md:text-lg mb-2 font-sans font-bold text-white leading-tight tracking-wide">
-            Slot disponible
-          </h2>
-          <p className="font-sans text-white/75 text-xs sm:text-sm leading-relaxed max-w-xs">
-            Add more service in the admin to fill this gallery slot.
-          </p>
-        </div>
+        <AvailableSlotCard
+          title="Slot disponible"
+          description="Add more service in the admin to fill this gallery slot."
+        />
       ) : (
         <>
           <div
@@ -217,7 +342,7 @@ function ServiceCard({ service, isPlaceholder }: ServiceCardProps) {
             </p>
           </div>
 
-          <div className="flex-1 relative overflow-hidden rounded-b-[18px] md:rounded-t-[18px] min-h-[200px] md:min-h-0">
+          <div className="flex-1 relative overflow-hidden rounded-b-[18px] md:rounded-t-[18px] min-h-[100px] md:min-h-0">
             <div className="absolute inset-0 transition-all duration-500 ease-out bg-black">
               <ImageWithSkeleton
                 src={service?.image_url || "/placeholder.svg"}

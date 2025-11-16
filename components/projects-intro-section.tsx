@@ -1,189 +1,154 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import ImageWithSkeleton from "@/components/image-with-skeleton"
+import { AvailableSlotCard } from "@/components/available-slot-card"
+import Shimmer from "@/components/shimmer"
 
 import { useLanguage } from "@/contexts/language-context"
 import { SecondaryCTAButton } from "@/components/cta-buttons"
 import { ArrowUpRight } from "lucide-react"
-
-// Utilise le composant partagé ImageWithSkeleton avec shimmer global
+import type { Project, Service } from "@/lib/types"
 
 type ProjectCard = {
-  id: number | string
+  id: string
   title: string
   category: string
   image: string
   isPlaceholder?: boolean
 }
 
-const mockProjects: ProjectCard[] = [
-  {
-    id: 1,
-    title: "PARKSPOT",
-    category: "Brand Design",
-    image: "/parkspot-branding-yellow-black.jpg",
-  },
-  {
-    id: 2,
-    title: "ApexCare+",
-    category: "Brand Design",
-    image: "/medical-healthcare-branding-green.jpg",
-  },
-  {
-    id: 3,
-    title: "Sports Photography",
-    category: "Visual Identity",
-    image: "/basketball-players-action-sports.jpg",
-  },
-  {
-    id: 4,
-    title: "Mobile App UI",
-    category: "User Interface Design",
-    image: "/mobile-app-interface-dark-yellow.jpg",
-  },
-  {
-    id: 5,
-    title: "Fashion Portrait",
-    category: "Visual Identity",
-    image: "/fashion-portrait-orange-jacket.jpg",
-  },
-  {
-    id: 6,
-    title: "AI-Driven Spaces",
-    category: "Web Design",
-    image: "/architectural-real-estate-design.jpg",
-  },
-  {
-    id: 7,
-    title: "Product Launch Video",
-    category: "Motion Graphics",
-    image: "/motion-graphics-video-production.jpg",
-  },
-  {
-    id: 8,
-    title: "Luxury Packaging",
-    category: "Product Packaging",
-    image: "/luxury-packaging.png",
-  },
-  {
-    id: 9,
-    title: "E-commerce Platform",
-    category: "User Interface Design",
-    image: "/ecommerce-website-interface.png",
-  },
-  {
-    id: 10,
-    title: "Corporate Identity",
-    category: "Brand Design",
-    image: "/corporate-brand-identity-design.jpg",
-  },
-  {
-    id: 11,
-    title: "Animated Logo",
-    category: "Motion Graphics",
-    image: "/animated-logo-motion-design.jpg",
-  },
-  {
-    id: 12,
-    title: "Cosmetics Packaging",
-    category: "Product Packaging",
-    image: "/cosmetics-packaging-design.jpg",
-  },
-  {
-    id: 13,
-    title: "Creative Branding",
-    category: "Brand Design",
-    image: "/creative-branding-project.jpg",
-  },
-  {
-    id: 14,
-    title: "Brand Identity Concept",
-    category: "Brand Design",
-    image: "/brand-identity-concept.png",
-  },
-  {
-    id: 15,
-    title: "Digital Campaign",
-    category: "Motion Graphics",
-    image: "/creative-campaign.jpg",
-  },
-  {
-    id: 16,
-    title: "Animated Product Mockup",
-    category: "Motion Graphics",
-    image: "/animated-product-design-mockup-display.jpg",
-  },
-  {
-    id: 17,
-    title: "Animated Photography",
-    category: "Visual Identity",
-    image: "/animated-photography-mockup-display.jpg",
-  },
-  {
-    id: 18,
-    title: "Spotify Visual",
-    category: "Visual Identity",
-    image: "/animated-spotify-logo-green-on-black.jpg",
-  },
-  {
-    id: 19,
-    title: "E-commerce UX",
-    category: "User Interface Design",
-    image: "/modern-web-design.png",
-  },
-  {
-    id: 20,
-    title: "UI/UX Concept",
-    category: "User Interface Design",
-    image: "/ui-ux-design-concept.png",
-  },
-  {
-    id: 21,
-    title: "Digital Strategy",
-    category: "Web Design",
-    image: "/digital-marketing-strategy.png",
-  },
-  {
-    id: 22,
-    title: "Product Photo",
-    category: "Visual Identity",
-    image: "/product-photography-still-life.png",
-  },
-  {
-    id: 23,
-    title: "Video Production",
-    category: "Motion Graphics",
-    image: "/video-production-team.png",
-  },
-]
-
 export default function ProjectsIntroSection() {
   const { t } = useLanguage()
-  const defaultCategory = t.projectsIntro.categories[0]
-  const [activeCategory, setActiveCategory] = useState<string>(defaultCategory)
+  const [projects, setProjects] = useState<ProjectCard[]>([])
+  const [services, setServices] = useState<Service[]>([])
+  // Chargement des projets : commence à false et ne passe à true que lorsqu'un service actif est défini
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [activeServiceId, setActiveServiceId] = useState<string | null>(null)
+  const sectionRef = useRef<HTMLDivElement | null>(null)
+  const [hasEntered, setHasEntered] = useState(false)
+  const [isFetchingServices, setIsFetchingServices] = useState<boolean>(false)
 
-  const filteredProjects = mockProjects.filter((p) => p.category === activeCategory)
-  const allForCategory: ProjectCard[] = filteredProjects.length ? filteredProjects : mockProjects
-  const [items, setItems] = useState<ProjectCard[]>(allForCategory.slice(0, Math.min(4, allForCategory.length)))
-
-  // Déterministe par filtre: fixe un nombre d'items par catégorie et prend les N premiers (ordre stable)
+  // 0) Observer l'entrée de la section dans le viewport
   useEffect(() => {
-    const layoutCountsByCategory: Record<string, number[]> = {
-      "Brand Design": [4, 2, 6],
-      "Visual Identity": [3, 4, 6],
-      "Motion Graphics": [4, 3, 2],
-      "User Interface Design": [6, 4, 2],
-      "Web Design": [3, 4],
-      "Product Packaging": [4, 3],
+    const node = sectionRef.current
+    if (!node) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasEntered(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(node)
+
+    return () => {
+      observer.disconnect()
     }
-    const max = Math.min(8, allForCategory.length)
-    const preferred = layoutCountsByCategory[activeCategory] || []
-    const primary = preferred[0] ?? Math.min(4, max)
-    const count = Math.max(1, Math.min(max, primary))
+  }, [])
+
+  // 1) Charger les services quand la section est visible
+  useEffect(() => {
+    if (!hasEntered) return
+
+    let mounted = true
+    setIsFetchingServices(true)
+    ;(async () => {
+      try {
+        const servicesRes = await fetch("/api/services", { cache: "no-store" })
+        if (!servicesRes.ok) throw new Error("Failed to fetch services")
+
+        const servicesData = (await servicesRes.json()) as Service[]
+        if (mounted) {
+          setServices(Array.isArray(servicesData) ? servicesData : [])
+          if (!activeServiceId && servicesData.length > 0) {
+            setActiveServiceId(servicesData[0].id)
+          }
+        }
+      } catch (_e) {
+        if (mounted) {
+          setServices([])
+        }
+      } finally {
+        if (mounted) setIsFetchingServices(false)
+      }
+    })()
+
+    return () => {
+      mounted = false
+    }
+  }, [hasEntered, activeServiceId])
+
+  // 2) Charger les projets du service actif
+  useEffect(() => {
+    if (!hasEntered || !activeServiceId) return
+
+    let mounted = true
+    setIsLoading(true)
+
+    ;(async () => {
+      try {
+        const projectsRes = await fetch(`/api/projects?service_id=${activeServiceId}`, {
+          cache: "no-store",
+        })
+        if (!projectsRes.ok) throw new Error("Failed to fetch projects")
+
+        const projectsData = (await projectsRes.json()) as Project[]
+        const activeService = services.find((s) => s.id === activeServiceId)
+
+        const mapped: ProjectCard[] = Array.isArray(projectsData)
+          ? projectsData.map((p) => ({
+              id: p.id,
+              title: p.title,
+              category: activeService?.title || "Other",
+              image: p.image_url || "/placeholder.svg",
+            }))
+          : []
+
+        if (mounted) {
+          setProjects(mapped)
+        }
+      } catch (_e) {
+        if (mounted) {
+          setProjects([])
+        }
+      } finally {
+        if (mounted) setIsLoading(false)
+      }
+    })()
+
+    return () => {
+      mounted = false
+    }
+  }, [hasEntered, activeServiceId, services])
+
+  // Catégories = services (id + titre)
+  const serviceCategories = useMemo(
+    () => services.filter((s) => s.title).map((s) => ({ id: s.id, title: s.title })),
+    [services]
+  )
+
+  // Slots de services (4 max, utilisés pour tous les breakpoints)
+  const SERVICE_SLOTS = 4
+  const serviceSlots = useMemo(
+    () => Array.from({ length: SERVICE_SLOTS }, (_, idx) => serviceCategories[idx] || null),
+    [serviceCategories]
+  )
+
+  const allForCategory: ProjectCard[] = projects
+  const [items, setItems] = useState<ProjectCard[]>([])
+
+  // Nombre d'items par catégorie : on prend jusqu'à 4 projets (complétés par des placeholders)
+  useEffect(() => {
+    const max = Math.min(4, allForCategory.length)
+    const count = max === 0 ? 0 : max
     setItems(allForCategory.slice(0, count))
-  }, [activeCategory])
+  }, [allForCategory])
 
   // Toujours forcer un layout 4 cartes en complétant avec des placeholders si besoin
   const MAX_SLOTS = 4
@@ -221,13 +186,14 @@ export default function ProjectsIntroSection() {
 
   return (
     <div
-      className="relative py-24 sm:py-32 lg:py-40 xl:py-48 px-4 md:px-8 lg:px-12 xl:px-16 -my-24 sm:-my-32 lg:-my-16 lg:min-h-[75vh] xl:min-h-[80vh]"
+      ref={sectionRef}
+      className="relative py-50 sm:py-32 lg:py-40 xl:py-48 px-4 md:px-8 lg:px-12 xl:px-16 -my-35  sm:-my-32 lg:-my-16 lg:min-h-[75vh] xl:min-h-[80vh]"
       style={{
         backgroundColor: "#FCDBCF",
         zIndex: 1,
       }}
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto ">
         {/* Title */}
         <div className="text-center mb-4 sm:mb-6 md:mb-8 lg:mb-10">
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold leading-tight tracking-wide uppercase mb-2 sm:mb-3 md:mb-4 lg:mb-5">
@@ -243,49 +209,129 @@ export default function ProjectsIntroSection() {
             <span className="text-[#F15A25] font-semibold">{t.projectsIntro.descriptionHighlight}</span>
           </p>
         </div>
-        <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-8 md:mb-10 lg:mb-12">
-          {t.projectsIntro.categories.map((category) => (
-            <motion.button
-              key={category}
-              onClick={() => setActiveCategory(category)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={`px-3 md:px-5 py-1.5 md:py-2 rounded-full text-sm md:text-base font-medium transition-all duration-300 ${
-                activeCategory === category
-                  ? "bg-[#1e1e1e] text-white shadow-lg"
-                  : "bg-white/50 text-[#1e1e1e] hover:bg-white/80"
-              }`}
-            >
-              {category}
-            </motion.button>
-          ))}
+        {/* Filtres services : 4 slots max, même forme (pills) sur mobile et desktop */}
+        <div className="flex flex-wrap justify-center gap-2 md:gap-6 mb-6 md:mb-8 lg:mb-10 min-h-[40px]">
+          {isFetchingServices
+            ? // Skeletons de chargement (4 pills noirs avec shimmer)
+              Array.from({ length: SERVICE_SLOTS }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="relative h-8 md:h-9 w-24 md:w-32 lg:w-40 rounded-full overflow-hidden bg-[#111]"
+                >
+                  <div className="absolute inset-0">
+                    <Shimmer />
+                  </div>
+                </div>
+              ))
+            : serviceSlots.map((slot, idx) =>
+                slot ? (
+                  <motion.button
+                    key={slot.id}
+                    onClick={() => setActiveServiceId(slot.id)}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, delay: idx * 0.05, ease: "easeOut" }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`px-3 md:px-5 py-1.5 md:py-2 rounded-full text-sm md:text-base font-medium transition-all duration-300 ${
+                      activeServiceId === slot.id
+                        ? "bg-[#1e1e1e] text-white shadow-lg"
+                        : "bg-white/50 text-[#1e1e1e] hover:bg-white/80"
+                    }`}
+                  >
+                    {slot.title}
+                  </motion.button>
+                ) : (
+                  <motion.div
+                    key={`service-slot-${idx}`}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, delay: idx * 0.05, ease: "easeOut" }}
+                    className="px-3 md:px-5 py-1.5 md:py-2 rounded-full text-sm md:text-base font-medium bg-[#111] text-white/90 flex items-center justify-center"
+                  >
+                    <AvailableSlotCard
+                      title="Slot available"
+                      description=""
+                    />
+                  </motion.div>
+                )
+              )}
         </div>
 
         {/* Grille adaptative (cas spécial pour 4 items) */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={activeCategory}
+            key={activeServiceId || "loading"}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className={isFour ? "w-full" : containerClass}
           >
-            {isFour ? (
+            {isLoading ? (
+              // Skeletons pendant le chargement des projets, en reprenant les layouts finaux
+              isFour ? (
+                <>
+                  {/* Mobile: 2 par ligne (carrés) */}
+                  <div className="grid grid-cols-2 gap-4 md:gap-6 lg:hidden">
+                    {Array.from({ length: MAX_SLOTS }).map((_, idx) => (
+                      <ProjectCardSkeleton
+                        key={idx}
+                        className="aspect-square"
+                      />
+                    ))}
+                  </div>
+
+                  {/* Desktop: layout spécial */}
+                  <div className="hidden lg:grid grid-cols-3 gap-4 md:gap-6 items-stretch w-full">
+                    {/* Left big */}
+                    <ProjectCardSkeleton className="col-span-2 row-span-2 h-[518px] w-full" />
+
+                    {/* Right column container */}
+                    <div className="flex flex-col gap-4 h-full">
+                      {/* Top wide */}
+                      <ProjectCardSkeleton className="h-[260px] w-full" />
+
+                      {/* Bottom two small side-by-side */}
+                      <div className="grid grid-cols-2 gap-4 flex-1">
+                        <ProjectCardSkeleton className="h-[244px] w-full" />
+                        <ProjectCardSkeleton className="h-[244px] w-full" />
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className={containerClass}>
+                  {Array.from({ length: MAX_SLOTS }).map((_, idx) => (
+                    <ProjectCardSkeleton
+                      key={idx}
+                      className={`aspect-square ${sizeClass} ${
+                        isThree && idx === 2 ? "col-span-2 md:col-span-1 justify-self-center" : ""
+                      }`}
+                    />
+                  ))}
+                </div>
+              )
+            ) : isFour ? (
               <>
                 {/* Mobile: 2 par ligne (carrés) */}
                 <div className="grid grid-cols-2 gap-4 md:gap-6 lg:hidden">
-                  {filledItems.map((it) => (
+                  {filledItems.map((it, idx) => (
                     <motion.div
                       key={it.id}
+                      initial={{ opacity: 0, y: 24 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, amount: 0.3 }}
+                      transition={{ duration: 0.4, delay: idx * 0.06, ease: "easeOut" }}
                       whileHover={{ y: -8, transition: { duration: 0.3 } }}
                       className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 aspect-square"
                     >
                       {it.isPlaceholder ? (
                         <div className="flex h-full w-full items-center justify-center bg-[#111] text-center px-3">
-                          <p className="text-xs sm:text-sm text-white/70 leading-relaxed">
-                            Add a new project for this category in the admin to showcase it here.
-                          </p>
+                          <AvailableSlotCard
+                            title="Slot available"
+                            description="Add a new project for this category in the admin to showcase it here."
+                          />
                         </div>
                       ) : (
                         <>
@@ -313,21 +359,25 @@ export default function ProjectsIntroSection() {
                   {filledItems[0] && (
                     <motion.div
                       key={filledItems[0].id}
+                      initial={{ opacity: 0, y: 32 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.45, delay: 0.04, ease: "easeOut" }}
                       whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                      className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 col-span-2 row-span-2"
+                      className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 col-span-2 row-span-2 h-[518px]"
                     >
                       {filledItems[0].isPlaceholder ? (
-                        <div className="flex h-[520px] w-full items-center justify-center bg-[#111] text-center px-6">
-                          <p className="text-base md:text-lg text-white/75 leading-relaxed max-w-md mx-auto">
-                            Add a highlight project for this category in the admin to feature it here.
-                          </p>
+                        <div className="flex h-full w-full items-center justify-center bg-[#111] text-center px-6">
+                          <AvailableSlotCard
+                            title="Highlight slot"
+                            description="Add a highlight project for this category in the admin to feature it here."
+                          />
                         </div>
                       ) : (
                         <>
                           <ImageWithSkeleton
                             src={filledItems[0].image || "/placeholder.svg"}
                             alt={filledItems[0].title}
-                            wrapperClassName="w-full h-full"
+                            wrapperClassName="w-full h-[420px]"
                             className="object-cover transform transition-transform duration-500 group-hover:scale-110"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           />
@@ -347,14 +397,18 @@ export default function ProjectsIntroSection() {
                     {filledItems[1] && (
                       <motion.div
                         key={filledItems[1].id}
+                        initial={{ opacity: 0, y: 24 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.45, delay: 0.1, ease: "easeOut" }}
                         whileHover={{ y: -8, transition: { duration: 0.3 } }}
                         className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
                       >
                         {filledItems[1].isPlaceholder ? (
                           <div className="flex h-[260px] w-full items-center justify-center bg-[#111] text-center px-4">
-                            <p className="text-sm md:text-base text-white/75 leading-relaxed max-w-xs mx-auto">
-                              Add another project in the admin to complete this showcase row.
-                            </p>
+                            <AvailableSlotCard
+                              title="Slot available"
+                              description="Add another project in the admin to complete this showcase row."
+                            />
                           </div>
                         ) : (
                           <>
@@ -380,14 +434,18 @@ export default function ProjectsIntroSection() {
                       {filledItems[2] && (
                         <motion.div
                           key={filledItems[2].id}
+                          initial={{ opacity: 0, y: 24 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.45, delay: 0.16, ease: "easeOut" }}
                           whileHover={{ y: -8, transition: { duration: 0.3 } }}
                           className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
                         >
                           {filledItems[2].isPlaceholder ? (
                             <div className="flex h-[244px] w-full items-center justify-center bg-[#111] text-center px-3">
-                              <p className="text-xs md:text-sm text-white/75 leading-relaxed max-w-xs mx-auto">
-                                Add more projects in the admin to fill this gallery slot.
-                              </p>
+                              <AvailableSlotCard
+                                title="Slot available"
+                                description="Add more projects in the admin to fill this gallery slot."
+                              />
                             </div>
                           ) : (
                             <>
@@ -410,14 +468,18 @@ export default function ProjectsIntroSection() {
                       {filledItems[3] && (
                         <motion.div
                           key={filledItems[3].id}
+                          initial={{ opacity: 0, y: 24 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.45, delay: 0.2, ease: "easeOut" }}
                           whileHover={{ y: -8, transition: { duration: 0.3 } }}
                           className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
                         >
                           {filledItems[3].isPlaceholder ? (
                             <div className="flex h-[244px] w-full items-center justify-center bg-[#111] text-center px-3">
-                              <p className="text-xs md:text-sm text-white/75 leading-relaxed max-w-xs mx-auto">
-                                Add more projects in the admin to fill this gallery slot.
-                              </p>
+                              <AvailableSlotCard
+                                title="Slot available"
+                                description="Add more projects in the admin to fill this gallery slot."
+                              />
                             </div>
                           ) : (
                             <>
@@ -446,6 +508,10 @@ export default function ProjectsIntroSection() {
               filledItems.map((item, idx) => (
                 <motion.div
                   key={item.id}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.4, delay: idx * 0.06, ease: "easeOut" }}
                   whileHover={{ y: -8, transition: { duration: 0.3 } }}
                   className={`group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 aspect-square ${sizeClass} ${
                     isThree && idx === 2 ? "col-span-2 md:col-span-1 justify-self-center" : ""
@@ -453,9 +519,10 @@ export default function ProjectsIntroSection() {
                 >
                   {item.isPlaceholder ? (
                     <div className="flex h-full w-full items-center justify-center bg-[#111] text-center px-4">
-                      <p className="text-xs sm:text-sm text-white/75 leading-relaxed max-w-xs mx-auto">
-                        Add more projects in the admin to fill this gallery.
-                      </p>
+                      <AvailableSlotCard
+                        title="Slot available"
+                        description="Add more projects in the admin to fill this gallery."
+                      />
                     </div>
                   ) : (
                     <>
@@ -485,6 +552,16 @@ export default function ProjectsIntroSection() {
             <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
           </SecondaryCTAButton>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function ProjectCardSkeleton({ className = "" }: { className?: string }) {
+  return (
+    <div className={`group relative rounded-2xl overflow-hidden bg-[#111] shadow-lg ${className}`}>
+      <div className="absolute inset-0">
+        <Shimmer />
       </div>
     </div>
   )

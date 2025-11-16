@@ -6,7 +6,7 @@ import ImageWithSkeleton from "@/components/image-with-skeleton"
 
 export type AdminItemCardProps = {
   imageUrl?: string | null
-  title: string
+  title: string | null
   description?: string | null
   selected?: boolean
   onSelect?: () => void
@@ -50,7 +50,7 @@ export function AdminItemCard({
         className="w-full text-left disabled:cursor-default flex-1"
         disabled={!onSelect}
       >
-        <div className="flex gap-3 items-start">
+        <div className="flex  items-start">
           <ImageWithSkeleton
             src={imageUrl || "/placeholder.svg"}
             alt={title || "Item"}
@@ -58,7 +58,7 @@ export function AdminItemCard({
             className="w-full h-full object-cover rounded"
           />
           <div className="min-w-0 flex-1 flex flex-col gap-1">
-            <p className="font-medium truncate">{title || "Sans titre"}</p>
+            <p className="font-medium truncate">{title}</p>
             {description !== undefined && description !== null && description !== "" && (
               <p className="text-xs text-muted-foreground line-clamp-2 whitespace-pre-line">
                 {description}
@@ -73,4 +73,10 @@ export function AdminItemCard({
       )}
     </div>
   )
+  
+  
+  
 }
+
+
+

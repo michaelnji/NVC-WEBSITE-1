@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { useEffect } from "react"
 import { LanguageSelector } from "./language-selector"
+import { HamburgerButton } from "./hamburger-button"
 
 interface MobileMenuProps {
   isOpen: boolean
@@ -36,7 +37,7 @@ export function MobileMenu({ isOpen, onClose, activeItem, menuItems }: MobileMen
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-0 z-[60]"
             onClick={onClose}
           >
@@ -65,23 +66,15 @@ export function MobileMenu({ isOpen, onClose, activeItem, menuItems }: MobileMen
             initial={{ clipPath: "circle(0% at 95% 5%)" }}
             animate={{ clipPath: "circle(150% at 95% 5%)" }}
             exit={{ clipPath: "circle(0% at 95% 5%)" }}
-            transition={{ duration: 0.9, ease: [0.76, 0, 0.24, 1] }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-0 z-[65] flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative w-full h-full flex flex-col items-center justify-center px-4 sm:px-6">
-              {/* Close button */}
-              <button
-                type="button"
-                aria-label="Close menu"
-                onClick={onClose}
-                className="absolute top-4 right-4 z-[70] p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10"
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
+              {/* Close button: reuse animated HamburgerButton for a coherent transition */}
+              <div className="absolute top-4 right-4 z-[70]">
+                <HamburgerButton isOpen={true} onClick={onClose} />
+              </div>
               {/* Menu items */}
               <nav className="flex flex-col items-center gap-1.5 sm:gap-2.5 mb-10">
                 {menuItems.map((item, index) => (

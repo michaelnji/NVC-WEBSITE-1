@@ -113,9 +113,10 @@ export function HeroManager() {
             return (
               <AdminItemCard
                 key={image.id}
+                imageSizeClass="h-30 w-50"
                 imageUrl={image.image_url}
-                title={image.title || "Sans titre"}
-                description={image.description || ""}
+                title={null}
+                description={image.description}
                 selected={selected}
                 onSelect={() => {
                   setEditingId(image.id)

@@ -8,6 +8,8 @@ import { useLanguage } from "@/contexts/language-context"
 import { ArrowUpRight } from "lucide-react"
 import { WhatsAppButton, SecondaryCTAButton } from "@/components/cta-buttons"
 import ImageWithSkeleton from "@/components/image-with-skeleton"
+import { AvailableSlotCard } from "@/components/available-slot-card"
+import Shimmer from "@/components/shimmer"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -22,28 +24,45 @@ export function HeroSection() {
     const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
     const ctx = gsap.context(() => {
-      const targets = [heroContentRef.current, headingRef.current, subtitleRef.current, buttonsRef.current].filter(
-        Boolean,
-      ) as HTMLElement[]
+      const content = heroContentRef.current
+      const heading = headingRef.current
+      const subtitle = subtitleRef.current
+      const buttons = buttonsRef.current
 
-      if (!targets.length) return
+      const targets = [heading, subtitle, buttons].filter(Boolean) as HTMLElement[]
+
+      if (!content || !targets.length) return
 
       if (prefersReduced) {
-        gsap.set(targets, { autoAlpha: 1, y: 0 })
+        gsap.set([content, ...targets], { autoAlpha: 1, y: 0 })
         return
       }
 
-      gsap.fromTo(
-        targets,
-        { autoAlpha: 0, y: 24 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.7,
-          stagger: 0.08,
-          ease: "power3.out",
-        },
+      const tl = gsap.timeline({ defaults: { ease: "power2.out" } })
+
+      // Légère montée du container pour une entrée plus immersive
+      tl.fromTo(
+        content,
+        { autoAlpha: 0, y: 40 },
+        { autoAlpha: 1, y: 0, duration: 0.7 },
       )
+
+      // Puis apparition progressive du heading, sous-titre et boutons
+      tl.from(
+        heading,
+        { autoAlpha: 0, y: 18, duration: 0.6 },
+        "-=0.35",
+      )
+        .from(
+          subtitle,
+          { autoAlpha: 0, y: 16, duration: 0.55 },
+          "-=0.3",
+        )
+        .from(
+          buttons,
+          { autoAlpha: 0, y: 14, duration: 0.5 },
+          "-=0.25",
+        )
     })
 
     return () => ctx.revert()
@@ -102,9 +121,11 @@ export function HeroSection() {
 
 function ScrollingGallery() {
   const galleryRef = useRef<HTMLDivElement>(null)
-  const [images, setImages] = useState<Array<{ src: string; height: number }>>([])
+  const [images, setImages] = useState<Array<{ src: string; height: number; isPlaceholder?: boolean }>>([])
   const [isFetching, setIsFetching] = useState(true)
+  const [hasEntered, setHasEntered] = useState(false)
 
+  // Animation d'entrée + scroll parallax
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from(galleryRef.current, {
@@ -130,16 +151,41 @@ function ScrollingGallery() {
     return () => ctx.revert()
   }, [])
 
-  // Fetch images managed by admin HeroManager API
+  // Déclencher le chargement uniquement quand la galerie entre dans le viewport
   useEffect(() => {
+    const node = galleryRef.current
+    if (!node) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasEntered(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(node)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
+  // Fetch images managed by admin HeroManager API (lazy-load)
+  useEffect(() => {
+    if (!hasEntered) return
+
     let mounted = true
+    setIsFetching(true)
     ;(async () => {
       try {
         const res = await fetch("/api/hero-images", { cache: "no-store" })
         if (!res.ok) throw new Error("Failed to fetch hero images")
         const data = await res.json()
-        const mapped: Array<{ src: string; height: number }> = Array.isArray(data)
-          ? data.map((it: any) => ({ src: it.image_url || "/placeholder.svg", height: 300 }))
+        const mapped: Array<{ src: string; height: number; isPlaceholder?: boolean }> = Array.isArray(data)
+          ? data.map((it: any) => ({ src: it.image_url || "", height: 300 }))
           : []
         if (mounted) setImages(mapped)
       } catch (_e) {
@@ -151,27 +197,17 @@ function ScrollingGallery() {
     return () => {
       mounted = false
     }
-  }, [])
-
-  const placeholders: Array<{ src: string; height: number }> = [
-    { src: "/hero-images/image1.png", height: 300 },
-    { src: "/hero-images/image2.png", height: 300 },
-    { src: "/hero-images/image3.png", height: 300 },
-    { src: "/hero-images/image4.png", height: 300 },
-    { src: "/hero-images/image5.png", height: 300 },
-    { src: "/hero-images/image6.png", height: 300 },
-  ]
+  }, [hasEntered])
 
   const MAX_TILES = 8
-  const real = images.slice(0, MAX_TILES)
-  const tiles: Array<{ src: string; height: number }> = [...real]
+  const real = images.slice(0, MAX_TILES).map((img) => ({ ...img, isPlaceholder: !img.src }))
+  const tiles: Array<{ src: string; height: number; isPlaceholder?: boolean }> = [...real]
   while (tiles.length < MAX_TILES) {
-    tiles.push({ src: "/placeholder.svg", height: 300 })
+    tiles.push({ src: "", height: 300, isPlaceholder: true })
   }
   const col1 = tiles.filter((_, i) => i % 2 === 0)
   const col2 = tiles.filter((_, i) => i % 2 === 1)
 
-  const allImages = [...col1.slice(0, 3), ...col2.slice(0, 3)]
   return (
     <>
       {/* Desktop only (>=1024) - Vertical scrolling columns */}
@@ -184,81 +220,135 @@ function ScrollingGallery() {
 
         {/* Column 1 - scrolls down */}
         <div className="flex-1 relative min-w-0 group hover:z-20 transition-all duration-300">
-          <motion.div
-            className="flex flex-col gap-3 xl:gap-5"
-            animate={{
-              y: ["0%", "-50%"],
-            }}
-            transition={{
-              duration: 90,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
-          >
-            {[
-              ...col1,
-              ...col1,
-              ...col1,
-            ].map((img, i) => (
-              <div
-                key={i}
-                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/40 before:z-10 before:transition-opacity before:duration-300 before:rounded-inherit group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300 transform-gpu will-change-[transform,opacity] [backface-visibility:hidden] [clip-path:inset(0_round_1rem)]"
-                style={{
-                  height: `${img.height}px`,
-                }}
-              >
-                <ImageWithSkeleton
-                  src={img.src || "/placeholder.svg"}
-                  alt="Project showcase"
-                  wrapperClassName="w-full h-full"
-                  className="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-opacity duration-300 rounded-inherit [backface-visibility:hidden] will-change-[opacity,transform]"
-                />
-              </div>
-            ))}
-          </motion.div>
+          {isFetching ? (
+            <div className="flex flex-col gap-3 xl:gap-5">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-[#050505] border border-white/[0.03] w-full"
+                  style={{ height: 300 }}
+                >
+                  <div className="absolute inset-0">
+                    <Shimmer />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              className="flex flex-col gap-3 xl:gap-5"
+              animate={{
+                y: ["0%", "-50%"],
+              }}
+              transition={{
+                duration: 90,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "linear",
+              }}
+            >
+              {[...col1, ...col1, ...col1].map((img, i) => (
+                <div
+                  key={i}
+                  className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 border border-white/[0.03] w-full"
+                  style={{
+                    height: `${img.height}px`,
+                  }}
+                >
+                  {/* Overlay noir par défaut, qui s'éclaircit au hover de la colonne */}
+                  <div className="absolute inset-0 bg-black/40 transition-colors duration-300 z-10 group-hover:bg-black/10" />
+                  {img.isPlaceholder ? (
+                    <div className="absolute inset-0 flex items-center justify-center px-4 text-center z-20">
+                      <AvailableSlotCard
+                        title="Slot available"
+                        description="Add hero images in the admin to showcase them here."
+                      />
+                    </div>
+                  ) : (
+                    <ImageWithSkeleton
+                      src={img.src || "/placeholder.svg"}
+                      alt="Project showcase"
+                      wrapperClassName="w-full h-full"
+                      className="w-full h-full object-cover transition-opacity duration-300 rounded-inherit opacity-60 group-hover:opacity-100"
+                    />
+                  )}
+                </div>
+              ))}
+            </motion.div>
+          )}
         </div>
 
         {/* Column 2 - scrolls up */}
         <div className="flex-1 relative min-w-0 group hover:z-20 transition-all duration-300">
-          <motion.div
-            className="flex flex-col gap-3 xl:gap-5"
-            animate={{
-              y: ["-50%", "0%"],
-            }}
-            transition={{
-              duration: 90,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
-          >
-            {[
-              ...col2,
-              ...col2,
-              ...col2,
-            ].map((img, i) => (
-              <div
-                key={i}
-                className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 border border-white/[0.03] w-full before:absolute before:inset-0 before:bg-black/40 before:z-10 before:transition-opacity before:duration-300 before:rounded-inherit group-hover:before:opacity-0 group-hover:bg-gradient-to-br group-hover:from-white/20 group-hover:to-white/15 group-hover:border-white/30 group-hover:shadow-[0_25px_70px_rgba(0,0,0,0.6)] transition-all duration-300 transform-gpu will-change-[transform,opacity] [backface-visibility:hidden] [clip-path:inset(0_round_1rem)]"
-                style={{
-                  height: `${img.height}px`,
-                }}
-              >
-                <ImageWithSkeleton
-                  src={img.src || "/placeholder.svg"}
-                  alt="Project showcase"
-                  wrapperClassName="w-full h-full"
-                  className="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-opacity duration-300 rounded-inherit [backface-visibility:hidden] will-change-[opacity,transform]"
-                />
-              </div>
-            ))}
-          </motion.div>
+          {isFetching ? (
+            <div className="flex flex-col gap-3 xl:gap-5">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-[#050505] border border-white/[0.03] w-full"
+                  style={{ height: 300 }}
+                >
+                  <div className="absolute inset-0">
+                    <Shimmer />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              className="flex flex-col gap-3 xl:gap-5"
+              animate={{
+                y: ["-50%", "0%"],
+              }}
+              transition={{
+                duration: 90,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "linear",
+              }}
+            >
+              {[...col2, ...col2, ...col2].map((img, i) => (
+                <div
+                  key={i}
+                  className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 border border-white/[0.03] w-full"
+                  style={{
+                    height: `${img.height}px`,
+                  }}
+                >
+                  {/* Overlay noir par défaut, qui s'éclaircit au hover de la colonne */}
+                  <div className="absolute inset-0 bg-black/40 transition-colors duration-300 z-10 group-hover:bg-black/10" />
+                  {img.isPlaceholder ? (
+                    <div className="absolute inset-0 flex items-center justify-center px-4 text-center z-20">
+                      <AvailableSlotCard
+                        title="Slot available"
+                        description="Add hero images in the admin to showcase them here."
+                      />
+                    </div>
+                  ) : (
+                    <ImageWithSkeleton
+                      src={img.src || "/placeholder.svg"}
+                      alt="Project showcase"
+                      wrapperClassName="w-full h-full"
+                      className="w-full h-full object-cover transition-opacity duration-300 rounded-inherit opacity-60 group-hover:opacity-100"
+                    />
+                  )}
+                </div>
+              ))}
+            </motion.div>
+          )}
         </div>
       </div>
 
       {/* Mobile & Tablet (<1024) - Two horizontal carousels with opposite scroll */}
       <div className="lg:hidden w-full mt-8 flex flex-col gap-4">
-        <MobileCarousel images={col1} direction="left" />
-        <MobileCarousel images={col2} direction="right" />
+        <MobileCarousel
+          images={col1}
+          isFetching={isFetching}
+          direction="left"
+        />
+        <MobileCarousel
+          images={col2}
+          isFetching={isFetching}
+          direction="right"
+        />
       </div>
     </>
   )
@@ -266,9 +356,11 @@ function ScrollingGallery() {
 
 function MobileCarousel({
   images,
+  isFetching,
   direction = "left",
 }: {
-  images: Array<{ src: string; height: number }>
+  images: Array<{ src: string; height: number; isPlaceholder?: boolean }>
+  isFetching: boolean
   direction?: "left" | "right"
 }) {
   const carouselRef = useRef<HTMLDivElement>(null)
@@ -290,6 +382,34 @@ function MobileCarousel({
 
   const mobileWidth = 140
   const mobileHeight = 180
+
+  if (isFetching) {
+    // Skeletons mobiles pendant le chargement des images
+    return (
+      <div
+        ref={carouselRef}
+        className="w-full overflow-hidden relative max-w-full"
+        style={{ height: `${mobileHeight}px` }}
+      >
+        <div className="flex items-center h-full">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="relative rounded-lg overflow-hidden flex-shrink-0 bg-[#050505] border border-white/10 mr-3"
+              style={{
+                width: `${mobileWidth}px`,
+                height: `${mobileHeight}px`,
+              }}
+            >
+              <div className="absolute inset-0">
+                <Shimmer />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div
@@ -313,20 +433,29 @@ function MobileCarousel({
         {extendedImages.map((img, i) => (
           <div
             key={i}
-            className="relative rounded-lg overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/10 to-white/5 border border-white/10 mr-3 before:absolute before:inset-0 before:bg-black/20 before:pointer-events-none"
+            className="relative rounded-lg overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/10 to-white/5 border border-white/10 mr-3"
             style={{
               width: `${mobileWidth}px`,
               height: `${mobileHeight}px`,
             }}
           >
-            <ImageWithSkeleton
-              src={img.src || "/placeholder.svg"}
-              alt="Project showcase"
-              wrapperClassName="w-full h-full"
-              className="w-full h-full object-cover"
-              priority={i === 0}
-                  sizes="(max-width: 1024px) 100vw, 42vw"
-            />
+            {img.isPlaceholder ? (
+              <div className="absolute inset-0 flex items-center justify-center px-3 text-center bg-black/70">
+                <AvailableSlotCard
+                  title="Slot available"
+                  description="Add hero images in the admin to showcase them here."
+                />
+              </div>
+            ) : (
+              <ImageWithSkeleton
+                src={img.src || "/placeholder.svg"}
+                alt="Project showcase"
+                wrapperClassName="w-full h-full"
+                className="w-full h-full object-cover"
+                priority={i === 0}
+                sizes="(max-width: 1024px) 100vw, 42vw"
+              />
+            )}
           </div>
         ))}
       </motion.div>

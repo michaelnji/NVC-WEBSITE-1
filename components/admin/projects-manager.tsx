@@ -148,9 +148,13 @@ export function ProjectsManager() {
   return (
     <div className="space-y-6">
       <Tabs value={activeService} onValueChange={setActiveService}>
-        <TabsList className="mb-4 flex flex-wrap">
+        <TabsList className="mb-4 flex flex-wrap gap-2 rounded-md bg-muted/40 p-1.5 border border-border/60">
           {services.map((service) => (
-            <TabsTrigger key={service.id} value={service.id} className="text-xs sm:text-sm">
+            <TabsTrigger
+              key={service.id}
+              value={service.id}
+              className="px-3 py-1.5 text-xs sm:text-sm rounded-full border border-transparent data-[state=active]:border-[#F15A25] data-[state=active]:bg-[#F15A25] data-[state=active]:text-white text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            >
               {service.title}
             </TabsTrigger>
           ))}
