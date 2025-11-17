@@ -1,11 +1,4 @@
-import type { Metadata } from "next"
 import { FlipCountdownSection } from "@/components/flipcountdown-section"
-
-export const metadata: Metadata = {
-  title: "Portfolio – New Vision Creatives",
-  description:
-    "Découvrez une sélection de projets photo, vidéo, design et campagnes créatives signés New Vision Creatives. Notre portfolio arrive très bientôt.",
-}
 
 export default function PortfolioPage() {
   return (
