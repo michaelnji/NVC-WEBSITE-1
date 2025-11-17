@@ -91,7 +91,7 @@ export function HeroSection() {
               </p>
 
               <div ref={buttonsRef} className="mt-6 md:mt-8 lg:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center md:items-center md:justify-center lg:items-start lg:justify-start pt-2">
-                <WhatsAppButton href="https://wa.me/YOUR_PHONE_NUMBER">
+                <WhatsAppButton href="https://wa.me/237650749592?text=Hello%20New%20Vision%20Creatives%2C%20I%27d%20love%20to%20book%20an%20intro%20call%20to%20craft%20my%20next%20visual%20story.">
                   <svg
                     className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0"
                     viewBox="0 0 24 24"
@@ -103,7 +103,7 @@ export function HeroSection() {
                   <span className="text-base sm:text-lg">{t.hero.cta}</span>
                 </WhatsAppButton>
 
-                <SecondaryCTAButton>
+                <SecondaryCTAButton href="/portfolio">
                   <span className="text-base sm:text-lg">{t.hero.ctaSecondary}</span>
                   <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
                 </SecondaryCTAButton>

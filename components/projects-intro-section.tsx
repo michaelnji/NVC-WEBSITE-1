@@ -547,7 +547,7 @@ export default function ProjectsIntroSection() {
         </AnimatePresence>
         
         <div className="flex justify-center mt-6 md:mt-10">
-          <SecondaryCTAButton href="/projets" variant="dark">
+          <SecondaryCTAButton href="/portfolio" variant="dark">
             <span className="text-sm md:text-base">Our Portfolio</span>
             <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
           </SecondaryCTAButton>

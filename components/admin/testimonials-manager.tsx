@@ -2,19 +2,21 @@
 
 import type React from "react"
 import ImageWithSkeleton from "@/components/image-with-skeleton"
-
 import { useState, useEffect } from "react"
 import type { Testimonial } from "@/lib/types"
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ImageUploader } from "./image-uploader"
+import { AdminItemsListCard } from "./admin-items-list-card"
+import { AdminItemCard } from "./admin-item-card"
+import { ButtonAdmin } from "./button-admin"
 
 export function TestimonialsManager() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isFetching, setIsFetching] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     author_name: "",
@@ -30,11 +32,14 @@ export function TestimonialsManager() {
 
   const fetchTestimonials = async () => {
     try {
+      setIsFetching(true)
       const res = await fetch("/api/testimonials")
       const data = await res.json()
       setTestimonials(data)
     } catch (error) {
       console.error("Failed to fetch testimonials:", error)
+    } finally {
+      setIsFetching(false)
     }
   }
 
@@ -88,63 +93,38 @@ export function TestimonialsManager() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <Card className="p-4 min-h-[320px]">
-        <div className="mb-3 flex items-center justify-between">
-          <p className="font-medium">Témoignages existants</p>
-          <span className="text-xs text-muted-foreground">{testimonials.length}</span>
-        </div>
-        {testimonials.length === 0 ? (
-          <div className="h-full min-h-[260px] flex flex-col items-center justify-center text-sm text-muted-foreground">
-            Aucun témoignage pour l’instant.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-3">
-            {testimonials.map((testimonial) => (
-              <button
-                key={testimonial.id}
-                type="button"
-                onClick={() => {
-                  setEditingId(testimonial.id)
-                  setFormData({
-                    author_name: testimonial.author_name,
-                    title: testimonial.title,
-                    description: testimonial.description,
-                    photo_url: testimonial.photo_url || "",
-                    rating: testimonial.rating,
-                  })
-                }}
-                className={`group relative text-left rounded-lg border p-3 transition-all ${
-                  editingId === testimonial.id
-                    ? "border-[#F15A25] ring-1 ring-[#F15A25]/30"
-                    : "border-border hover:border-[#F15A25] hover:ring-1 hover:ring-[#F15A25]/30"
-                }`}
-              >
-                <div className="flex gap-3">
-                  {testimonial.photo_url && (
-                    <ImageWithSkeleton
-                      src={testimonial.photo_url || "/placeholder.svg"}
-                      alt={testimonial.author_name}
-                      wrapperClassName="h-16 w-16"
-                      className="w-full h-full object-cover rounded-full"
-                    />
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold truncate">{testimonial.author_name}</p>
-                    <p className="text-xs text-yellow-500">{"⭐".repeat(testimonial.rating)}</p>
-                    <p className="text-xs font-medium mt-1 line-clamp-2">{testimonial.title}</p>
-                    <p className="text-xs text-muted-foreground line-clamp-2">{testimonial.description}</p>
-                  </div>
-                </div>
-                {editingId === testimonial.id && (
-                  <div className="pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset ring-[#F15A25]/30" />
-                )}
-              </button>
-            ))}
-          </div>
-        )}
-      </Card>
+      <AdminItemsListCard
+        title="Témoignages existants"
+        count={testimonials.length}
+        max={999}
+        isFetching={isFetching}
+        emptyMessage="Aucun témoignage pour l’instant."
+      >
+        {testimonials.map((testimonial) => (
+          <AdminItemCard
+            key={testimonial.id}
+            imageUrl={testimonial.photo_url}
+            title={testimonial.author_name}
+            description={testimonial.description}
+            selected={editingId === testimonial.id}
+            onSelect={() => {
+              setEditingId(testimonial.id)
+              setFormData({
+                author_name: testimonial.author_name,
+                title: testimonial.title,
+                description: testimonial.description,
+                photo_url: testimonial.photo_url || "",
+                rating: testimonial.rating,
+              })
+            }}
+            onDelete={() => handleDelete(testimonial.id)}
+            imageSizeClass="h-16 w-16 mr-3 rounded-full"
+            imageClassName="w-full h-full object-cover rounded-full"
+          />
+        ))}
+      </AdminItemsListCard>
 
-      <Card className="p-6">
+      <Card className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
         <div className="mb-2 text-xs text-muted-foreground">
           Créez ou modifiez un témoignage. Ces témoignages alimentent la section "Témoignages" du site.
         </div>
@@ -197,21 +177,21 @@ export function TestimonialsManager() {
               <ImageWithSkeleton
                 src={formData.photo_url || "/placeholder.svg"}
                 alt="Preview"
-                wrapperClassName="mt-2 h-32 w-32"
+                wrapperClassName="mt-2 h-32 w-32 rounded-full"
                 className="w-full h-full object-cover rounded-full"
               />
             )}
           </div>
 
           <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
-            <Button type="submit" disabled={isLoading}>
+            <ButtonAdmin type="submit" disabled={isLoading} fullWidth={false}>
               {editingId ? "Mettre à jour" : "Ajouter"} Témoignage
-            </Button>
+            </ButtonAdmin>
             {editingId && (
-              <Button
+              <ButtonAdmin
                 type="button"
-                variant="ghost"
-                className="text-muted-foreground hover:bg-muted/30 h-9 px-4"
+                fullWidth={false}
+                className="bg-transparent text-muted-foreground border-transparent hover:bg-muted/30 h-9 px-4"
                 onClick={() => {
                   setEditingId(null)
                   setFormData({
@@ -224,7 +204,7 @@ export function TestimonialsManager() {
                 }}
               >
                 Annuler
-              </Button>
+              </ButtonAdmin>
             )}
           </div>
         </form>

@@ -87,11 +87,41 @@ interface Translations {
     buttons: {
       discoverTeams: string
       ourPortfolio: string
+      backHome: string
     }
     countdown: {
       days: string
       hours: string
       minutes: string
+    }
+  }
+  admin: {
+    panelTitle: string
+    nav: {
+      home: string
+      projects: string
+      about: string
+      contact: string
+    }
+    actions: {
+      viewSite: string
+      logout: string
+    }
+    loading: string
+    login: {
+      title: string
+      emailLabel: string
+      passwordLabel: string
+      invalidCredentials: string
+      submit: string
+      submitting: string
+      retryIn: string
+      restricted: string
+      forgotPasswordLink: string
+      forgotPasswordEmailRequired: string
+      forgotPasswordError: string
+      forgotPasswordSuccess: string
+      noSignup: string
     }
   }
 }
@@ -137,6 +167,7 @@ const translations: Record<Language, Translations> = {
       buttons: {
         discoverTeams: "Découvrir nos équipes",
         ourPortfolio: "Notre portfolio",
+        backHome: "Retour à l'accueil",
       },
       countdown: {
         days: "JOURS",
@@ -291,6 +322,35 @@ const translations: Record<Language, Translations> = {
         },
       ],
     },
+    admin: {
+      panelTitle: "Panel Admin",
+      nav: {
+        home: "Accueil",
+        projects: "Projets",
+        about: "À propos",
+        contact: "Contact",
+      },
+      actions: {
+        viewSite: "Voir le site",
+        logout: "Déconnexion",
+      },
+      loading: "Chargement…",
+      login: {
+        title: "Connexion",
+        emailLabel: "Email",
+        passwordLabel: "Mot de passe",
+        invalidCredentials: "Identifiants invalides. Veuillez réessayer.",
+        submit: "Se connecter",
+        submitting: "Connexion...",
+        retryIn: "Réessayer dans",
+        restricted: "Accès restreint",
+        forgotPasswordLink: "Mot de passe oublié ?",
+        forgotPasswordEmailRequired: "Saisissez votre email pour recevoir un lien de réinitialisation.",
+        forgotPasswordError: "Impossible d’envoyer l’email pour le moment. Réessayez plus tard.",
+        forgotPasswordSuccess: "Email de réinitialisation envoyé. Consultez votre boîte de réception.",
+        noSignup: "Aucune inscription disponible.",
+      },
+    },
   },
   En: {
     nav: {
@@ -321,7 +381,7 @@ const translations: Record<Language, Translations> = {
       bottomTitle: "LET’S BUILD SOMETHING AMAZING",
     },
     common: {
-      buttons: { discoverTeams: "Discover our teams", ourPortfolio: "Our Portfolio" },
+      buttons: { discoverTeams: "Discover our teams", ourPortfolio: "Our Portfolio", backHome: "Back to home" },
       countdown: {
         days: "DAYS",
         hours: "HOURS",
@@ -473,6 +533,35 @@ const translations: Record<Language, Translations> = {
           rating: 5,
         },
       ],
+    },
+    admin: {
+      panelTitle: "Admin Panel",
+      nav: {
+        home: "Home",
+        projects: "Projects",
+        about: "About",
+        contact: "Contact",
+      },
+      actions: {
+        viewSite: "View site",
+        logout: "Logout",
+      },
+      loading: "Loading…",
+      login: {
+        title: "Sign in",
+        emailLabel: "Email",
+        passwordLabel: "Password",
+        invalidCredentials: "Invalid credentials. Please try again.",
+        submit: "Sign in",
+        submitting: "Signing in...",
+        retryIn: "Retry in",
+        restricted: "Restricted access",
+        forgotPasswordLink: "Forgot password?",
+        forgotPasswordEmailRequired: "Enter your email to receive a reset link.",
+        forgotPasswordError: "Could not send the email right now. Please try again later.",
+        forgotPasswordSuccess: "Reset email sent. Check your inbox.",
+        noSignup: "Sign up is not available.",
+      },
     },
   },
 }

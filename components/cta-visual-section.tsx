@@ -1,11 +1,26 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, useAnimation, useInView } from "framer-motion"
+import { useEffect, useRef } from "react"
 import { WhatsAppButton } from "@/components/cta-buttons"
 
 export default function CtaVisualSection() {
+  const controls = useAnimation()
+  const sectionRef = useRef<HTMLElement | null>(null)
+  const isInView = useInView(sectionRef, { amount: 0.3 })
+
+  useEffect(() => {
+    if (isInView) {
+      controls.start({ opacity: 0.7, transition: { duration: 5, ease: "easeOut" } })
+    } else {
+      controls.stop()
+      controls.set({ opacity: 1 })
+    }
+  }, [isInView, controls])
+
   return (
     <section
+      ref={sectionRef}
       className="relative z-40 -mt-12 md:-mt-16 lg:-mt-20 xl:-mt-24 2xl:-mt-28 py-32 md:py-40 lg:py-48 px-6 md:px-12 lg:px-16 xl:px-24 -mb-10 lg:mb-0 2xl:px-32 overflow-hidden lg:min-h-[75vh] xl:min-h-[85vh]"
       style={{
         backgroundImage: "url('/background custom section.png')",
@@ -14,7 +29,32 @@ export default function CtaVisualSection() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div className="relative max-w-7xl mx-auto text-center">
+      <div className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none z-0">
+        <img
+          src="/video-cta.gif"
+          alt="cta animation"
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          style={{
+            WebkitMaskImage: "url('/background custom section.png')",
+            maskImage: "url('/background custom section.png')",
+            WebkitMaskSize: "cover",
+            maskSize: "cover",
+            WebkitMaskRepeat: "no-repeat",
+            maskRepeat: "no-repeat",
+            WebkitMaskPosition: "center",
+            maskPosition: "center",
+          }}
+        />
+        <motion.img
+          src="/background custom section.png"
+          alt="cta background"
+          className="absolute inset-0 w-full h-full object-cover z-10"
+          initial={{ opacity: 1 }}
+          animate={controls}
+        />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto text-center z-20">
         <motion.h2
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -46,7 +86,10 @@ export default function CtaVisualSection() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mt-10 md:mt-12"
         >
-          <WhatsAppButton href="https://wa.me/YOUR_PHONE_NUMBER" className="w-auto h-auto px-8 py-4">
+          <WhatsAppButton
+            href="https://wa.me/237650749592?text=Hello%20New%20Vision%20Creatives%2C%20I%27d%20love%20to%20book%20an%20intro%20call%20to%20craft%20my%20next%20visual%20story."
+            className="w-auto h-auto px-8 py-4"
+          >
             <svg
               className="w-6 h-6"
               viewBox="0 0 24 24"

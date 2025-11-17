@@ -74,6 +74,9 @@ export default function TeamIntroSection() {
   const CARD_W = 180
   const CARD_H = 220
 
+  // Dev-only flag: enable/disable vertical yoyo animation for all columns
+  const ENABLE_YOYO = true
+
   // Desktop: keep 7 columns static
   const desktopCounts = [5, 4, 4, 3, 4, 4, 5]
   const desktopShifts = [0, 150, 300, 450, 300, 150, 0]
@@ -127,7 +130,6 @@ export default function TeamIntroSection() {
         : desktopColumns,
     [isLoading, desktopCounts, desktopColumns],
   )
-  // Mobile horizontal marquee state
   const mobileTrackRef = useRef<HTMLDivElement>(null)
   const mobileTrackX = useMotionValue(0)
   const MOBILE_SPEED = 30 // px/s
@@ -302,12 +304,15 @@ export default function TeamIntroSection() {
                         key={`mcol-${loop}-${colIdx}`}
                         className={`shrink-0 flex flex-col items-start gap-3 ${colIdx % 2 === 1 ? "pt-20" : "pt-0"} md:pt-0`}
                       >
-                        {(isLoading ? Array.from({ length: mobileCountPerCol[colIdx] }) : mobileColumns[colIdx] || []).map((cardOrUndefined, i) => (
+                        {(isLoading
+                          ? Array.from({ length: mobileCountPerCol[colIdx] }, () => ({} as TeamCard))
+                          : mobileColumns[colIdx] || []
+                        ).map((card, i) => (
                           <FlipCard
                             key={`m-${colIdx}-${i}-${loop}`}
                             width={Math.max(140, CARD_W - 30)}
                             height={Math.max(180, CARD_H - 30)}
-                            data={isLoading ? undefined : cardOrUndefined}
+                            data={isLoading ? undefined : card}
                             isSkeleton={isLoading}
                           />
                         ))}
@@ -317,44 +322,96 @@ export default function TeamIntroSection() {
                 </motion.div>
               </div>
 
-              {/* Tablet: 7 columns with vertical back-and-forth (linear yoyo) */}
-              <div className="hidden md:grid lg:hidden relative z-10 h-[540px] overflow-hidden grid grid-cols-7 gap-x-2 items-start [mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] [webkit-mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)]">
-                {desktopCounts.map((n, colIdx) => (
-                  <div key={`tab-${colIdx}`} className="relative overflow-hidden">
-                    <motion.div
-                      className="flex flex-col items-start gap-2 will-change-transform"
-                      animate={{ y: [0, -120, 0] }}
-                      transition={{ duration: 8, ease: "linear", repeat: Number.POSITIVE_INFINITY, repeatType: "reverse" }}
-                      initial={false}
-                      style={{ marginTop: Math.max(0, desktopShifts[colIdx] - 100) }}
-                    >
-                      {(isLoading ? Array.from({ length: n }) : desktopColumns[colIdx]?.slice(0, n) || []).map((cardOrUndefined, i) => (
-                        <FlipCard
-                          key={`tab-${colIdx}-${i}`}
-                          width={Math.max(120, CARD_W - 40)}
-                          height={Math.max(150, CARD_H - 60)}
-                          data={isLoading ? undefined : cardOrUndefined}
-                          isSkeleton={isLoading}
-                        />
-                      ))}
-                    </motion.div>
-                  </div>
-                ))}
-              </div>
+              {/* Tablet: 7 columns, optional vertical back-and-forth (linear yoyo) */}
+              {ENABLE_YOYO ? (
+                <div className="hidden md:grid lg:hidden relative z-10 h-[540px] overflow-hidden grid grid-cols-7 gap-x-2 items-start [mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] [webkit-mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)]">
+                  {desktopCounts.map((n, colIdx) => (
+                    <div key={`tab-${colIdx}`} className="relative overflow-hidden">
+                      <motion.div
+                        className="flex flex-col items-start gap-2 will-change-transform"
+                        animate={{ y: [0, -120, 0] }}
+                        transition={{ duration: 8, ease: "linear", repeat: Number.POSITIVE_INFINITY, repeatType: "reverse" }}
+                        initial={false}
+                        style={{ marginTop: Math.max(0, desktopShifts[colIdx] - 100) }}
+                      >
+                        {(isLoading
+                          ? Array.from({ length: n }, () => ({} as TeamCard))
+                          : desktopColumns[colIdx]?.slice(0, n) || []
+                        ).map((card, i) => (
+                          <FlipCard
+                            key={`tab-${colIdx}-${i}`}
+                            width={Math.max(120, CARD_W - 40)}
+                            height={Math.max(150, CARD_H - 60)}
+                            data={isLoading ? undefined : card}
+                            isSkeleton={isLoading}
+                          />
+                        ))}
+                      </motion.div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="hidden md:grid lg:hidden relative z-10 h-[540px] overflow-hidden grid grid-cols-7 gap-x-2 items-start [mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] [webkit-mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)]">
+                  {desktopCounts.map((n, colIdx) => (
+                    <div key={`tab-static-${colIdx}`} className="relative overflow-hidden">
+                      <div
+                        className="flex flex-col items-start gap-2"
+                        style={{ marginTop: Math.max(0, desktopShifts[colIdx] - 100) }}
+                      >
+                        {(isLoading
+                          ? Array.from({ length: n }, () => ({} as TeamCard))
+                          : desktopColumns[colIdx]?.slice(0, n) || []
+                        ).map((card, i) => (
+                          <FlipCard
+                            key={`tab-static-${colIdx}-${i}`}
+                            width={Math.max(120, CARD_W - 40)}
+                            height={Math.max(150, CARD_H - 60)}
+                            data={isLoading ? undefined : card}
+                            isSkeleton={isLoading}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
-              {/* Desktop: 7 columns with deterministic yoyo (pixel-driven) */}
-              <div className="hidden lg:grid relative z-10 h-[640px] md:h-[760px] overflow-hidden grid grid-cols-7 gap-x-3 md:gap-x-3 items-start [mask-image:linear-gradient(to_bottom,white_0%,white_85%,transparent_100%)] [webkit-mask-image:linear-gradient(to_bottom,white_0%,white_85%,transparent_100%)]">
-                {desktopColumnsWithSkeletons.map((cardsOrPlaceholders, colIdx) => (
-                  <YoyoColumn
-                    key={`desk-col-${colIdx}`}
-                    columnKey={`desk-${colIdx}`}
-                    cards={cardsOrPlaceholders}
-                    shift={desktopShifts[colIdx]}
-                    cardW={CARD_W}
-                    cardH={CARD_H}
-                  />
-                ))}
-              </div>
+              {/* Desktop: 7 columns, optional deterministic yoyo (pixel-driven) */}
+              {ENABLE_YOYO ? (
+                <div className="hidden lg:grid relative z-10 h-[640px] md:h-[760px] overflow-hidden grid grid-cols-7 gap-x-3 md:gap-x-3 items-start [mask-image:linear-gradient(to_bottom,white_0%,white_85%,transparent_100%)] [webkit-mask-image:linear-gradient(to_bottom,white_0%,white_85%,transparent_100%)]">
+                  {desktopColumnsWithSkeletons.map((cardsOrPlaceholders, colIdx) => (
+                    <YoyoColumn
+                      key={`desk-col-${colIdx}`}
+                      columnKey={`desk-${colIdx}`}
+                      cards={cardsOrPlaceholders}
+                      shift={desktopShifts[colIdx]}
+                      cardW={CARD_W}
+                      cardH={CARD_H}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="hidden lg:grid relative z-10 h-[640px] md:h-[760px] overflow-hidden grid grid-cols-7 gap-x-3 md:gap-x-3 items-start [mask-image:linear-gradient(to_bottom,white_0%,white_85%,transparent_100%)] [webkit-mask-image:linear-gradient(to_bottom,white_0%,white_85%,transparent_100%)]">
+                  {desktopColumnsWithSkeletons.map((cardsOrPlaceholders, colIdx) => (
+                    <div key={`desk-static-${colIdx}`} className="relative overflow-hidden">
+                      <div
+                        className="flex flex-col items-start gap-3"
+                        style={{ marginTop: desktopShifts[colIdx] }}
+                      >
+                        {(cardsOrPlaceholders as TeamCard[]).map((cardOrPlaceholder, i) => (
+                          <FlipCard
+                            key={`desk-static-${colIdx}-${i}`}
+                            width={CARD_W}
+                            height={CARD_H}
+                            data={cardOrPlaceholder}
+                            isSkeleton={isLoading && !cardOrPlaceholder.member && !cardOrPlaceholder.isPlaceholder}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </>
           )
         })()}

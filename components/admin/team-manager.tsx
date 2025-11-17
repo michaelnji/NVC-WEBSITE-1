@@ -2,19 +2,21 @@
 
 import type React from "react"
 import ImageWithSkeleton from "@/components/image-with-skeleton"
-
 import { useState, useEffect } from "react"
 import type { TeamMember } from "@/lib/types"
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ImageUploader } from "./image-uploader"
+import { AdminItemsListCard } from "./admin-items-list-card"
+import { AdminItemCard } from "./admin-item-card"
+import { ButtonAdmin } from "./button-admin"
 
 export function TeamManager() {
   const [members, setMembers] = useState<TeamMember[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isFetching, setIsFetching] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: "",
@@ -29,6 +31,7 @@ export function TeamManager() {
 
   const fetchMembers = async () => {
     try {
+      setIsFetching(true)
       const res = await fetch("/api/team-members")
       if (!res.ok) {
         console.error("Failed to fetch members:", res.status)
@@ -40,6 +43,8 @@ export function TeamManager() {
     } catch (error) {
       console.error("Failed to fetch members:", error)
       setMembers([])
+    } finally {
+      setIsFetching(false)
     }
   }
 
@@ -86,66 +91,41 @@ export function TeamManager() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <Card className="p-4 min-h-[320px]">
-        <div className="mb-3 flex items-center justify-between">
-          <p className="font-medium">Membres existants</p>
-          <span className="text-xs text-muted-foreground">{members.length}</span>
-        </div>
-        {members.length === 0 ? (
-          <div className="h-full min-h-[260px] flex flex-col items-center justify-center text-sm text-muted-foreground">
-            Aucun membre pour l’instant.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-3">
-            {members.map((member) => {
-              const selected = editingId === member.id
-              return (
-                <button
-                  key={member.id}
-                  type="button"
-                  onClick={() => {
-                    setEditingId(member.id)
-                    setFormData({
-                      name: member.name,
-                      position: member.position,
-                      description: member.description || "",
-                      photo_url: member.photo_url || "",
-                    })
-                  }}
-                  className={`group relative text-left rounded-lg border p-3 transition-all ${
-                    selected
-                      ? "border-[#F15A25] ring-1 ring-[#F15A25]/30"
-                      : "border-border hover:border-[#F15A25] hover:ring-1 hover:ring-[#F15A25]/30"
-                  }`}
-                >
-                  <div className="flex gap-3">
-                    {member.photo_url && (
-                      <ImageWithSkeleton
-                        src={member.photo_url || "/placeholder.svg"}
-                        alt={member.name}
-                        wrapperClassName="h-16 w-16"
-                        className="w-full h-full object-cover rounded-full"
-                      />
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <p className="font-semibold truncate">{member.name}</p>
-                      <p className="text-xs text-muted-foreground">{member.position}</p>
-                      {member.description && (
-                        <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{member.description}</p>
-                      )}
-                    </div>
-                  </div>
-                  {selected && (
-                    <div className="pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset ring-[#F15A25]/30" />
-                  )}
-                </button>
-              )
-            })}
-          </div>
-        )}
-      </Card>
+      <AdminItemsListCard
+        title="Membres existants"
+        count={members.length}
+        max={999}
+        isFetching={isFetching}
+        emptyMessage="Aucun membre pour l’instant."
+      >
+        {members.map((member) => {
+          const selected = editingId === member.id
+          const combinedDescription = member.description
+            ? `${member.position}\n${member.description}`
+            : member.position
+          return (
+            <AdminItemCard
+              key={member.id}
+              imageUrl={member.photo_url}
+              title={member.name}
+              description={combinedDescription}
+              selected={selected}
+              onSelect={() => {
+                setEditingId(member.id)
+                setFormData({
+                  name: member.name,
+                  position: member.position,
+                  description: member.description || "",
+                  photo_url: member.photo_url || "",
+                })
+              }}
+              onDelete={() => handleDelete(member.id)}
+            />
+          )
+        })}
+      </AdminItemsListCard>
 
-      <Card className="p-6">
+      <Card className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
         <div className="mb-2 text-xs text-muted-foreground">
           Créez ou modifiez un membre de l’équipe. Ces membres alimentent la section "Team" du site.
         </div>
@@ -187,27 +167,27 @@ export function TeamManager() {
                 src={formData.photo_url || "/placeholder.svg"}
                 alt="Preview"
                 wrapperClassName="mt-2 h-32 w-32"
-                className="w-full h-full object-cover rounded-full"
+                className="w-full h-full object-cover rounded"
               />
             )}
           </div>
 
           <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
-            <Button type="submit" disabled={isLoading}>
+            <ButtonAdmin type="submit" disabled={isLoading} fullWidth={false}>
               {editingId ? "Mettre à jour" : "Ajouter"} Membre
-            </Button>
+            </ButtonAdmin>
             {editingId && (
-              <Button
+              <ButtonAdmin
                 type="button"
-                variant="ghost"
-                className="text-muted-foreground hover:bg-muted/30 h-9 px-4"
+                fullWidth={false}
+                className="bg-transparent text-muted-foreground border-transparent hover:bg-muted/30 h-9 px-4"
                 onClick={() => {
                   setEditingId(null)
                   setFormData({ name: "", position: "", description: "", photo_url: "" })
                 }}
               >
                 Annuler
-              </Button>
+              </ButtonAdmin>
             )}
           </div>
         </form>

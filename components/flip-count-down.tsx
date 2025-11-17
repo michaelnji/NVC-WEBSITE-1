@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useLanguage } from "@/contexts/language-context"
 
 export function FlipCountdown() {
+  const { t } = useLanguage()
   const [days, setDays] = useState(0)
   const [hours, setHours] = useState(0)
   const [minutes, setMinutes] = useState(0)
@@ -38,11 +40,11 @@ export function FlipCountdown() {
 
   return (
     <div className="flex flex-nowrap items-center justify-center gap-2 sm:gap-4 md:gap-6 lg:gap-8">
-      <TimeUnit value={days} label="JOURS" />
+      <TimeUnit value={days} label={t.common.countdown.days} />
       <Separator />
-      <TimeUnit value={hours} label="HEURES" />
+      <TimeUnit value={hours} label={t.common.countdown.hours} />
       <Separator />
-      <TimeUnit value={minutes} label="MINUTES" />
+      <TimeUnit value={minutes} label={t.common.countdown.minutes} />
     </div>
   )
 }

@@ -12,6 +12,7 @@ export type AdminItemCardProps = {
   onSelect?: () => void
   onDelete?: () => void
   imageSizeClass?: string
+  imageClassName?: string
 }
 
 export function AdminItemCard({
@@ -22,6 +23,7 @@ export function AdminItemCard({
   onSelect,
   onDelete,
   imageSizeClass = "h-24 w-24",
+  imageClassName = "w-full h-full object-cover rounded",
 }: AdminItemCardProps) {
   return (
     <div
@@ -50,14 +52,14 @@ export function AdminItemCard({
         className="w-full text-left disabled:cursor-default flex-1"
         disabled={!onSelect}
       >
-        <div className="flex  items-start">
+        <div className="flex   items-start">
           <ImageWithSkeleton
             src={imageUrl || "/placeholder.svg"}
             alt={title || "Item"}
             wrapperClassName={imageSizeClass}
-            className="w-full h-full object-cover rounded"
+            className={imageClassName}
           />
-          <div className="min-w-0 flex-1 flex flex-col gap-1">
+          <div className="min-w-0 ml-2 flex-1 flex flex-col gap-1">
             <p className="font-medium truncate">{title}</p>
             {description !== undefined && description !== null && description !== "" && (
               <p className="text-xs text-muted-foreground line-clamp-2 whitespace-pre-line">

@@ -23,7 +23,7 @@ export function AdminItemsListCard({
   gridClassName = "grid grid-cols-1 pt-3 sm:grid-cols-2 gap-1 max-h-[500px] overflow-y-auto pr-1",
 }: AdminItemsListCardProps) {
   return (
-    <Card className="p-4 min-h-[360px]">
+    <Card className="p-4 min-h-[360px] max-h-[calc(100vh-200px)] overflow-y-auto">
       <div className="flex items-center justify-between">
         <p className="font-medium">{title}</p>
         <span className="text-xs text-muted-foreground">
@@ -36,7 +36,7 @@ export function AdminItemsListCard({
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#F15A25] border-t-transparent" />
         </div>
       ) : count === 0 ? (
-        <div className="h-full min-h-[320px] flex flex-col items-center justify-center text-sm text-muted-foreground">
+        <div className="h-full min-h-[320px] flex flex-col items-center justify-center text-sm text-muted-foreground text-center">
           {emptyMessage}
         </div>
       ) : (

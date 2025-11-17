@@ -17,18 +17,8 @@ export default function AdminPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [checking, setChecking] = useState(true)
   const [session, setSession] = useState<any>(null)
-  const { language } = useLanguage()
-  const isFr = language === "Fr"
-  const L = {
-    title: isFr ? "Panel Admin" : "Admin Panel",
-    home: isFr ? "Accueil" : "Home",
-    projects: isFr ? "Projets" : "Projects",
-    about: isFr ? "À propos" : "About",
-    contact: isFr ? "Contact" : "Contact",
-    viewSite: isFr ? "Voir le site" : "View site",
-    logout: isFr ? "Déconnexion" : "Logout",
-    loading: isFr ? "Chargement…" : "Loading…",
-  }
+  const { t } = useLanguage()
+  const L = t.admin
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient()
@@ -65,7 +55,7 @@ export default function AdminPage() {
                <Image src="/logo-dark.svg" alt="Logo" width={140} height={36} className="h-9 w-auto" />
             </div>
             <div className="relative flex items-center justify-end">
-              <h1 className="absolute left-1/2 -translate-x-1/2 translate-y-[2px] text-xl md:text-[40px] font-display uppercase tracking-wider leading-none">{L.title}</h1>
+              <h1 className="absolute left-1/2 -translate-x-1/2 translate-y-[2px] text-xl md:text-[40px] font-display uppercase tracking-wider leading-none">{L.panelTitle}</h1>
               <div className="flex items-center gap-3">
                 <LanguageSelector />
               </div>
@@ -84,25 +74,25 @@ export default function AdminPage() {
                 <TabsTrigger value="home" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
                   <span className="flex items-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 21V12h6v9"/></svg>
-                    {L.home}
+                    {L.nav.home}
                   </span>
                 </TabsTrigger>
                 <TabsTrigger value="projets" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
                   <span className="flex items-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                    {L.projects}
+                    {L.nav.projects}
                   </span>
                 </TabsTrigger>
                 <TabsTrigger value="a-propos" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
                   <span className="flex items-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7.5 7.5 0 0 1 13 0"/></svg>
-                    {L.about}
+                    {L.nav.about}
                   </span>
                 </TabsTrigger>
                 <TabsTrigger value="contact" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
                   <span className="flex items-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M4 4h16v16H4z"/><path d="M22 6 12 13 2 6"/></svg>
-                    {L.contact}
+                    {L.nav.contact}
                   </span>
                 </TabsTrigger>
               </TabsList>
@@ -113,7 +103,7 @@ export default function AdminPage() {
                   rel="noopener noreferrer"
                   className="w-full inline-flex items-center justify-center rounded-md border border-border px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground transition-colors"
                 >
-                  {L.viewSite}
+                  {L.actions.viewSite}
                 </Link>
                 <ButtonAdmin
                   onClick={async () => {
@@ -121,7 +111,7 @@ export default function AdminPage() {
                     await supabase.auth.signOut()
                   }}
                 >
-                  {L.logout}
+                  {L.actions.logout}
                 </ButtonAdmin>
               </div>
             </div>
@@ -135,25 +125,25 @@ export default function AdminPage() {
                 <TabsTrigger value="home" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
                   <span className="flex items-center justify-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 21V12h6v9"/></svg>
-                    {L.home}
+                    {L.nav.home}
                   </span>
                 </TabsTrigger>
                 <TabsTrigger value="projets" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
                   <span className="flex items-center justify-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                    {L.projects}
+                    {L.nav.projects}
                   </span>
                 </TabsTrigger>
                 <TabsTrigger value="a-propos" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
                   <span className="flex items-center justify-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7.5 7.5 0 0 1 13 0"/></svg>
-                    {L.about}
+                    {L.nav.about}
                   </span>
                 </TabsTrigger>
                 <TabsTrigger value="contact" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
                   <span className="flex items-center justify-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M4 4h16v16H4z"/><path d="M22 6 12 13 2 6"/></svg>
-                    {L.contact}
+                    {L.nav.contact}
                   </span>
                 </TabsTrigger>
               </TabsList>
@@ -197,6 +187,9 @@ function LoginInline() {
   // Cooldown remaining in seconds
   const remaining = cooldownUntil ? Math.max(0, Math.ceil((cooldownUntil - Date.now()) / 1000)) : 0
 
+  const { t } = useLanguage()
+  const L = t.admin.login
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
@@ -209,7 +202,7 @@ function LoginInline() {
     const supabase = createSupabaseBrowserClient()
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
-      setError("Identifiants invalides. Veuillez réessayer.")
+      setError(L.invalidCredentials)
       setLoading(false)
       const newCount = failCount + 1
       setFailCount(newCount)
@@ -227,17 +220,17 @@ function LoginInline() {
     setError(null)
     setInfo(null)
     if (!email) {
-      setError("Saisissez votre email pour recevoir un lien de réinitialisation.")
+      setError(L.forgotPasswordEmailRequired)
       return
     }
     const supabase = createSupabaseBrowserClient()
     const redirectTo = `${window.location.origin}/admin`
     const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo })
     if (error) {
-      setError("Impossible d’envoyer l’email pour le moment. Réessayez plus tard.")
+      setError(L.forgotPasswordError)
       return
     }
-    setInfo("Email de réinitialisation envoyé. Consultez votre boîte de réception.")
+    setInfo(L.forgotPasswordSuccess)
   }
 
   return (
@@ -246,11 +239,11 @@ function LoginInline() {
         <div className="mb-5 flex items-center gap-3">
           <Image src="/logo-dark.svg" alt="Logo" width={128} height={32} className="h-8 w-auto" />
           <div className="h-6 w-px bg-border" />
-          <h1 className="text-xl font-semibold tracking-tight">Connexion</h1>
+          <h1 className="text-xl font-semibold tracking-tight">{L.title}</h1>
         </div>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm text-muted-foreground mb-1">Email</label>
+            <label className="block text-sm text-muted-foreground mb-1">{L.emailLabel}</label>
             <input
               type="email"
               required
@@ -262,7 +255,7 @@ function LoginInline() {
             />
           </div>
           <div>
-            <label className="block text-sm text-muted-foreground mb-1">Mot de passe</label>
+            <label className="block text-sm text-muted-foreground mb-1">{L.passwordLabel}</label>
             <input
               type="password"
               required
@@ -288,16 +281,16 @@ function LoginInline() {
             disabled={loading || (cooldownUntil !== null && Date.now() < cooldownUntil)}
             className="w-full rounded-md border border-[#F15A25] bg-[#F15A25] text-white px-4 py-2 font-medium hover:opacity-90 disabled:opacity-60"
           >
-            {loading ? "Connexion..." : remaining > 0 ? `Réessayer dans ${remaining}s` : "Se connecter"}
+            {loading ? L.submitting : remaining > 0 ? `${L.retryIn} ${remaining}s` : L.submit}
           </button>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Accès restreint</span>
+            <span className="text-muted-foreground">{L.restricted}</span>
             <button type="button" onClick={onForgot} className="text-[#F15A25] hover:underline">
-              Mot de passe oublié ?
+              {L.forgotPasswordLink}
             </button>
           </div>
         </form>
-        <p className="mt-4 text-xs text-muted-foreground">Aucune inscription disponible.</p>
+        <p className="mt-4 text-xs text-muted-foreground">{L.noSignup}</p>
       </div>
     </div>
   )
