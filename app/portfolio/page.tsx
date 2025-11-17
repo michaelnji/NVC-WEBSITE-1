@@ -1,5 +1,3 @@
-"use client"
-
 import type { Metadata } from "next"
 import { FlipCountdownSection } from "@/components/flipcountdown-section"
 
