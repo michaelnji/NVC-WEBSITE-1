@@ -19,7 +19,7 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
   const [isDesktop, setIsDesktop] = useState(false)
   const [prefersReduced, setPrefersReduced] = useState(false)
   const pathname = usePathname()
-  const hideChrome = ["/projets", "/a-propos", "/contact", "/admin"].some((route) =>
+  const hideChrome = ["/projets", "/a-propos", "/contact", "/portfolio", "/admin"].some((route) =>
     pathname?.startsWith(route)
   )
   const isAdmin = pathname?.startsWith("/admin")

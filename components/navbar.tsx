@@ -168,7 +168,7 @@ export function Navbar() {
         <motion.div
           className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-700"
           style={{
-            background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(241, 90, 37, 0.06), transparent 40%)`,
+            background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(241, 90, 37, 0.06), transparent 0%)`,
           }}
         />
 
@@ -306,20 +306,7 @@ export function Navbar() {
                               ease: "easeOut",
                             }}
                           />
-                          <motion.div
-                            className="absolute inset-0 bg-gradient-to-b from-[#F15A25]/10 to-transparent rounded-lg backdrop-blur-sm"
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
-                            transition={{ duration: 0.3 }}
-                          />
-                          <motion.div
-                            className="absolute inset-0 bg-[#F15A25]/5 blur-xl rounded-full"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.4 }}
-                          />
+                         
                         </>
                       )}
                     </motion.div>

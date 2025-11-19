@@ -65,6 +65,13 @@ interface Translations {
       uiux: { title: string; description: string }
     }
   }
+   cta_visual: {
+    title1: string
+    title2: string
+    subtitle: string
+    button: string
+    
+  }
   testimonials: {
     headingLine1: string
     headingLine2: string
@@ -93,6 +100,7 @@ interface Translations {
       days: string
       hours: string
       minutes: string
+      seconds: string
     }
   }
   admin: {
@@ -173,6 +181,7 @@ const translations: Record<Language, Translations> = {
         days: "JOURS",
         hours: "HEURES",
         minutes: "MINUTES",
+        seconds: "SECONDES",
       },
     },
     hero: {
@@ -286,10 +295,10 @@ const translations: Record<Language, Translations> = {
     },
     testimonials: {
       headingLine1: "CE QUE DISENT NOS CLIENTS",
-      headingLine2: "ET BIENTÔT VOUS AUSSI",
+      headingLine2: "ET BIENTOT VOUS AUSSI",
       items: [
         {
-          title: "CE QUE DISENT NOS CLIENTS\nBientôt vous aussi",
+          title: "CE QUE DISENT NOS CLIENTS\nBientot vous aussi",
           text:
             "Travailler avec New Vision Creatives, c’est collaborer avec des artistes qui savent exactement quand être professionnels.",
           name: "Bill DOORS",
@@ -297,7 +306,7 @@ const translations: Record<Language, Translations> = {
           rating: 4,
         },
         {
-          title: "TRANSFORMER LES IDÉES\nEN RÉALITÉ",
+          title: "TRANSFORMER LES IDEES\nEN REALITE",
           text:
             "L’équipe apporte non seulement une touche créative, mais aussi une approche stratégique orientée résultats.",
           name: "Sarah KARNES",
@@ -313,7 +322,7 @@ const translations: Record<Language, Translations> = {
           rating: 4,
         },
         {
-          title: "CRÉATIVITÉ ET\nEXCELLENCE",
+          title: "CREATIVITE ET\nEXCELLENCE",
           text:
             "Chaque projet est soigné et unique grâce à leur sens du détail et leur créativité.",
           name: "Linda CHO",
@@ -386,6 +395,7 @@ const translations: Record<Language, Translations> = {
         days: "DAYS",
         hours: "HOURS",
         minutes: "MINUTES",
+        seconds: "SECONDS",
       },
     },
     hero: {

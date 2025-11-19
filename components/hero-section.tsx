@@ -76,7 +76,7 @@ export function HeroSection() {
           ref={heroContentRef}
           className="relative z-10 w-full max-w-full min-h-screen flex flex-col lg:flex-row pt-20 overflow-hidden"
         >
-          <div className="font-500 w-full lg:w-7/10 2xl:w-6/10 flex items-center justify-center lg:justify-start  pt-10 lg:pt-0">
+          <div className="font-500 w-full lg:w-1/2 2xl:w-6/10 flex items-center justify-center lg:justify-start  pt-10 lg:pt-0">
             <div className="text-center lg:text-left max-w-full">
               <h1 ref={headingRef} className="font-display text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-7xl 2xl:text-8xl font-bold leading-[1.1] text-balance tracking-wide mb-3 sm:mb-4 md:mb-5 lg:mb-6">
                 <span className="text-foreground">{t.hero.title}</span>
@@ -210,10 +210,9 @@ function ScrollingGallery() {
 
   return (
     <>
-      {/* Desktop only (>=1024) - Vertical scrolling columns */}
       <div
         ref={galleryRef}
-        className="hidden lg:flex w-full lg:w-5/12 gap-3 xl:gap-5 2xl:gap-6 lg:absolute lg:-top-32 lg:right-4 xl:right-8 2xl:right-16 3xl:right-24 bottom-0 overflow-hidden lg:pr-4 will-change-transform max-w-full"
+        className="hidden lg:flex w-full lg:w-1/2 gap-3 xl:gap-5 2xl:gap-6 lg:absolute lg:-top-32 lg:right-0  bottom-0 overflow-hidden  will-change-transform max-w-full"
       >
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent z-10 pointer-events-none" />
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
@@ -384,7 +383,6 @@ function MobileCarousel({
   const mobileHeight = 180
 
   if (isFetching) {
-    // Skeletons mobiles pendant le chargement des images
     return (
       <div
         ref={carouselRef}

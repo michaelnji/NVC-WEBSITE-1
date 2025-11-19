@@ -4,7 +4,7 @@ import { motion, useAnimationFrame, useMotionValue, type Variants } from "framer
 import ImageWithSkeleton from "@/components/image-with-skeleton"
 import Image from "next/image"
 
-import { useRef, useEffect, useMemo } from "react"
+import { useRef, useEffect, useMemo, useState } from "react"
 import { useLanguage } from "@/contexts/language-context"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -33,6 +33,7 @@ export default function TestimonialsSection() {
   const speed = 60 // px per second
   const containerRef = useRef<HTMLDivElement>(null)
   const holdUntilRef = useRef<number>(0)
+  const [isVisible, setIsVisible] = useState(false)
   const prefersReduced = useMemo(() =>
     typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
   , [])
@@ -54,6 +55,7 @@ export default function TestimonialsSection() {
 
   useAnimationFrame((t, delta) => {
     if (prefersReduced) return
+    if (!isVisible) return
     // pause auto-scroll while user is interacting
     if (Date.now() < holdUntilRef.current) return
     const dx = (speed * delta) / 1000
@@ -144,6 +146,25 @@ export default function TestimonialsSection() {
       window.removeEventListener('pointermove', onPointerMove as any)
       window.removeEventListener('pointerup', onPointerUp as any)
       window.removeEventListener('pointercancel', onPointerCancel as any)
+    }
+  }, [])
+
+  // Observe visibility of the section to avoid running marquee when offscreen
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting)
+      },
+      { threshold: 0.1 },
+    )
+
+    observer.observe(section)
+
+    return () => {
+      observer.disconnect()
     }
   }, [])
 

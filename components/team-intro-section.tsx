@@ -75,7 +75,7 @@ export default function TeamIntroSection() {
   const CARD_H = 220
 
   // Dev-only flag: enable/disable vertical yoyo animation for all columns
-  const ENABLE_YOYO = true
+  const ENABLE_YOYO = false
 
   // Desktop: keep 7 columns static
   const desktopCounts = [5, 4, 4, 3, 4, 4, 5]
@@ -135,7 +135,7 @@ export default function TeamIntroSection() {
   const MOBILE_SPEED = 30 // px/s
   useAnimationFrame((_, delta) => {
     if (typeof window === 'undefined') return
-    if (window.innerWidth >= 768) return // mobile only
+    if (window.innerWidth >= 1024) return // mobile + tablet only
     const el = mobileTrackRef.current
     if (!el) return
     const totalW = el.scrollWidth
@@ -291,8 +291,8 @@ export default function TeamIntroSection() {
 
           return (
             <>
-              {/* Mobile only: auto-scrolling 3 columns (pixel loop) */}
-              <div className="md:hidden relative overflow-hidden mt-10 [mask-image:linear-gradient(to_top,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_10%,rgba(0,0,0,0.25)_22%,rgba(0,0,0,0.55)_38%,rgba(0,0,0,0.8)_50%,#000_62%)] [webkit-mask-image:linear-gradient(to_top,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_10%,rgba(0,0,0,0.25)_22%,rgba(0,0,0,0.55)_38%,rgba(0,0,0,0.8)_50%,#000_62%)] [mask-size:100%_100%] [webkit-mask-size:100%_100%]">
+              {/* Mobile & tablet: auto-scrolling 3 columns (pixel loop) */}
+              <div className="lg:hidden relative overflow-hidden mt-10 [mask-image:linear-gradient(to_top,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_10%,rgba(0,0,0,0.25)_22%,rgba(0,0,0,0.55)_38%,rgba(0,0,0,0.8)_50%,#000_62%)] [webkit-mask-image:linear-gradient(to_top,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_10%,rgba(0,0,0,0.25)_22%,rgba(0,0,0,0.55)_38%,rgba(0,0,0,0.8)_50%,#000_62%)] [mask-size:100%_100%] [webkit-mask-size:100%_100%]">
                 <motion.div
                   ref={mobileTrackRef}
                   className="flex gap-4 pr-0 md:pr-4 will-change-transform w-max"
@@ -321,60 +321,6 @@ export default function TeamIntroSection() {
                   )}
                 </motion.div>
               </div>
-
-              {/* Tablet: 7 columns, optional vertical back-and-forth (linear yoyo) */}
-              {ENABLE_YOYO ? (
-                <div className="hidden md:grid lg:hidden relative z-10 h-[540px] overflow-hidden grid grid-cols-7 gap-x-2 items-start [mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] [webkit-mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)]">
-                  {desktopCounts.map((n, colIdx) => (
-                    <div key={`tab-${colIdx}`} className="relative overflow-hidden">
-                      <motion.div
-                        className="flex flex-col items-start gap-2 will-change-transform"
-                        animate={{ y: [0, -120, 0] }}
-                        transition={{ duration: 8, ease: "linear", repeat: Number.POSITIVE_INFINITY, repeatType: "reverse" }}
-                        initial={false}
-                        style={{ marginTop: Math.max(0, desktopShifts[colIdx] - 100) }}
-                      >
-                        {(isLoading
-                          ? Array.from({ length: n }, () => ({} as TeamCard))
-                          : desktopColumns[colIdx]?.slice(0, n) || []
-                        ).map((card, i) => (
-                          <FlipCard
-                            key={`tab-${colIdx}-${i}`}
-                            width={Math.max(120, CARD_W - 40)}
-                            height={Math.max(150, CARD_H - 60)}
-                            data={isLoading ? undefined : card}
-                            isSkeleton={isLoading}
-                          />
-                        ))}
-                      </motion.div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="hidden md:grid lg:hidden relative z-10 h-[540px] overflow-hidden grid grid-cols-7 gap-x-2 items-start [mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] [webkit-mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)]">
-                  {desktopCounts.map((n, colIdx) => (
-                    <div key={`tab-static-${colIdx}`} className="relative overflow-hidden">
-                      <div
-                        className="flex flex-col items-start gap-2"
-                        style={{ marginTop: Math.max(0, desktopShifts[colIdx] - 100) }}
-                      >
-                        {(isLoading
-                          ? Array.from({ length: n }, () => ({} as TeamCard))
-                          : desktopColumns[colIdx]?.slice(0, n) || []
-                        ).map((card, i) => (
-                          <FlipCard
-                            key={`tab-static-${colIdx}-${i}`}
-                            width={Math.max(120, CARD_W - 40)}
-                            height={Math.max(150, CARD_H - 60)}
-                            data={isLoading ? undefined : card}
-                            isSkeleton={isLoading}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
 
               {/* Desktop: 7 columns, optional deterministic yoyo (pixel-driven) */}
               {ENABLE_YOYO ? (

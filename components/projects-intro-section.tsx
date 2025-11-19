@@ -195,16 +195,15 @@ export default function ProjectsIntroSection() {
     >
       <div className="max-w-7xl mx-auto ">
         {/* Title */}
-        <div className="text-center mb-4 sm:mb-6 md:mb-8 lg:mb-10">
+        <div className="text-center mb-4 sm:mb-6 md:mb-8 lg:mb-[8px]">
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold leading-tight tracking-wide uppercase mb-2 sm:mb-3 md:mb-4 lg:mb-5">
             <span className="text-[#1e1e1e]">{t.projectsIntro.titlePart1} </span>
             <span className="text-[#F15A25]">{t.projectsIntro.titleHighlight}</span>
             <span className="text-[#1e1e1e]"> {t.projectsIntro.titlePart2}</span>
           </h2>
         </div>
-
-        <div className="text-center mt-1 sm:mt-2 md:mt-3 mb-6 md:mb-8 lg:mb-10 max-w-3xl mx-auto">
-          <p className="text-sm md:text-base lg:text-lg text-[#1e1e1e]/80 leading-relaxed">
+        <div className="text-center mb-6 md:mb-8 lg:mb-10 max-w-3xl mx-auto">
+          <p className="text-sm md:text-base lg:text-lg text-[#1e1e1e]/80 ">
             {t.projectsIntro.descriptionPart1}
             <span className="text-[#F15A25] font-semibold">{t.projectsIntro.descriptionHighlight}</span>
           </p>
@@ -377,7 +376,7 @@ export default function ProjectsIntroSection() {
                           <ImageWithSkeleton
                             src={filledItems[0].image || "/placeholder.svg"}
                             alt={filledItems[0].title}
-                            wrapperClassName="w-full h-[420px]"
+                            wrapperClassName="w-full h-full"
                             className="object-cover transform transition-transform duration-500 group-hover:scale-110"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           />

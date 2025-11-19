@@ -22,7 +22,7 @@ export default function SiteFooter() {
     >
       <div className="w-full px-4 md:px-8 lg:px-12 xl:px-16 py-12 md:py-16 lg:py-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 lg:gap-20 place-items-center lg:place-items-start">
-          <div className="flex flex-col gap-5 items-center lg:items-start">
+          <div className="flex flex-col gap-5 items-center lg:items-center">
             <FooterLogo />
             <p className="text-[#1e1e1e] text-sm md:text-base font-medium text-center lg:text-left">{t.footer.tagline}</p>
           </div>
