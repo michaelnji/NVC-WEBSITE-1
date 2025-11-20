@@ -73,9 +73,9 @@ export default function ServicesSection() {
   return (
     <div
       ref={sectionRef}
-      className="relative rounded-[28px] md:rounded-[40px] md:p-10 lg:p-14 xl:p-16 -mt-8 md:-mt-12 lg:-mt-16 pb-40 md:py-30 lg:py-30 xl:py-40 2xl:py-44 mb-16 md:mb-24 lg:-mb-8 xl:-mb-12 2xl:-mb-16 overflow-hidden lg:min-h-[75vh] xl:min-h-[80vh]"
+      className="relative rounded-[28px] md:rounded-[40px] md:p-10 lg:p-14 xl:p-16 -mt-8 md:-mt-12 lg:-mt-16 pt-10 pb-40 md:py-30 lg:py-36 xl:py-40 2xl:py-44 mb-16 md:mb-24 lg:-mb-8 xl:-mb-12 2xl:-mb-16 overflow-hidden lg:min-h-[75vh] xl:min-h-[80vh]"
       style={{
-        backgroundImage: `url('/background-section.png')`,
+        backgroundImage: "url('/background-section.png')",
         backgroundSize: "100% 100%",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -330,19 +330,21 @@ function ServiceCard({ service, isPlaceholder }: ServiceCardProps) {
       ) : (
         <>
           <div
-            className={`px-5 py-5 sm:px-7 sm:pt-7 flex-shrink-0 transition-all duration-300 ease-out ${
-              isHovered ? "md:opacity-0 md:max-h-0 md:py-0 md:overflow-hidden" : "opacity-100 max-h-[200px]"
-            }`}
+            className="px-5 py-5 sm:px-7 sm:pt-7 flex-shrink-0 transition-all duration-300 ease-out"
           >
-            <h2 className="text-sm sm:text-base md:text-lg mb-[8px] font-sans font-bold text-[#1e1e1e] leading-tight tracking-wide">
+            <h2 className="text-sm sm:text-base md:text-lg mb-1.5 font-sans font-bold text-[#1e1e1e] leading-tight tracking-wide">
               {service?.title}
             </h2>
-            <p className="font-sans text-[#404040] text-xs sm:text-sm   max-w-xs sm:max-w-sm md:max-w-md ">
+            <p
+              className={`font-sans text-[#404040] text-xs sm:text-sm leading-relaxed whitespace-pre-line max-w-xs sm:max-w-sm md:max-w-md break-words transition-all duration-300 ease-out ${
+                isHovered ? "md:max-h-0 md:opacity-0 md:overflow-hidden" : "opacity-100 max-h-[200px]"
+              }`}
+            >
               {service?.description}
             </p>
           </div>
 
-          <div className="flex-1 relative overflow-hidden rounded-b-[18px] md:rounded-t-[18px] min-h-[100px] md:min-h-0">
+          <div className="flex-1 relative overflow-hidden rounded-[18px] md:rounded-[18px] min-h-[100px] md:min-h-0">
             <div className="absolute inset-0 transition-all duration-500 ease-out bg-black">
               <ImageWithSkeleton
                 src={service?.image_url || "/placeholder.svg"}
