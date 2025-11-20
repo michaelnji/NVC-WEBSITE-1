@@ -5,6 +5,7 @@ import ImageWithSkeleton from "@/components/image-with-skeleton"
 import { AdminItemCard } from "./admin-item-card"
 import { AdminItemsListCard } from "./admin-items-list-card"
 import { ButtonAdmin } from "./button-admin"
+import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal"
 
 import { useState, useEffect } from "react"
 import type { Service } from "@/lib/types"
@@ -20,6 +21,7 @@ export function ServicesManager() {
   const [isLoading, setIsLoading] = useState(false)
   const [isFetching, setIsFetching] = useState(true)
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
   const MAX_SERVICES = 6
 
   const [serviceForm, setServiceForm] = useState({
@@ -85,18 +87,24 @@ export function ServicesManager() {
     }
   }
 
-  const handleDeleteService = async (id: string) => {
-    if (confirm("Êtes-vous sûr?")) {
-      try {
-        await fetch(`/api/services/${id}`, { method: "DELETE" })
-        await fetchServices()
-      } catch (error) {
-        console.error("Delete failed:", error)
-      }
+  const handleDeleteService = (id: string) => {
+    setDeleteId(id)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return
+    try {
+      await fetch(`/api/services/${deleteId}`, { method: "DELETE" })
+      await fetchServices()
+    } catch (error) {
+      console.error("Delete failed:", error)
+    } finally {
+      setDeleteId(null)
     }
   }
 
   return (
+    <>
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <AdminItemsListCard
         title="Services existants"
@@ -201,5 +209,16 @@ export function ServicesManager() {
         </form>
       </Card>
     </div>
+
+    <AdminConfirmModal
+      open={deleteId !== null}
+      title="Supprimer ce service ?"
+      message="Cette action est irréversible. Le service sera définitivement supprimé."
+      confirmLabel="Supprimer"
+      cancelLabel="Annuler"
+      onCancel={() => setDeleteId(null)}
+      onConfirm={handleConfirmDelete}
+    />
+    </>
   )
 }

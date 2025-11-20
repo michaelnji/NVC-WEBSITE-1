@@ -40,7 +40,14 @@ export function AdminHomePage() {
 
   return (
     <div className="space-y-3 lg:space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => setSection(null)}
+          className="text-[0.9rem] rounded-md border border-border px-2.5 py-1.5 hover:bg-accent hover:text-accent-foreground transition-colors"
+          aria-label="Back to sections"
+        >
+          ←
+        </button>
         <div>
           <h2 className="text-[1.15rem] lg:text-[1.35rem] font-semibold tracking-tight leading-snug">
             {section === "hero" && "Hero"}
@@ -57,12 +64,6 @@ export function AdminHomePage() {
             {section === "testimonials" && "Gérez les avis clients."}
           </p>
         </div>
-        <button
-          onClick={() => setSection(null)}
-          className="text-[0.85rem] rounded-md border border-border px-3 py-1.5 hover:bg-accent hover:text-accent-foreground transition-colors"
-        >
-          ← Retour aux sections
-        </button>
       </div>
 
       <div className="rounded-xl border border-border bg-card p-3 lg:p-4">

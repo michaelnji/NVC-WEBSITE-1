@@ -12,12 +12,15 @@ import { ImageUploader } from "./image-uploader"
 import { AdminItemsListCard } from "./admin-items-list-card"
 import { AdminItemCard } from "./admin-item-card"
 import { ButtonAdmin } from "./button-admin"
+import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal"
 
 export function TestimonialsManager() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isFetching, setIsFetching] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [formData, setFormData] = useState({
     author_name: "",
     title: "",
@@ -80,14 +83,21 @@ export function TestimonialsManager() {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Êtes-vous sûr?")) {
-      try {
-        await fetch(`/api/testimonials/${id}`, { method: "DELETE" })
-        await fetchTestimonials()
-      } catch (error) {
-        console.error("Delete failed:", error)
-      }
+  const handleDelete = (id: string) => {
+    setDeleteId(id)
+    setShowDeleteModal(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return
+    try {
+      await fetch(`/api/testimonials/${deleteId}`, { method: "DELETE" })
+      await fetchTestimonials()
+    } catch (error) {
+      console.error("Delete failed:", error)
+    } finally {
+      setDeleteId(null)
+      setShowDeleteModal(false)
     }
   }
 
@@ -209,6 +219,16 @@ export function TestimonialsManager() {
           </div>
         </form>
       </Card>
+
+      <AdminConfirmModal
+        open={deleteId !== null}
+        title="Supprimer ce témoignage ?"
+        message="Cette action est irréversible. Le témoignage sera définitivement supprimé."
+        confirmLabel="Supprimer"
+        cancelLabel="Annuler"
+        onCancel={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   )
 }

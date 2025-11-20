@@ -5,6 +5,7 @@ import ImageWithSkeleton from "@/components/image-with-skeleton"
 import { AdminItemCard } from "./admin-item-card"
 import { AdminItemsListCard } from "./admin-items-list-card"
 import { ButtonAdmin } from "./button-admin"
+import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal"
 
 import { useState, useEffect } from "react"
 import type { HeroImage } from "@/lib/types"
@@ -20,6 +21,7 @@ export function HeroManager() {
   const [isLoading, setIsLoading] = useState(false)
   const [isFetching, setIsFetching] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     image_url: "",
     title: "",
@@ -83,22 +85,28 @@ export function HeroManager() {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Êtes-vous sûr?")) {
-      try {
-        await fetch(`/api/hero-images/${id}`, { method: "DELETE" })
-        await fetchImages()
-        if (editingId === id) {
-          setEditingId(null)
-          setFormData({ image_url: "", title: "", description: "" })
-        }
-      } catch (error) {
-        console.error("Delete failed:", error)
+  const handleDelete = (id: string) => {
+    setDeleteId(id)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return
+    try {
+      await fetch(`/api/hero-images/${deleteId}`, { method: "DELETE" })
+      await fetchImages()
+      if (editingId === deleteId) {
+        setEditingId(null)
+        setFormData({ image_url: "", title: "", description: "" })
       }
+    } catch (error) {
+      console.error("Delete failed:", error)
+    } finally {
+      setDeleteId(null)
     }
   }
 
   return (
+    <>
      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
         <AdminItemsListCard
@@ -252,5 +260,16 @@ export function HeroManager() {
           </form>
         </Card>
       </div>
+
+      <AdminConfirmModal
+        open={deleteId !== null}
+        title="Supprimer cette image Hero ?"
+        message="Cette action est irréversible. L'image sera définitivement supprimée."
+        confirmLabel="Supprimer"
+        cancelLabel="Annuler"
+        onCancel={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
+      />
+    </>
   )
 }

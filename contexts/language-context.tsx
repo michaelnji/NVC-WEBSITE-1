@@ -65,12 +65,11 @@ interface Translations {
       uiux: { title: string; description: string }
     }
   }
-   cta_visual: {
+  cta_visual: {
     title1: string
     title2: string
     subtitle: string
     button: string
-    
   }
   testimonials: {
     headingLine1: string
@@ -184,6 +183,13 @@ const translations: Record<Language, Translations> = {
         seconds: "SECONDES",
       },
     },
+    cta_visual: {
+      title1: "PRÊT À RACONTER TA PROCHAINE",
+      title2: "HISTOIRE VISUELLE ?",
+      subtitle:
+        "Tu as une idée, un produit ou juste une étincelle d'ambition ? Parlons-en. (Promis, on ne mord pas — sauf si tu dis : \"Tu peux me faire un petit logo rapide ?\")",
+      button: "Réserver un call d'intro",
+    },
     hero: {
       title: "NOUS NE FAISONS PAS QUE DU DESIGN",
       line2: "NOUS CREONS",
@@ -295,10 +301,10 @@ const translations: Record<Language, Translations> = {
     },
     testimonials: {
       headingLine1: "CE QUE DISENT NOS CLIENTS",
-      headingLine2: "ET BIENTOT VOUS AUSSI",
+      headingLine2: "ET BIENTÔT VOUS AUSSI",
       items: [
         {
-          title: "CE QUE DISENT NOS CLIENTS\nBientot vous aussi",
+          title: "CE QUE DISENT NOS CLIENTS\nBientôt vous aussi",
           text:
             "Travailler avec New Vision Creatives, c’est collaborer avec des artistes qui savent exactement quand être professionnels.",
           name: "Bill DOORS",
@@ -306,7 +312,7 @@ const translations: Record<Language, Translations> = {
           rating: 4,
         },
         {
-          title: "TRANSFORMER LES IDEES\nEN REALITE",
+          title: "TRANSFORMER LES IDÉES\nEN RÉALITÉ",
           text:
             "L’équipe apporte non seulement une touche créative, mais aussi une approche stratégique orientée résultats.",
           name: "Sarah KARNES",
@@ -322,7 +328,7 @@ const translations: Record<Language, Translations> = {
           rating: 4,
         },
         {
-          title: "CREATIVITE ET\nEXCELLENCE",
+          title: "CRÉATIVITÉ ET\nEXCELLENCE",
           text:
             "Chaque projet est soigné et unique grâce à leur sens du détail et leur créativité.",
           name: "Linda CHO",
@@ -397,6 +403,13 @@ const translations: Record<Language, Translations> = {
         minutes: "MINUTES",
         seconds: "SECONDS",
       },
+    },
+    cta_visual: {
+      title1: "READY TO TELL YOUR NEXT",
+      title2: "VISUAL STORY?",
+      subtitle:
+        "Have an idea, a product, or just a spark of ambition? Let's talk. (We promise we won't bite — unless you say, \"Can you make me a quick logo?\")",
+      button: "Book your intro call",
     },
     hero: {
       title: "WE DON'T JUST DESIGN",

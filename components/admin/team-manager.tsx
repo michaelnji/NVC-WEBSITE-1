@@ -12,12 +12,14 @@ import { ImageUploader } from "./image-uploader"
 import { AdminItemsListCard } from "./admin-items-list-card"
 import { AdminItemCard } from "./admin-item-card"
 import { ButtonAdmin } from "./button-admin"
+import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal"
 
 export function TeamManager() {
   const [members, setMembers] = useState<TeamMember[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isFetching, setIsFetching] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: "",
     position: "",
@@ -78,14 +80,19 @@ export function TeamManager() {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Êtes-vous sûr?")) {
-      try {
-        await fetch(`/api/team-members/${id}`, { method: "DELETE" })
-        await fetchMembers()
-      } catch (error) {
-        console.error("Delete failed:", error)
-      }
+  const handleDelete = (id: string) => {
+    setDeleteId(id)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return
+    try {
+      await fetch(`/api/team-members/${deleteId}`, { method: "DELETE" })
+      await fetchMembers()
+    } catch (error) {
+      console.error("Delete failed:", error)
+    } finally {
+      setDeleteId(null)
     }
   }
 
@@ -192,6 +199,16 @@ export function TeamManager() {
           </div>
         </form>
       </Card>
+
+      <AdminConfirmModal
+        open={deleteId !== null}
+        title="Supprimer ce membre ?"
+        message="Cette action est irréversible. Le membre sera définitivement supprimé."
+        confirmLabel="Supprimer"
+        cancelLabel="Annuler"
+        onCancel={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   )
 }

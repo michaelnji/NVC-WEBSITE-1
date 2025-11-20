@@ -5,6 +5,7 @@ import ImageWithSkeleton from "@/components/image-with-skeleton"
 import { AdminItemCard } from "./admin-item-card"
 import { AdminItemsListCard } from "./admin-items-list-card"
 import { ButtonAdmin } from "./button-admin"
+import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal"
 
 import { useState, useEffect } from "react"
 import type { Service, Project } from "@/lib/types"
@@ -24,6 +25,7 @@ export function ProjectsManager() {
   const [isFetchingProjects, setIsFetchingProjects] = useState(true)
   const [isFetchingServices, setIsFetchingServices] = useState(true)
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
   const [projectForm, setProjectForm] = useState({
     title: "",
     description: "",
@@ -111,16 +113,21 @@ export function ProjectsManager() {
     }
   }
 
-  const handleDeleteProject = async (id: string) => {
-    if (confirm("Êtes-vous sûr?")) {
-      try {
-        await fetch(`/api/projects/${id}`, { method: "DELETE" })
-        if (activeService) {
-          await fetchProjects(activeService)
-        }
-      } catch (error) {
-        console.error("Delete failed:", error)
+  const handleDeleteProject = (id: string) => {
+    setDeleteId(id)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return
+    try {
+      await fetch(`/api/projects/${deleteId}`, { method: "DELETE" })
+      if (activeService) {
+        await fetchProjects(activeService)
       }
+    } catch (error) {
+      console.error("Delete failed:", error)
+    } finally {
+      setDeleteId(null)
     }
   }
 
@@ -255,6 +262,16 @@ export function ProjectsManager() {
           </Card>
         </div>
       </Tabs>
+
+      <AdminConfirmModal
+        open={deleteId !== null}
+        title="Supprimer ce projet ?"
+        message="Cette action est irréversible. Le projet sera définitivement supprimé."
+        confirmLabel="Supprimer"
+        cancelLabel="Annuler"
+        onCancel={() => setDeleteId(null)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   )
 }

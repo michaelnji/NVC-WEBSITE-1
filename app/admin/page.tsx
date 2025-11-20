@@ -106,6 +106,11 @@ export default function AdminPage() {
                   {L.actions.viewSite}
                 </Link>
                 <ButtonAdmin
+                  confirm
+                  confirmTitle={L.actions.logout}
+                  confirmMessage={"You are about to log out of the admin panel."}
+                  confirmConfirmLabel={"Log out"}
+                  confirmCancelLabel={"Cancel"}
                   onClick={async () => {
                     const supabase = createSupabaseBrowserClient()
                     await supabase.auth.signOut()
