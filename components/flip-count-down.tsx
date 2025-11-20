@@ -93,7 +93,7 @@ function FlipCard({ digit, fast }: { digit: string; fast?: boolean }) {
       const timeout = setTimeout(() => {
         setCurrentDigit(digit)
         setIsFlipping(false)
-      }, flipDuration)
+      }, flipDuration)  
       return () => {
         clearTimeout(timeout)
         clearTimeout(bottomTimeout)
@@ -115,7 +115,7 @@ function FlipCard({ digit, fast }: { digit: string; fast?: boolean }) {
 
         <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-black rounded-b-md sm:rounded-b-xl md:rounded-b-2xl overflow-hidden">
           <div className="absolute inset-0 flex items-end justify-center pb-0">
-            <span className="font-display translate-y-[12px] text-3xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-[#ff5722] leading-none">
+            <span className="font-display -translate-y-[5px] lg:translate-y-[12px] text-3xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-[#ff5722] leading-none">
               {bottomDigit}
             </span>
           </div>

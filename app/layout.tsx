@@ -42,10 +42,10 @@ export default function RootLayout({
               url: 'https://newvcreatives.com',
               logo: 'https://newvcreatives.com/favicon.png',
               sameAs: [
-                'https://www.linkedin.com',
-                'https://www.instagram.com',
-                'https://twitter.com',
-                'https://facebook.com',
+                'https://www.linkedin.com/company/new-vision-creatives/life?lipi=urn%3Ali%3Apage%3Acompanies_company_life_index%3B6e2d4f8f-c1d7-4d5a-9d0e-4b615e16fa41',
+                'https://www.instagram.com/newvisioncreatives/',
+                'https://www.tiktok.com/@nvc.yde/',
+                'https://www.bing.com/ck/a?!&&p=b2f36752b2a36ed059d753e9aec0a32c488d85183924f44f68420739c3473b8fJmltdHM9MTc2MzI1MTIwMA&ptn=3&ver=2&hsh=4&fclid=3233c4ab-3f92-65a3-2a13-d2893e8e6498&psq=new+vision+creatives++yaounde+facebook&u=a1aHR0cHM6Ly93d3cuZmFjZWJvb2suY29tL3Byb2ZpbGUucGhwLz9pZD02MTU4MTI3Mjc1NDkyNA',
               ],
             }),
           }}
