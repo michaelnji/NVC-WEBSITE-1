@@ -25,6 +25,7 @@ export function TestimonialsManager() {
     author_name: "",
     title: "",
     description: "",
+    position: "",
     photo_url: "",
     rating: 5,
   })
@@ -71,6 +72,7 @@ export function TestimonialsManager() {
         author_name: "",
         title: "",
         description: "",
+        position: "",
         photo_url: "",
         rating: 5,
       })
@@ -123,6 +125,7 @@ export function TestimonialsManager() {
                 author_name: testimonial.author_name,
                 title: testimonial.title,
                 description: testimonial.description,
+                position: testimonial.position || "",
                 photo_url: testimonial.photo_url || "",
                 rating: testimonial.rating,
               })
@@ -146,6 +149,15 @@ export function TestimonialsManager() {
               onChange={(e) => setFormData({ ...formData, author_name: e.target.value })}
               placeholder="Nom"
               required
+            />
+          </div>
+
+          <div>
+            <Label>Poste / Rôle</Label>
+            <Input
+              value={formData.position}
+              onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+              placeholder="Ex: CEO, Directrice Marketing…"
             />
           </div>
 
@@ -208,6 +220,7 @@ export function TestimonialsManager() {
                     author_name: "",
                     title: "",
                     description: "",
+                    position: "",
                     photo_url: "",
                     rating: 5,
                   })

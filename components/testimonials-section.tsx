@@ -8,10 +8,12 @@ import { useRef, useEffect, useMemo, useState } from "react"
 import { useLanguage } from "@/contexts/language-context"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { AvailableSlotCard } from "@/components/available-slot-card"
+import type { Testimonial } from "@/lib/types"
 
 export default function TestimonialsSection() {
   const { t } = useLanguage()
-  const testimonials = t.testimonials.items
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const sectionRef = useRef<HTMLElement>(null)
 
   const Star = ({ filled }: { filled: boolean }) => (
@@ -149,6 +151,43 @@ export default function TestimonialsSection() {
     }
   }, [])
 
+  // Load testimonials from API (BD)
+  useEffect(() => {
+    let cancelled = false
+    const load = async () => {
+      try {
+        const res = await fetch("/api/testimonials")
+        if (!res.ok) return
+        const data: Testimonial[] = await res.json()
+        if (!cancelled) setTestimonials(data || [])
+      } catch (e) {
+        console.error("Failed to load testimonials", e)
+      }
+    }
+    load()
+    // option: could refetch on interval if needed
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const hasTestimonials = testimonials.length > 0
+
+  // Ensure we always have enough cards to visually fill the marquee track
+  const visibleTestimonials = useMemo(() => {
+    if (!testimonials.length) return []
+    const MIN_CARDS = 4
+    const result: Testimonial[] = []
+
+    // Repeat testimonials until we reach at least MIN_CARDS
+    while (result.length < Math.max(MIN_CARDS, testimonials.length)) {
+      result.push(...testimonials)
+    }
+
+    // Trim to the exact target length
+    return result.slice(0, Math.max(MIN_CARDS, testimonials.length))
+  }, [testimonials])
+
   // Observe visibility of the section to avoid running marquee when offscreen
   useEffect(() => {
     const section = sectionRef.current
@@ -217,72 +256,90 @@ export default function TestimonialsSection() {
         <div ref={containerRef} className="mt-6 sm:mt-8 md:mt-9 lg:mt-10 relative overflow-visible z-10 cursor-grab active:cursor-grabbing select-none touch-pan-y md:touch-auto">
           <motion.div ref={trackRef} className="flex gap-5 sm:gap-6 md:gap-7 lg:gap-8 will-change-transform" style={{ x: trackX }}>
             <div ref={seqRef} className="flex gap-5 sm:gap-6 md:gap-7 lg:gap-8">
-              {testimonials.map((t, i) => (
-                <motion.div
-                  key={`a-${i}`}
-                  className="group relative w-[280px] sm:w-[300px] md:w-[320px] lg:w-[340px] min-h-[340px] sm:min-h-[360px] md:min-h-[380px] lg:min-h-[400px] flex-shrink-0 rounded-2xl sm:rounded-3xl bg-[#efefef] p-4 sm:p-5 md:p-6 shadow-[0_6px_24px_rgba(0,0,0,0.15)] transition-all flex flex-col overflow-visible hover:z-20"
-                  variants={cardVariants}
-                  initial="initial"
-                  whileHover="hovered"
-                  transition={{ type: 'spring', stiffness: 180, damping: 22, mass: 0.7 }}
-                >
-                  <div className="pointer-events-none absolute inset-0 rounded-2xl overflow-hidden">
-                    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                  </div>
-                  <motion.div className="flex items-center justify-center gap-1 sm:gap-1.5 mb-2" style={{ perspective: 600 }}>
-                    {Array.from({ length: 5 }).map((_, s) => (
-                      <motion.div key={s} variants={starVariants} custom={s} className="origin-center">
-                        <Star filled={s < t.rating} />
+              {hasTestimonials
+                ? visibleTestimonials.map((item, i) => (
+                    <motion.div
+                      key={`a-${i}`}
+                      className="group relative w-[280px] sm:w-[300px] md:w-[320px] lg:w-[340px] min-h-[340px] sm:min-h-[360px] md:min-h-[380px] lg:min-h-[400px] flex-shrink-0 rounded-2xl sm:rounded-3xl bg-[#efefef] p-4 sm:p-5 md:p-6 shadow-[0_6px_24px_rgba(0,0,0,0.15)] transition-all flex flex-col overflow-visible hover:z-20"
+                      variants={cardVariants}
+                      initial="initial"
+                      whileHover="hovered"
+                      transition={{ type: 'spring', stiffness: 180, damping: 22, mass: 0.7 }}
+                    >
+                      <div className="pointer-events-none absolute inset-0 rounded-2xl overflow-hidden">
+                        <div className="absolute inset-0 -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                      </div>
+                      <motion.div className="flex items-center justify-center gap-1 sm:gap-1.5 mb-2" style={{ perspective: 600 }}>
+                        {Array.from({ length: 5 }).map((_, s) => (
+                          <motion.div key={s} variants={starVariants} custom={s} className="origin-center">
+                            <Star filled={s < item.rating} />
+                          </motion.div>
+                        ))}
                       </motion.div>
-                    ))}
-                  </motion.div>
-                  <h3 className="font-display text-lg sm:text-xl md:text-2xl text-[#1e1e1e] leading-tight mb-2 whitespace-pre-line uppercase font-extrabold tracking-wider transition-transform duration-500 group-hover:translate-x-1">
-                    {t.title}
-                  </h3>
-                  <p className="text-[#1e1e1e]/80 text-xs sm:text-sm md:text-base leading-relaxed mb-2 transition-transform duration-500 group-hover:translate-x-[2px]">{t.text}</p>
-                  <div className="flex flex-col items-center justify-center mt-auto transition-transform duration-500 group-hover:-translate-y-1">
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-[#d9d9d9] shadow-inner flex items-center justify-center ring-1 ring-black/10 mb-2">
-                      <ImageWithSkeleton src="/avatar.svg" alt={t.name} wrapperClassName="w-full h-full" className="w-full h-full rounded-full object-cover" />
-                    </div>
-                    <p className="text-[#1e1e1e] font-semibold leading-tight">{t.name}</p>
-                    <p className="text-[#ff6b35] text-xs sm:text-sm leading-tight">{t.role}</p>
-                  </div>
-                </motion.div>
-              ))}
+                      <h3 className="font-display text-lg sm:text-xl md:text-2xl text-[#1e1e1e] leading-tight mb-2 whitespace-pre-line uppercase font-extrabold tracking-wider transition-transform duration-500 group-hover:translate-x-1">
+                        {item.title}
+                      </h3>
+                      <p className="text-[#1e1e1e]/80 text-xs sm:text-sm md:text-base leading-relaxed mb-2 break-words whitespace-pre-line transition-transform duration-500 group-hover:translate-x-[2px]">{item.description}</p>
+                      <div className="flex flex-col items-center justify-center mt-auto transition-transform duration-500 group-hover:-translate-y-1">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-[#d9d9d9] shadow-inner flex items-center justify-center ring-1 ring-black/10 mb-2">
+                          <ImageWithSkeleton src={item.photo_url || "/avatar.svg"} alt={item.author_name} wrapperClassName="w-full h-full" className="w-full h-full rounded-full object-cover" />
+                        </div>
+                        <p className="text-[#1e1e1e] font-semibold leading-tight">{item.author_name}</p>
+                        <p className="text-[#ff6b35] text-xs sm:text-sm leading-tight">{item.position}</p>
+                      </div>
+                    </motion.div>
+                  ))
+                : Array.from({ length: 4 }).map((_, i) => (
+                    <motion.div
+                      key={`placeholder-a-${i}`}
+                      className="group relative w-[280px] sm:w-[300px] md:w-[320px] lg:w-[340px] min-h-[340px] sm:min-h-[360px] md:min-h-[380px] lg:min-h-[400px] flex-shrink-0 rounded-2xl sm:rounded-3xl bg-black/95 border border-white/10 p-4 sm:p-5 md:p-6 shadow-[0_6px_32px_rgba(0,0,0,0.45)] transition-all flex flex-col overflow-visible hover:z-20"
+                    >
+                      <AvailableSlotCard className="h-full" />
+                    </motion.div>
+                  ))}
             </div>
             <div className="flex gap-5 sm:gap-6 md:gap-7 lg:gap-8">
-              {testimonials.map((t, i) => (
-                <motion.div
-                  key={`b-${i}`}
-                  className="group relative w-[280px] sm:w-[300px] md:w-[320px] lg:w-[340px] min-h-[340px] sm:min-h-[360px] md:min-h-[380px] lg:min-h-[400px] flex-shrink-0 rounded-2xl sm:rounded-3xl bg-[#efefef] p-4 sm:p-5 md:p-6 shadow-[0_6px_24px_rgba(0,0,0,0.15)] transition-all flex flex-col overflow-visible hover:z-20"
-                  variants={cardVariants}
-                  initial="initial"
-                  whileHover="hovered"
-                  transition={{ type: 'spring', stiffness: 180, damping: 22, mass: 0.7 }}
-                >
-                  <div className="pointer-events-none absolute inset-0 rounded-2xl overflow-hidden">
-                    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                  </div>
-                  <motion.div className="flex items-center justify-center gap-1 sm:gap-1.5 mb-2">
-                    {Array.from({ length: 5 }).map((_, s) => (
-                      <motion.div key={s} variants={starVariants} custom={s} className="origin-center">
-                        <Star filled={s < t.rating} />
+              {hasTestimonials
+                ? visibleTestimonials.map((item, i) => (
+                    <motion.div
+                      key={`b-${i}`}
+                      className="group relative w-[280px] sm:w-[300px] md:w-[320px] lg:w-[340px] min-h-[340px] sm:min-h-[360px] md:min-h-[380px] lg:min-h-[400px] flex-shrink-0 rounded-2xl sm:rounded-3xl bg-[#efefef] p-4 sm:p-5 md:p-6 shadow-[0_6px_24px_rgba(0,0,0,0.15)] transition-all flex flex-col overflow-visible hover:z-20"
+                      variants={cardVariants}
+                      initial="initial"
+                      whileHover="hovered"
+                      transition={{ type: 'spring', stiffness: 180, damping: 22, mass: 0.7 }}
+                    >
+                      <div className="pointer-events-none absolute inset-0 rounded-2xl overflow-hidden">
+                        <div className="absolute inset-0 -translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                      </div>
+                      <motion.div className="flex items-center justify-center gap-1 sm:gap-1.5 mb-2">
+                        {Array.from({ length: 5 }).map((_, s) => (
+                          <motion.div key={s} variants={starVariants} custom={s} className="origin-center">
+                            <Star filled={s < item.rating} />
+                          </motion.div>
+                        ))}
                       </motion.div>
-                    ))}
-                  </motion.div>
-                  <h3 className="font-display text-lg sm:text-xl md:text-2xl text-[#1e1e1e] leading-tight mb-2 whitespace-pre-line uppercase font-extrabold tracking-wider transition-transform duration-500 group-hover:translate-x-1">
-                    {t.title}
-                  </h3>
-                  <p className="text-[#1e1e1e]/80 text-xs sm:text-sm md:text-base leading-relaxed mb-2 transition-transform duration-500 group-hover:translate-x-[2px]">{t.text}</p>
-                  <div className="flex flex-col items-center justify-center mt-auto transition-transform duration-500 group-hover:-translate-y-1">
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-[#d9d9d9] shadow-inner flex items-center justify-center ring-1 ring-black/10 mb-2">
-                      <ImageWithSkeleton src="/avatar.svg" alt={t.name} wrapperClassName="w-full h-full" className="w-full h-full rounded-full object-cover" />
-                    </div>
-                    <p className="text-[#1e1e1e] font-semibold leading-tight">{t.name}</p>
-                    <p className="text-[#ff6b35] text-xs sm:text-sm leading-tight">{t.role}</p>
-                  </div>
-                </motion.div>
-              ))}
+                      <h3 className="font-display text-lg sm:text-xl md:text-2xl text-[#1e1e1e] leading-tight mb-2 whitespace-pre-line uppercase font-extrabold tracking-wider transition-transform duration-500 group-hover:translate-x-1">
+                        {item.title}
+                      </h3>
+                      <p className="text-[#1e1e1e]/80 text-xs sm:text-sm md:text-base leading-relaxed mb-2 break-words whitespace-pre-line transition-transform duration-500 group-hover:translate-x-[2px]">{item.description}</p>
+                      <div className="flex flex-col items-center justify-center mt-auto transition-transform duration-500 group-hover:-translate-y-1">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-[#d9d9d9] shadow-inner flex items-center justify-center ring-1 ring-black/10 mb-2">
+                          <ImageWithSkeleton src={item.photo_url || "/avatar.svg"} alt={item.author_name} wrapperClassName="w-full h-full" className="w-full h-full rounded-full object-cover" />
+                        </div>
+                        <p className="text-[#1e1e1e] font-semibold leading-tight">{item.author_name}</p>
+                        <p className="text-[#ff6b35] text-xs sm:text-sm leading-tight">{item.position}</p>
+                      </div>
+                    </motion.div>
+                  ))
+                : Array.from({ length: 4 }).map((_, i) => (
+                    <motion.div
+                      key={`placeholder-b-${i}`}
+                      className="group relative w-[280px] sm:w-[300px] md:w-[320px] lg:w-[340px] min-h-[340px] sm:min-h-[360px] md:min-h-[380px] lg:min-h-[400px] flex-shrink-0 rounded-2xl sm:rounded-3xl bg-black/95 border border-white/10 p-4 sm:p-5 md:p-6 shadow-[0_6px_32px_rgba(0,0,0,0.45)] transition-all flex flex-col overflow-visible hover:z-20"
+                    >
+                      <AvailableSlotCard className="h-full" />
+                    </motion.div>
+                  ))}
             </div>
           </motion.div>
         </div>

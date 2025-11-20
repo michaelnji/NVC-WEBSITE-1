@@ -41,6 +41,7 @@ export interface Testimonial {
   author_name: string
   title: string
   description: string
+  position?: string
   photo_url?: string
   rating: number
   order_index: number

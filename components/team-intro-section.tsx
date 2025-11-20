@@ -226,6 +226,14 @@ export default function TeamIntroSection() {
                   <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#F15A25] to-[#ff7a4d] rounded-xl [backface-visibility:hidden] [transform:rotateY(180deg)] p-4 flex flex-col items-center justify-center">
                     {isSkeleton ? null : member ? (
                       <div className="w-full flex flex-col items-center justify-center text-center space-y-2">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-18 md:h-18 rounded-full bg-black/15 shadow-inner flex items-center justify-center ring-1 ring-white/25 mb-1">
+                          <ImageWithSkeleton
+                            src={member.photo_url || "/avatar.svg"}
+                            alt={member.name}
+                            wrapperClassName="w-full h-full rounded-full overflow-hidden"
+                            className="w-full h-full object-cover rounded-full"
+                          />
+                        </div>
                         <p className="text-sm sm:text-base md:text-lg font-semibold text-white truncate max-w-[90%]">
                           {member.name}
                         </p>
