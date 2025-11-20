@@ -148,7 +148,7 @@ export default function TeamIntroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative z-40 py-20 md:py-28 lg:py-32 px-0 md:px-12 lg:px-16 xl:px-24  2xl:px-32 overflow-hidden bg-[url('/background-section.png')] bg-[length:100%_100%] bg-center bg-no-repeat lg:min-h-[70vh] xl:min-h-[80vh]"
+      className="relative z-40 py-20 md:py-28 lg:py-32  lg:px-16    overflow-hidden bg-[url('/background-section.png')] bg-[length:100%_100%] bg-center bg-no-repeat lg:min-h-[70vh] xl:min-h-[80vh]"
     >
       <div className="relative z-30 max-w-6xl mx-auto text-center">
         <Reveal>
@@ -176,7 +176,7 @@ export default function TeamIntroSection() {
         </Reveal>
       </div>
 
-      <div className="relative   mx-auto lg:-my-10 pb-0">
+      <div className="relative   lg:-my-10 pb-0">
         {(() => {
           const FlipCard = ({
             width,
