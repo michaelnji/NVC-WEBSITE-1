@@ -1,12 +1,16 @@
 import type { ReactNode } from "react"
 
 interface AngledPanelProps {
-  children: ReactNode
   color?: string
   className?: string
+  children?: ReactNode
 }
 
-export function AngledPanel({ children, color = "#F15A25", className = "" }: AngledPanelProps) {
+export function AngledPanel({
+  color = "#F15A25",
+  className = "",
+  children,
+}: AngledPanelProps) {
   return (
     <div
       className={`relative overflow-hidden ${className}`}
@@ -20,5 +24,3 @@ export function AngledPanel({ children, color = "#F15A25", className = "" }: Ang
     </div>
   )
 }
-
-export default AngledPanel

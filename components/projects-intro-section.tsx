@@ -256,7 +256,6 @@ export default function ProjectsIntroSection() {
                 )
               )}
         </div>
-
         {/* Grille adaptative (cas spécial pour 4 items) */}
         <AnimatePresence mode="wait">
           <motion.div
