@@ -1,18 +1,24 @@
 "use client"
 
 import type React from "react"
-import { CustomCursor } from "@/components/custom-cursor"
+import dynamic from "next/dynamic"
 import { Navbar } from "@/components/navbar"
 import { LanguageProvider } from "@/contexts/language-context"
 import SiteFooter from "@/components/site-footer"
 import { ThemeProvider } from "@/contexts/theme-context"
-import { useEffect, useMemo, useState } from "react"
-import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
-import Particles, { initParticlesEngine } from "@tsparticles/react"
-import { loadSlim } from "@tsparticles/slim"
+import { useEffect, useState } from "react"
 import NextTopLoader from "nextjs-toploader"
 import { usePathname } from "next/navigation"
+
+const CustomCursor = dynamic(
+  () => import("@/components/custom-cursor").then((mod) => ({ default: mod.CustomCursor })),
+  { ssr: false },
+)
+
+const Particles = dynamic(
+  () => import("@tsparticles/react").then((mod) => mod.default),
+  { ssr: false },
+)
 
 export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
   const [init, setInit] = useState(false)
@@ -42,36 +48,63 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (prefersReduced || !isDesktop || isAdmin) return
-    gsap.registerPlugin(ScrollTrigger)
-    const ctx = gsap.context(() => {
-      const sections = gsap.utils.toArray<HTMLElement>("section")
-      sections.forEach((el) => {
-        if (!el || el.offsetParent === null) return
-        gsap.from(el, {
-          opacity: 0,
-          y: 28,
-          duration: 0.8,
-          ease: "power3.out",
-          clearProps: "opacity,transform",
-          scrollTrigger: {
-            trigger: el,
-            start: "top 80%",
-            end: "top 40%",
-            once: true,
-          },
+
+    let ctx: any
+    ;(async () => {
+      const gsapModule = await import("gsap")
+      const ScrollTriggerModule = await import("gsap/ScrollTrigger")
+      const gsap = gsapModule.gsap
+      const ScrollTrigger = ScrollTriggerModule.ScrollTrigger
+
+      gsap.registerPlugin(ScrollTrigger)
+      ctx = gsap.context(() => {
+        const sections = gsap.utils.toArray<HTMLElement>("section")
+        sections.forEach((el) => {
+          if (!el || el.offsetParent === null) return
+          gsap.from(el, {
+            opacity: 0,
+            y: 28,
+            duration: 0.8,
+            ease: "power3.out",
+            clearProps: "opacity,transform",
+            scrollTrigger: {
+              trigger: el,
+              start: "top 80%",
+              end: "top 40%",
+              once: true,
+            },
+          })
         })
       })
-    })
-    return () => ctx.revert()
+    })()
+
+    return () => {
+      if (ctx) ctx.revert()
+    }
   }, [prefersReduced, isDesktop, isAdmin])
 
   useEffect(() => {
     if (!isHome || isAdmin || prefersReduced || !isDesktop) return
-    initParticlesEngine(async (engine) => {
-      await loadSlim(engine)
-    }).then(() => {
-      setInit(true)
-    })
+
+    let cancelled = false
+    ;(async () => {
+      const [{ initParticlesEngine }, { loadSlim }] = await Promise.all([
+        import("@tsparticles/react"),
+        import("@tsparticles/slim"),
+      ])
+
+      if (cancelled) return
+
+      await initParticlesEngine(async (engine: any) => {
+        await loadSlim(engine)
+      })
+
+      if (!cancelled) setInit(true)
+    })()
+
+    return () => {
+      cancelled = true
+    }
   }, [isHome, isAdmin, prefersReduced, isDesktop])
 
   return (

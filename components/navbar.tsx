@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion"
+import { motion, useMotionValue, useSpring } from "framer-motion"
 import { gsap } from "gsap"
 import { LanguageSelector } from "./language-selector"
 import { MobileMenu } from "./mobile-menu"
@@ -57,13 +57,6 @@ export function Navbar() {
   const magneticYValues = [magneticY0, magneticY1, magneticY2, magneticY3]
   const magneticXSprings = [magneticXSpring0, magneticXSpring1, magneticXSpring2, magneticXSpring3]
   const magneticYSprings = [magneticYSpring0, magneticYSpring1, magneticYSpring2, magneticYSpring3]
-
-  const { scrollY } = useScroll()
-  const navY = useTransform(scrollY, [0, 100], [0, -10])
-  const navOpacity = useTransform(scrollY, [0, 50, 100], [1, 0.95, 0.9])
-
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
 
   useEffect(() => {
     const hasPlayedEntrance = sessionStorage.getItem("navbar-entrance-played")
@@ -124,18 +117,6 @@ export function Navbar() {
     window.addEventListener("resize", handleResize)
     return () => window.removeEventListener("resize", handleResize)
   }, [isMobileMenuOpen])
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!navRef.current) return
-      const rect = navRef.current.getBoundingClientRect()
-      mouseX.set(e.clientX - rect.left - rect.width / 2)
-      mouseY.set(e.clientY - rect.top - rect.height / 2)
-    }
-
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [mouseX, mouseY])
 
   const handleMouseMove = (e: React.MouseEvent, index: number) => {
     if (!itemRefs.current[index]) return

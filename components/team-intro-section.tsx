@@ -11,12 +11,20 @@ import { AvailableSlotCard } from "@/components/available-slot-card"
 import type { TeamMember } from "@/lib/types"
 import Shimmer from "@/components/shimmer"
 
-export default function TeamIntroSection() {
+type TeamIntroSectionProps = {
+  initialMembers?: TeamMember[]
+}
+
+export default function TeamIntroSection({ initialMembers }: TeamIntroSectionProps) {
   const { t } = useLanguage()
   const sectionRef = useRef<HTMLElement | null>(null)
   const [hasEntered, setHasEntered] = useState(false)
-  const [members, setMembers] = useState<TeamMember[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [members, setMembers] = useState<TeamMember[]>(() => {
+    if (!initialMembers) return []
+    return [...initialMembers].sort((a, b) => a.order_index - b.order_index)
+  })
+  const [isLoading, setIsLoading] = useState(!initialMembers)
+  const [isVisible, setIsVisible] = useState(false)
 
   // Lazy-load: déclencher le fetch uniquement quand la section entre dans le viewport
   useEffect(() => {
@@ -40,9 +48,28 @@ export default function TeamIntroSection() {
     }
   }, [])
 
-  // Fetch des membres d'équipe
+  useEffect(() => {
+    const node = sectionRef.current
+    if (!node) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting)
+      },
+      { threshold: 0.1 },
+    )
+
+    observer.observe(node)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
+  // Fetch des membres d'équipe (fallback si aucune donnée initiale)
   useEffect(() => {
     if (!hasEntered) return
+    if (initialMembers && initialMembers.length) return
 
     let mounted = true
     setIsLoading(true)
@@ -68,7 +95,7 @@ export default function TeamIntroSection() {
     return () => {
       mounted = false
     }
-  }, [hasEntered])
+  }, [hasEntered, initialMembers])
 
   // Base card sizes
   const CARD_W = 180
@@ -134,7 +161,8 @@ export default function TeamIntroSection() {
   const mobileTrackX = useMotionValue(0)
   const MOBILE_SPEED = 30 // px/s
   useAnimationFrame((_, delta) => {
-    if (typeof window === 'undefined') return
+    if (typeof window === "undefined") return
+    if (!isVisible) return
     if (window.innerWidth >= 1024) return // mobile + tablet only
     const el = mobileTrackRef.current
     if (!el) return

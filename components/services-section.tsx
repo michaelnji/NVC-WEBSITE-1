@@ -8,19 +8,17 @@ import { AvailableSlotCard } from "@/components/available-slot-card"
 import { SectionEyebrow } from "@/components/section-eyebrow"
 import type { Service } from "@/lib/types"
 import { motion } from "framer-motion"
-import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger)
+type ServicesSectionProps = {
+  initialServices?: Service[]
 }
 
-export default function ServicesSection() {
+export default function ServicesSection({ initialServices }: ServicesSectionProps) {
   const { t } = useLanguage()
   const sectionRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<(HTMLDivElement | null)[]>([])
-  const [services, setServices] = useState<Service[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [services, setServices] = useState<Service[]>(initialServices ?? [])
+  const [isLoading, setIsLoading] = useState(!initialServices)
   const [hasEntered, setHasEntered] = useState(false)
 
   // Déclencher le chargement uniquement quand la section entre dans le viewport
@@ -47,6 +45,7 @@ export default function ServicesSection() {
 
   useEffect(() => {
     if (!hasEntered) return
+    if (initialServices) return
 
     const fetchServices = async () => {
       setIsLoading(true)
@@ -68,7 +67,7 @@ export default function ServicesSection() {
     }
 
     fetchServices()
-  }, [hasEntered])
+  }, [hasEntered, initialServices])
 
   return (
     <div
@@ -132,64 +131,19 @@ function ServicesGrid({
 }) {
   const MAX_SERVICES = 6
 
-  // Suivi du scroll pour l'effet d'empilement mobile (déclenche les re-renders)
-  const [scrollY, setScrollY] = useState(0)
-  const [isMounted, setIsMounted] = useState(false)
-
-  useEffect(() => {
-    setIsMounted(true)
-
-    const handleScroll = () => {
-      if (typeof window === "undefined") return
-
-      // On utilise seulement scrollY pour forcer le recalcul des transforms des cartes
-      setScrollY(window.scrollY)
-    }
-
-    window.addEventListener("scroll", handleScroll, { passive: true })
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll)
-    }
-  }, [])
-
   if (isLoading) {
     const skeletons = Array.from({ length: MAX_SERVICES })
     return (
       <>
         <div className="block md:hidden space-y-0">
           {skeletons.map((_, index) => {
-            // Empilement mobile pendant le chargement
             let scale = 1
             let yOffset = 0
 
-            if (isMounted && index > 0) {
-              const sectionElement = sectionRef.current
-              if (sectionElement) {
-                const sectionRect = sectionElement.getBoundingClientRect()
-                const sectionTop = sectionRect.top
-                const sectionHeight = sectionRect.height
-                const viewportHeight = window.innerHeight
-
-                const scrollProgress = Math.max(
-                  0,
-                  Math.min(1, -sectionTop / Math.max(1, sectionHeight - viewportHeight))
-                )
-
-                const cardStartProgress = (index - 1) * 0.15
-                const cardEndProgress = cardStartProgress + 0.3
-                const cardProgress = Math.max(
-                  0,
-                  Math.min(1, (scrollProgress - cardStartProgress) / Math.max(0.001, cardEndProgress - cardStartProgress))
-                )
-
-                scale = 0.85 + 0.15 * cardProgress
-                const baseMargin = 40
-                yOffset = index * baseMargin * (1 - cardProgress * 0.7)
-              } else {
-                scale = 0.85
-                yOffset = index * 40
-              }
+            if (index > 0) {
+              const baseMargin = 40
+              scale = 0.9
+              yOffset = index * baseMargin
             }
 
             return (
@@ -234,34 +188,10 @@ function ServicesGrid({
           let scale = 1
           let yOffset = 0
 
-          if (isMounted && index > 0) {
-            const sectionElement = sectionRef.current
-            if (sectionElement) {
-              const sectionRect = sectionElement.getBoundingClientRect()
-              const sectionTop = sectionRect.top
-              const sectionHeight = sectionRect.height
-              const viewportHeight = window.innerHeight
-
-              const scrollProgress = Math.max(
-                0,
-                Math.min(1, -sectionTop / Math.max(1, sectionHeight - viewportHeight))
-              )
-
-              // L'effet commence après la pleine présentation du premier bloc (index 0)
-              const cardStartProgress = (index - 1) * 0.15
-              const cardEndProgress = cardStartProgress + 0.3
-              const cardProgress = Math.max(
-                0,
-                Math.min(1, (scrollProgress - cardStartProgress) / Math.max(0.001, cardEndProgress - cardStartProgress))
-              )
-
-              scale = 0.85 + 0.15 * cardProgress
-              const baseMargin = 40
-              yOffset = index * baseMargin * (1 - cardProgress * 0.7)
-            } else {
-              scale = 0.85
-              yOffset = index * 40
-            }
+          if (index > 0) {
+            const baseMargin = 40
+            scale = 0.9
+            yOffset = index * baseMargin
           }
 
           return (

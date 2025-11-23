@@ -77,8 +77,8 @@ export function HeroSection() {
           className="relative z-10 w-full max-w-full min-h-screen flex flex-col lg:flex-row pt-20 overflow-hidden"
         >
           <div className="font-500 w-full lg:w-1/2  flex items-center justify-center lg:justify-start  pt-10 lg:pt-0">
-            <div className="text-center lg:text-left max-w-full">
-              <h1 ref={headingRef} className="font-display text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-7xl font-bold leading-[1.1] text-balance tracking-wide mb-3 sm:mb-4 md:mb-5 lg:mb-6">
+            <div className="text-center lg:text-left max-w-full lg:pr-[15px]">
+              <h1 ref={headingRef} className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-7xl  font-bold leading-[1.1] text-tight -tracking-normal mb-3 sm:mb-4 md:mb-5 lg:mb-6">
                 <span className="text-foreground">{t.hero.title}</span>
                 <br />
                 <span className="text-white">{t.hero.line2} </span>
@@ -86,7 +86,7 @@ export function HeroSection() {
                 <br />
                 <span className="text-[#F15A25]">{t.hero.line3ThatStick}</span>
               </h1>
-              <p ref={subtitleRef} className="font-sans tracking-tight text-sm sm:text-base md:text-lg lg:text-xl text-foreground/80 max-w-xl lg:max-w-2xl text-balance leading-relaxed mt-1 sm:mt-1.5 md:mt-2">
+              <p ref={subtitleRef} className="font-sans  tracking-tight text-sm sm:text-base md:text-lg lg:text-xl text-foreground/80 leading-tight ">
                 {t.hero.subtitle}
               </p>
 

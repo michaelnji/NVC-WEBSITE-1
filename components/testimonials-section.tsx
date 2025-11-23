@@ -6,14 +6,16 @@ import Image from "next/image"
 
 import { useRef, useEffect, useMemo, useState } from "react"
 import { useLanguage } from "@/contexts/language-context"
-import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { AvailableSlotCard } from "@/components/available-slot-card"
 import type { Testimonial } from "@/lib/types"
 
-export default function TestimonialsSection() {
+type TestimonialsSectionProps = {
+  initialTestimonials?: Testimonial[]
+}
+
+export default function TestimonialsSection({ initialTestimonials }: TestimonialsSectionProps) {
   const { t } = useLanguage()
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials ?? [])
   const sectionRef = useRef<HTMLElement>(null)
 
   const Star = ({ filled }: { filled: boolean }) => (
@@ -32,6 +34,7 @@ export default function TestimonialsSection() {
   const trackX = useMotionValue(0)
   const trackRef = useRef<HTMLDivElement>(null)
   const seqRef = useRef<HTMLDivElement>(null)
+  const seqWidthRef = useRef(0)
   const speed = 60 // px per second
   const containerRef = useRef<HTMLDivElement>(null)
   const holdUntilRef = useRef<number>(0)
@@ -61,12 +64,25 @@ export default function TestimonialsSection() {
     // pause auto-scroll while user is interacting
     if (Date.now() < holdUntilRef.current) return
     const dx = (speed * delta) / 1000
-    const seqW = seqRef.current?.getBoundingClientRect().width || 0
+    const seqW = seqWidthRef.current
     if (!seqW) return
     let next = trackX.get() - dx
     if (next <= -seqW) next += seqW
     trackX.set(next)
   })
+
+  useEffect(() => {
+    const measure = () => {
+      if (!seqRef.current) return
+      seqWidthRef.current = seqRef.current.getBoundingClientRect().width || 0
+    }
+
+    measure()
+    window.addEventListener("resize", measure)
+    return () => {
+      window.removeEventListener("resize", measure)
+    }
+  }, [])
 
   // Enable manual scroll: wheel (horizontal/vertical) and drag
   useEffect(() => {
@@ -91,7 +107,7 @@ export default function TestimonialsSection() {
       // Otherwise, treat as horizontal intent
       e.preventDefault()
       const delta = e.deltaX !== 0 ? e.deltaX : e.deltaY
-      const seqW = seqRef.current?.getBoundingClientRect().width || 0
+      const seqW = seqWidthRef.current
       if (!seqW) return
       let next = trackX.get() - delta
       if (next <= -seqW) next += seqW
@@ -121,7 +137,7 @@ export default function TestimonialsSection() {
         dragged = true
         holdUntilRef.current = Date.now() + HOLD_DRAG_MS
       }
-      const seqW = seqRef.current?.getBoundingClientRect().width || 0
+      const seqW = seqWidthRef.current
       if (!seqW) return
       let next = trackX.get() + dx
       if (next <= -seqW) next += seqW
@@ -151,8 +167,10 @@ export default function TestimonialsSection() {
     }
   }, [])
 
-  // Load testimonials from API (BD)
+  // Load testimonials from API (BD) uniquement si aucune donnée n'a été fournie côté serveur
   useEffect(() => {
+    if (initialTestimonials && initialTestimonials.length) return
+
     let cancelled = false
     const load = async () => {
       try {
@@ -169,7 +187,7 @@ export default function TestimonialsSection() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [initialTestimonials])
 
   const hasTestimonials = testimonials.length > 0
 
@@ -205,30 +223,6 @@ export default function TestimonialsSection() {
     return () => {
       observer.disconnect()
     }
-  }, [])
-
-  useEffect(() => {
-    if (!sectionRef.current) return
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    if (prefersReduced) return
-
-    gsap.registerPlugin(ScrollTrigger)
-    const ctx = gsap.context(() => {
-      gsap.from(".testimonials-title", {
-        opacity: 0,
-        y: 40,
-        duration: 0.8,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-          end: "top 40%",
-          toggleActions: "play none none none",
-        },
-      })
-    }, sectionRef)
-
-    return () => ctx.revert()
   }, [])
 
   return (

@@ -11,6 +11,10 @@ import { SecondaryCTAButton } from "@/components/cta-buttons"
 import { ArrowUpRight } from "lucide-react"
 import type { Project, Service } from "@/lib/types"
 
+type ProjectsIntroSectionProps = {
+  initialServices?: Service[]
+}
+
 type ProjectCard = {
   id: string
   title: string
@@ -19,16 +23,19 @@ type ProjectCard = {
   isPlaceholder?: boolean
 }
 
-export default function ProjectsIntroSection() {
+export default function ProjectsIntroSection({ initialServices }: ProjectsIntroSectionProps) {
   const { t } = useLanguage()
   const [projects, setProjects] = useState<ProjectCard[]>([])
-  const [services, setServices] = useState<Service[]>([])
+  const [services, setServices] = useState<Service[]>(initialServices ?? [])
   // Chargement des projets : commence à false et ne passe à true que lorsqu'un service actif est défini
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [activeServiceId, setActiveServiceId] = useState<string | null>(null)
+  const [activeServiceId, setActiveServiceId] = useState<string | null>(() => {
+    if (initialServices && initialServices.length) return initialServices[0].id
+    return null
+  })
   const sectionRef = useRef<HTMLDivElement | null>(null)
   const [hasEntered, setHasEntered] = useState(false)
-  const [isFetchingServices, setIsFetchingServices] = useState<boolean>(false)
+  const [isFetchingServices, setIsFetchingServices] = useState<boolean>(!initialServices)
 
   // 0) Observer l'entrée de la section dans le viewport
   useEffect(() => {
@@ -52,9 +59,10 @@ export default function ProjectsIntroSection() {
     }
   }, [])
 
-  // 1) Charger les services quand la section est visible
+  // 1) Charger les services quand la section est visible (fallback si pas de données serveur)
   useEffect(() => {
     if (!hasEntered) return
+    if (initialServices && initialServices.length) return
 
     let mounted = true
     setIsFetchingServices(true)
@@ -82,7 +90,7 @@ export default function ProjectsIntroSection() {
     return () => {
       mounted = false
     }
-  }, [hasEntered, activeServiceId])
+  }, [hasEntered, activeServiceId, initialServices])
 
   // 2) Charger les projets du service actif
   useEffect(() => {
