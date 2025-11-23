@@ -46,42 +46,7 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
     return () => window.removeEventListener("resize", onResize)
   }, [])
 
-  useEffect(() => {
-    if (prefersReduced || !isDesktop || isAdmin) return
-
-    let ctx: any
-    ;(async () => {
-      const gsapModule = await import("gsap")
-      const ScrollTriggerModule = await import("gsap/ScrollTrigger")
-      const gsap = gsapModule.gsap
-      const ScrollTrigger = ScrollTriggerModule.ScrollTrigger
-
-      gsap.registerPlugin(ScrollTrigger)
-      ctx = gsap.context(() => {
-        const sections = gsap.utils.toArray<HTMLElement>("section")
-        sections.forEach((el) => {
-          if (!el || el.offsetParent === null) return
-          gsap.from(el, {
-            opacity: 0,
-            y: 28,
-            duration: 0.8,
-            ease: "power3.out",
-            clearProps: "opacity,transform",
-            scrollTrigger: {
-              trigger: el,
-              start: "top 80%",
-              end: "top 40%",
-              once: true,
-            },
-          })
-        })
-      })
-    })()
-
-    return () => {
-      if (ctx) ctx.revert()
-    }
-  }, [prefersReduced, isDesktop, isAdmin])
+  
 
   useEffect(() => {
     if (!isHome || isAdmin || prefersReduced || !isDesktop) return

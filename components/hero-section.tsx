@@ -2,83 +2,29 @@
 
 import { motion } from "framer-motion"
 import { useEffect, useRef, useState } from "react"
-import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useLanguage } from "@/contexts/language-context"
 import { ArrowUpRight } from "lucide-react"
 import { WhatsAppButton, SecondaryCTAButton } from "@/components/cta-buttons"
 import ImageWithSkeleton from "@/components/image-with-skeleton"
 import { AvailableSlotCard } from "@/components/available-slot-card"
 import Shimmer from "@/components/shimmer"
+import type { HeroImage } from "@/lib/types"
 
-gsap.registerPlugin(ScrollTrigger)
+type HeroSectionProps = {
+  initialHeroImages?: HeroImage[]
+}
 
-export function HeroSection() {
+export function HeroSection({ initialHeroImages }: HeroSectionProps) {
   const { t } = useLanguage()
-  const heroContentRef = useRef<HTMLDivElement>(null)
-  const headingRef = useRef<HTMLHeadingElement>(null)
-  const subtitleRef = useRef<HTMLParagraphElement>(null)
-  const buttonsRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
-
-    const ctx = gsap.context(() => {
-      const content = heroContentRef.current
-      const heading = headingRef.current
-      const subtitle = subtitleRef.current
-      const buttons = buttonsRef.current
-
-      const targets = [heading, subtitle, buttons].filter(Boolean) as HTMLElement[]
-
-      if (!content || !targets.length) return
-
-      if (prefersReduced) {
-        gsap.set([content, ...targets], { autoAlpha: 1, y: 0 })
-        return
-      }
-
-      const tl = gsap.timeline({ defaults: { ease: "power2.out" } })
-
-      // Légère montée du container pour une entrée plus immersive
-      tl.fromTo(
-        content,
-        { autoAlpha: 0, y: 40 },
-        { autoAlpha: 1, y: 0, duration: 0.7 },
-      )
-
-      // Puis apparition progressive du heading, sous-titre et boutons
-      tl.from(
-        heading,
-        { autoAlpha: 0, y: 18, duration: 0.6 },
-        "-=0.35",
-      )
-        .from(
-          subtitle,
-          { autoAlpha: 0, y: 16, duration: 0.55 },
-          "-=0.3",
-        )
-        .from(
-          buttons,
-          { autoAlpha: 0, y: 14, duration: 0.5 },
-          "-=0.25",
-        )
-    })
-
-    return () => ctx.revert()
-  }, [])
 
   return (
     <div className="relative min-h-screen flex flex-col items-start overflow-hidden  px-6 md:px-12 lg:px-16 xl:px-24 2xl:px-32 3xl:px-40 pb-20 max-w-full ">
       <div className="relative w-full max-w-full min-h-screen overflow-hidden">
         {/* Hero content */}
-        <div
-          ref={heroContentRef}
-          className="relative z-10 w-full max-w-full min-h-screen flex flex-col lg:flex-row pt-20 overflow-hidden"
-        >
+        <div className="relative z-10 w-full max-w-full min-h-screen flex flex-col lg:flex-row pt-20 overflow-hidden">
           <div className="font-500 w-full lg:w-1/2  flex items-center justify-center lg:justify-start  pt-10 lg:pt-0">
             <div className="text-center lg:text-left max-w-full lg:pr-[15px]">
-              <h1 ref={headingRef} className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-7xl  font-bold leading-[1.1] text-tight -tracking-normal mb-3 sm:mb-4 md:mb-5 lg:mb-6">
+              <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-7xl  font-bold leading-[1.1] text-tight -tracking-normal mb-3 sm:mb-4 md:mb-5 lg:mb-6">
                 <span className="text-foreground">{t.hero.title}</span>
                 <br />
                 <span className="text-white">{t.hero.line2} </span>
@@ -86,11 +32,11 @@ export function HeroSection() {
                 <br />
                 <span className="text-[#F15A25]">{t.hero.line3ThatStick}</span>
               </h1>
-              <p ref={subtitleRef} className="font-sans  tracking-tight text-sm sm:text-base md:text-lg lg:text-xl text-foreground/80 leading-tight ">
+              <p className="font-sans  tracking-tight text-sm sm:text-base md:text-lg lg:text-xl text-foreground/80 leading-tight ">
                 {t.hero.subtitle}
               </p>
 
-              <div ref={buttonsRef} className="mt-6 md:mt-8 lg:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center md:items-center md:justify-center lg:items-start lg:justify-start pt-2">
+              <div className="mt-6 md:mt-8 lg:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center md:items-center md:justify-center lg:items-start lg:justify-start pt-2">
                 <WhatsAppButton href="https://wa.me/237650749592?text=Hello%20New%20Vision%20Creatives%2C%20I%27d%20love%20to%20book%20an%20intro%20call%20to%20craft%20my%20next%20visual%20story.">
                   <svg
                     className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0"
@@ -110,7 +56,7 @@ export function HeroSection() {
               </div>
             </div>
           </div>
-          <ScrollingGallery />
+          <ScrollingGallery initialImages={initialHeroImages} />
         </div>
       </div>
 
@@ -119,37 +65,18 @@ export function HeroSection() {
   )
 }
 
-function ScrollingGallery() {
+type ScrollingGalleryProps = {
+  initialImages?: HeroImage[]
+}
+
+function ScrollingGallery({ initialImages }: ScrollingGalleryProps) {
   const galleryRef = useRef<HTMLDivElement>(null)
-  const [images, setImages] = useState<Array<{ src: string; height: number; isPlaceholder?: boolean }>>([])
-  const [isFetching, setIsFetching] = useState(true)
+  const [images, setImages] = useState<Array<{ src: string; height: number; isPlaceholder?: boolean }>>(() => {
+    if (!initialImages || !initialImages.length) return []
+    return initialImages.map((it) => ({ src: it.image_url || "", height: 300 }))
+  })
+  const [isFetching, setIsFetching] = useState(!initialImages || !initialImages.length)
   const [hasEntered, setHasEntered] = useState(false)
-
-  // Animation d'entrée + scroll parallax
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(galleryRef.current, {
-        x: 100,
-        opacity: 0,
-        duration: 1.2,
-        ease: "power3.out",
-        delay: 0.5,
-      })
-
-      gsap.to(galleryRef.current, {
-        y: -30,
-        ease: "none",
-        scrollTrigger: {
-          trigger: galleryRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1,
-        },
-      })
-    })
-
-    return () => ctx.revert()
-  }, [])
 
   // Déclencher le chargement uniquement quand la galerie entre dans le viewport
   useEffect(() => {
@@ -173,9 +100,10 @@ function ScrollingGallery() {
     }
   }, [])
 
-  // Fetch images managed by admin HeroManager API (lazy-load)
+  // Fetch images managed by admin HeroManager API (lazy-load, fallback si aucune donnée initiale)
   useEffect(() => {
     if (!hasEntered) return
+    if (initialImages && initialImages.length) return
 
     let mounted = true
     setIsFetching(true)
@@ -197,7 +125,7 @@ function ScrollingGallery() {
     return () => {
       mounted = false
     }
-  }, [hasEntered])
+  }, [hasEntered, initialImages])
 
   const MAX_TILES = 8
   const real = images.slice(0, MAX_TILES).map((img) => ({ ...img, isPlaceholder: !img.src }))
@@ -236,16 +164,17 @@ function ScrollingGallery() {
           ) : (
             <motion.div
               className="flex flex-col gap-3 xl:gap-5"
+              initial={{ opacity: 0 }}
               animate={{
+                opacity: 1,
                 y: ["0%", "-50%"],
               }}
               transition={{
-                duration: 90,
-                repeat: Number.POSITIVE_INFINITY,
-                ease: "linear",
+                opacity: { duration: 0.8, ease: "easeOut" },
+                y: { duration: 140, repeat: Number.POSITIVE_INFINITY, ease: "linear" },
               }}
             >
-              {[...col1, ...col1, ...col1].map((img, i) => (
+              {[...col1, ...col1].map((img, i) => (
                 <div
                   key={i}
                   className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 border border-white/[0.03] w-full"
@@ -295,16 +224,17 @@ function ScrollingGallery() {
           ) : (
             <motion.div
               className="flex flex-col gap-3 xl:gap-5"
+              initial={{ opacity: 0 }}
               animate={{
+                opacity: 1,
                 y: ["-50%", "0%"],
               }}
               transition={{
-                duration: 90,
-                repeat: Number.POSITIVE_INFINITY,
-                ease: "linear",
+                opacity: { duration: 0.8, ease: "easeOut" },
+                y: { duration: 140, repeat: Number.POSITIVE_INFINITY, ease: "linear" },
               }}
             >
-              {[...col2, ...col2, ...col2].map((img, i) => (
+              {[...col2, ...col2].map((img, i) => (
                 <div
                   key={i}
                   className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-white/[0.02] to-black/20 border border-white/[0.03] w-full"
@@ -363,21 +293,7 @@ function MobileCarousel({
   direction?: "left" | "right"
 }) {
   const carouselRef = useRef<HTMLDivElement>(null)
-  const extendedImages = [...images, ...images, ...images, ...images, ...images, ...images]
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(carouselRef.current, {
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        ease: "power3.out",
-        delay: 0.6,
-      })
-    })
-
-    return () => ctx.revert()
-  }, [])
+  const extendedImages = [...images, ...images, ...images]
 
   const mobileWidth = 140
   const mobileHeight = 180
@@ -423,7 +339,7 @@ function MobileCarousel({
           x: direction === "left" ? [0, -((mobileWidth + 12) * 3)] : [-((mobileWidth + 12) * 3), 0],
         }}
         transition={{
-          duration: 45,
+          duration: 70,
           repeat: Number.POSITIVE_INFINITY,
           ease: "linear",
         }}

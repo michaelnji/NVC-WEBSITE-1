@@ -5,24 +5,26 @@ import TeamIntroSection from "@/components/team-intro-section"
 import TestimonialsSection from "@/components/testimonials-section"
 import CtaVisualSection from "@/components/cta-visual-section"
 import { createAdminClient } from "@/lib/supabase/admin"
-import type { Service, TeamMember, Testimonial } from "@/lib/types"
+import type { HeroImage, Service, TeamMember, Testimonial } from "@/lib/types"
 
 export default async function Home() {
   const supabase = createAdminClient()
 
-  const [servicesResult, teamMembersResult, testimonialsResult] = await Promise.all([
+  const [heroImagesResult, servicesResult, teamMembersResult, testimonialsResult] = await Promise.all([
+    supabase.from("hero_images").select("*").order("order_index"),
     supabase.from("services").select("*").order("order_index"),
     supabase.from("team_members").select("*").order("order_index"),
     supabase.from("testimonials").select("*").order("order_index"),
   ])
 
+  const heroImages = (heroImagesResult.data || []) as HeroImage[]
   const services = (servicesResult.data || []) as Service[]
   const teamMembers = (teamMembersResult.data || []) as TeamMember[]
   const testimonials = (testimonialsResult.data || []) as Testimonial[]
 
   return (
     <>
-      <HeroSection />
+      <HeroSection initialHeroImages={heroImages} />
       <ServicesSection initialServices={services} />
       <ProjectsIntroSection initialServices={services} />
       <TeamIntroSection initialMembers={teamMembers} />
