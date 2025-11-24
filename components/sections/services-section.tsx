@@ -71,10 +71,10 @@ export default function ServicesSection({ initialServices }: ServicesSectionProp
   }, [hasEntered, initialServices])
 
   return (
-      <AngledPanel color="#ffffff" className=" z-40 w-full h-full">
+      <AngledPanel color="#ffffff" className=" z-40 w-full h-full ">
        <section
       ref={sectionRef}
-      className="relative z-40 py-20 md:py-28 lg:py-32  lg:px-16    overflow-hidden lg:min-h-[70vh] xl:min-h-[80vh]"
+      className="relative z-40 py-20 md:py-28 lg:py-32  lg:px-16  overflow-hidden lg:min-h-[70vh] xl:min-h-[80vh]"
     >
          <div ref={sectionRef} className="w-full h-full">
         {/* Header Section */}
@@ -97,7 +97,7 @@ export default function ServicesSection({ initialServices }: ServicesSectionProp
           </div>
         </div>
 
-        <div className="px-4 sm:px-4 md:px-8">
+        <div className="px-4 pb-60 sm:pb-0 sm:px-4 md:px-8">
           <ServicesGrid
             sectionRef={sectionRef}
             cardsRef={cardsRef}
