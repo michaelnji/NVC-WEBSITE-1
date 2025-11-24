@@ -2,9 +2,9 @@
 
 import type React from "react"
 import dynamic from "next/dynamic"
-import { Navbar } from "@/components/navbar"
+import { Navbar } from "@/components/layout/navbar"
 import { LanguageProvider } from "@/contexts/language-context"
-import SiteFooter from "@/components/site-footer"
+import SiteFooter from "@/components/layout/site-footer"
 import { ThemeProvider } from "@/contexts/theme-context"
 import { useEffect, useState } from "react"
 import NextTopLoader from "nextjs-toploader"

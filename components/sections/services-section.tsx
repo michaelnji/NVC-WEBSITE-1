@@ -6,6 +6,7 @@ import ImageWithSkeleton from "@/components/image-with-skeleton"
 import Shimmer from "@/components/shimmer"
 import { AvailableSlotCard } from "@/components/available-slot-card"
 import { SectionEyebrow } from "@/components/section-eyebrow"
+import { AngledPanel } from "@/components/angled-panel"
 import type { Service } from "@/lib/types"
 import { motion } from "framer-motion"
 
@@ -70,46 +71,45 @@ export default function ServicesSection({ initialServices }: ServicesSectionProp
   }, [hasEntered, initialServices])
 
   return (
-    <div
+      <AngledPanel color="#ffffff" className=" z-40 w-full h-full">
+       <section
       ref={sectionRef}
-      className="relative rounded-[28px] md:rounded-[40px] md:p-10 lg:p-14 xl:p-16 -mt-8 md:-mt-12 lg:-mt-16 pt-10 pb-40 md:py-30 lg:py-36 xl:py-40 2xl:py-44 mb-16 md:mb-24 lg:-mb-8 xl:-mb-12 2xl:-mb-16 overflow-hidden lg:min-h-[75vh] xl:min-h-[80vh]"
-      style={{
-        backgroundImage: "url('/background-section.png')",
-        backgroundSize: "100% 100%",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        zIndex: 2,
-      }}
+      className="relative z-40 py-20 md:py-28 lg:py-32  lg:px-16    overflow-hidden lg:min-h-[70vh] xl:min-h-[80vh]"
     >
-      {/* Header Section */}
-      <div className="text-center mb-6 sm:mb-10 md:mb-14 lg:mb-16">
-        <div className="flex justify-center mb-3 sm:mb-4 md:mb-5">
-          <SectionEyebrow>{t.services.subtitle}</SectionEyebrow>
+         <div ref={sectionRef} className="w-full h-full">
+        {/* Header Section */}
+        <div className="text-center mb-6 sm:mb-10 md:mb-14 lg:mb-[50px]">
+          <div className="flex justify-center mb-3 sm:mb-4 md:mb-[12px]">
+            <SectionEyebrow>{t.services.subtitle}</SectionEyebrow>
+          </div>
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[64px] font-bold mb-3 sm:mb-4 md:mb-5 lg:mb-[10px] tracking-wide text-balance uppercase">
+            <span className="text-[#1e1e1e]">{t.services.titlePart1} </span>
+            <span className="text-[#f15a25]">{t.services.titlePart2}</span>
+          </h1>
+          <div className="font-sans">
+            <p className="text-[#1e1e1e] text-xs sm:text-[18px] ">
+              {t.services.description}
+            </p>
+            <p className="text-[#1e1e1e] text-xs sm:text-[18px] ">
+              {t.services.descriptionPrefix}{" "}
+              <span className="text-[#f15a25] font-semibold">{t.services.descriptionHighlight}</span>
+            </p>
+          </div>
         </div>
-        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 md:mb-5 lg:mb-6 leading-[1.1] max-w-xs sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto tracking-wide text-balance uppercase">
-          <span className="text-[#1e1e1e]">{t.services.titlePart1} </span>
-          <span className="text-[#f15a25]">{t.services.titlePart2}</span>
-        </h1>
-        <div className="max-w-lg md:max-w-xl mx-auto font-sans px-2 sm:px-3 space-y-1.5 sm:space-y-2 md:space-y-2.5">
-          <p className="text-[#1e1e1e] text-xs sm:text-sm leading-relaxed md:leading-relaxed">
-            {t.services.description}
-          </p>
-          <p className="text-[#1e1e1e] text-xs sm:text-sm leading-relaxed md:leading-relaxed">
-            {t.services.descriptionPrefix}{" "}
-            <span className="text-[#f15a25] font-semibold">{t.services.descriptionHighlight}</span>
-          </p>
+
+        <div className="px-4 sm:px-4 md:px-8">
+          <ServicesGrid
+            sectionRef={sectionRef}
+            cardsRef={cardsRef}
+            services={services}
+            isLoading={isLoading}
+          />
         </div>
       </div>
 
-      <div className="px-4 sm:px-4 md:px-8">
-        <ServicesGrid
-          sectionRef={sectionRef}
-          cardsRef={cardsRef}
-          services={services}
-          isLoading={isLoading}
-        />
-      </div>
-    </div>
+    </section>
+   
+    </AngledPanel>
   )
 }
 
@@ -224,7 +224,7 @@ function ServicesGrid({
       </div>
 
       {/* Sur desktop: grille classique */}
-      <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-8">
+      <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-8">
         {cards.map((card, index) => (
           <motion.div
             key={index}

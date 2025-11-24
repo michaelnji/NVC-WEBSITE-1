@@ -92,7 +92,6 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
     }
   }, [hasEntered, activeServiceId, initialServices])
 
-  // 2) Charger les projets du service actif
   useEffect(() => {
     if (!hasEntered || !activeServiceId) return
 
@@ -204,7 +203,7 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
       <div className="max-w-7xl mx-auto ">
         {/* Title */}
         <div className="text-center mb-4 sm:mb-6 md:mb-8 lg:mb-[8px]">
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold leading-tight tracking-wide uppercase mb-2 sm:mb-3 md:mb-4 lg:mb-5">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[64px] font-bold  tracking-wide uppercase mb-2 sm:mb-3 md:mb-4 lg:mb-[8px]">
             <span className="text-[#1e1e1e]">{t.projectsIntro.titlePart1} </span>
             <span className="text-[#F15A25]">{t.projectsIntro.titleHighlight}</span>
             <span className="text-[#1e1e1e]"> {t.projectsIntro.titlePart2}</span>

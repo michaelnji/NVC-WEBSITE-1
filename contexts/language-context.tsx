@@ -191,9 +191,9 @@ const translations: Record<Language, Translations> = {
       button: "Réserver un call d'intro",
     },
     hero: {
-      title: "NOUS NE FAISONS PAS QUE DU DESIGN",
+      title: "NOUS NE FAISONS PAS QUE DU DESIGN ",
       line2: "NOUS CREONS",
-      line3Emotions: "DES EMOTIONS",
+      line3Emotions: "DES EMOTIONS ",
       line3ThatStick: "QUI RESTENT",
       subtitle:
         "Une équipe jeune, passionnée, et perfectionniste dans tout ce qu’elle entreprend.",
@@ -412,9 +412,9 @@ const translations: Record<Language, Translations> = {
       button: "Book your intro call",
     },
     hero: {
-      title: "WE DON'T JUST DESIGN",
+      title: "WE DON'T JUST DESIGN ",
       line2: "WE CREATE",
-      line3Emotions: "EMOTIONS",
+      line3Emotions: "EMOTIONS ",
       line3ThatStick: "THAT STICK",
       subtitle:
         "We're a young, passionate, and slightly obsessive team when it comes to doing things right.",

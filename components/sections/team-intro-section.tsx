@@ -3,8 +3,9 @@
 import { motion, useAnimationFrame, useMotionValue } from "framer-motion"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useLanguage } from "@/contexts/language-context"
-import { SecondaryCTAButton } from "./cta-buttons"
+import { SecondaryCTAButton } from "@/components/cta-buttons"
 import { ArrowUpRight } from "lucide-react"
+import { AngledPanel } from "@/components/angled-panel"
 import Reveal from "@/components/reveal"
 import ImageWithSkeleton from "@/components/image-with-skeleton"
 import { AvailableSlotCard } from "@/components/available-slot-card"
@@ -66,7 +67,6 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
     }
   }, [])
 
-  // Fetch des membres d'équipe (fallback si aucune donnée initiale)
   useEffect(() => {
     if (!hasEntered) return
     if (initialMembers && initialMembers.length) return
@@ -174,37 +174,40 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
     mobileTrackX.set(next)
   })
   return (
+    <AngledPanel color="#ffffff" className=" z-40 w-full h-full">
+        
+     
     <section
       ref={sectionRef}
-      className="relative z-40 py-20 md:py-28 lg:py-32  lg:px-16    overflow-hidden bg-[url('/background-section.png')] bg-[length:100%_100%] bg-center bg-no-repeat lg:min-h-[70vh] xl:min-h-[80vh]"
+      className="relative z-40 py-20 md:py-28 lg:py-32  lg:px-16    overflow-hidden lg:min-h-[70vh] xl:min-h-[80vh]"
     >
-      <div className="relative z-30 max-w-6xl mx-auto text-center">
-        <Reveal>
-          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl font-bold leading-[1.05] tracking-wide text-balance mb-3 sm:mb-4 md:mb-5 lg:mb-6">
-            <span className="text-[#1e1e1e]">{t.teamIntro.titlePart1} </span>
-            <span className="text-[#F15A25]">{t.teamIntro.titleEmphasis}</span>
-            <span className="text-[#1e1e1e]"> {t.teamIntro.titlePart2}</span>
-          </h2>
-        </Reveal>
+      <div className="relative z-30  mx-auto text-center">
+          <Reveal>
+            <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl font-bold leading-[1.05] tracking-wide text-balance mb-3 sm:mb-4 md:mb-5 lg:mb-6">
+              <span className="text-[#1e1e1e]">{t.teamIntro.titlePart1} </span>
+              <span className="text-[#F15A25]">{t.teamIntro.titleEmphasis}</span>
+              <span className="text-[#1e1e1e]"> {t.teamIntro.titlePart2}</span>
+            </h2>
+          </Reveal>
 
-        <Reveal delay={0.08}>
-          <p className="mt-2 md:mt-3 max-w-2xl mx-auto text-sm md:text-base text-[#1e1e1e]/80 text-pretty leading-relaxed">
-            {t.teamIntro.descriptionPart1}
-            <span className="text-[#F15A25] font-semibold">{t.teamIntro.descriptionEmphasis}</span>
-          </p>
-        </Reveal>
+          <Reveal delay={0.08}>
+            <p className="mt-2 md:mt-3 max-w-2xl mx-auto text-sm md:text-base text-[#1e1e1e]/80 text-pretty leading-relaxed">
+              {t.teamIntro.descriptionPart1}
+              <span className="text-[#F15A25] font-semibold">{t.teamIntro.descriptionEmphasis}</span>
+            </p>
+          </Reveal>
 
-        <Reveal delay={0.14}>
-          <div className="mt-6 sm:mt-7 md:mt-8 lg:mt-9">
-            <SecondaryCTAButton href="#teams" variant="dark">
-              <span className="text-sm md:text-base">Discover our teams</span>
-              <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
-            </SecondaryCTAButton>
-          </div>
-        </Reveal>
-      </div>
+          <Reveal delay={0.14}>
+            <div className="mt-6 sm:mt-7 md:mt-8 lg:mt-9">
+              <SecondaryCTAButton href="#teams" variant="dark">
+                <span className="text-sm md:text-base">Discover our teams</span>
+                <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+              </SecondaryCTAButton>
+            </div>
+          </Reveal>
+        </div>
 
-      <div className="relative   lg:-my-10 pb-0">
+        <div className="relative   lg:-my-10 pb-0">
         {(() => {
           const FlipCard = ({
             width,
@@ -397,7 +400,9 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
             </>
           )
         })()}
-      </div>
+        </div>
+      
     </section>
+     </AngledPanel>
   )
 }
