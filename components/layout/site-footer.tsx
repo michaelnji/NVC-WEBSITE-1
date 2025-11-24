@@ -17,7 +17,7 @@ export default function SiteFooter() {
 
   return (
     <footer
-      className="w-full font-sans overflow-hidden -mt-8 md:-mt-10 lg:-mt-16  "
+      className="w-full  bg-[url('/Calque_1.png')]  font-sans overflow-hidden -mt-8 md:-mt-10 lg:-mt-16  "
       style={{ backgroundColor: "#FCDBCF" }}
     >
       <div className="w-full px-4 md:px-8 lg:px-12 xl:px-16 py-12 mt-20 md:py-16 lg:py-15">

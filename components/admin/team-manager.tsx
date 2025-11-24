@@ -34,7 +34,7 @@ export function TeamManager() {
   const fetchMembers = async () => {
     try {
       setIsFetching(true)
-      const res = await fetch("/api/team-members")
+      const res = await fetch("/api/team-members", { cache: "no-store" })
       if (!res.ok) {
         console.error("Failed to fetch members:", res.status)
         setMembers([])

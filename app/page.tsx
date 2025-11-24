@@ -7,6 +7,8 @@ import CtaVisualSection from "@/components/sections/cta-visual-section"
 import { createAdminClient } from "@/lib/supabase/admin"
 import type { HeroImage, Service, TeamMember, Testimonial } from "@/lib/types"
 
+export const dynamic = "force-dynamic"
+
 export default async function Home() {
   const supabase = createAdminClient()
 

@@ -40,6 +40,28 @@ export async function DELETE(
     const { id } = await context.params
     if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 })
     const supabase = createAdminClient()
+    const { data: toDelete, error: fetchError } = await supabase
+      .from("hero_images")
+      .select("image_url")
+      .eq("id", id)
+      .single()
+
+    if (fetchError) throw fetchError
+
+    const imageUrl = toDelete?.image_url as string | undefined
+    if (imageUrl && imageUrl.includes("/storage/v1/object/public/")) {
+      try {
+        const url = new URL(imageUrl)
+        const parts = url.pathname.split("/storage/v1/object/public/")[1]?.split("/") || []
+        const bucket = parts.shift()
+        const path = parts.join("/")
+        if (bucket && path) {
+          await supabase.storage.from(bucket).remove([path])
+        }
+      } catch (e) {
+        console.error("Failed to delete hero_image file from storage", e)
+      }
+    }
 
     const { error } = await supabase.from("hero_images").delete().eq("id", id)
 

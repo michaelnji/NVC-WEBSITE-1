@@ -173,7 +173,7 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
      
     <section
       ref={sectionRef}
-      className="relative z-40 py-20 md:py-28 lg:py-32  lg:px-16    overflow-hidden lg:min-h-[70vh] xl:min-h-[80vh]"
+      className="relative z-40 py-20 md:py-28 lg:py-0 lg:pb-20 lg:pt-32  lg:px-16 overflow-hidden "
     >
       <div className="relative z-30    mx-auto text-center">
           <Reveal>
@@ -201,7 +201,7 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
           </Reveal>
         </div>
 
-        <div className="relative   lg:-my-10 pb-0">
+        <div className="relative lg:-my-10 pb-0">
         {(() => {
           const FlipCard = ({
             width,
@@ -353,7 +353,7 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
               </div>
 
               {ENABLE_YOYO ? (
-                <div className="hidden lg:grid relative z-10 h-[640px] md:h-[760px] overflow-hidden grid grid-cols-7 gap-x-3 md:gap-x-3 items-start [mask-image:linear-gradient(to_bottom,white_0%,white_85%,transparent_100%)] [webkit-mask-image:linear-gradient(to_bottom,white_0%,white_85%,transparent_100%)]">
+                <div className="hidden lg:grid relative z-10 h-[640px] md:h-[900px] overflow-hidden grid grid-cols-7 gap-x-3 md:gap-x-3 items-start [mask-image:linear-gradient(to_bottom,white_0%,white_60%,transparent_100%)] [webkit-mask-image:linear-gradient(to_bottom,white_0%,white_60%,transparent_100%)]">
                   {desktopColumnsWithSkeletons.map((cardsOrPlaceholders, colIdx) => (
                     <YoyoColumn
                       key={`desk-col-${colIdx}`}
@@ -366,7 +366,7 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
                   ))}
                 </div>
               ) : (
-                <div className="hidden lg:grid relative z-10 h-[640px] md:h-[760px] overflow-hidden grid grid-cols-7 gap-x-3 md:gap-x-3 items-start [mask-image:linear-gradient(to_bottom,white_0%,white_85%,transparent_100%)] [webkit-mask-image:linear-gradient(to_bottom,white_0%,white_85%,transparent_100%)]">
+                <div className="hidden lg:grid relative z-10 h-[640px] md:h-[900px] overflow-hidden grid grid-cols-7 gap-x-3 md:gap-x-3 items-start [mask-image:linear-gradient(to_bottom,white_0%,white_60%,transparent_100%)] [webkit-mask-image:linear-gradient(to_bottom,white_0%,white_60%,transparent_100%)]">
                   {desktopColumnsWithSkeletons.map((cardsOrPlaceholders, colIdx) => (
                     <div key={`desk-static-${colIdx}`} className="relative overflow-hidden">
                       <div
