@@ -37,9 +37,23 @@ export function ImageUploader({
     formData.append("file", file)
     const response = await fetch("/api/upload", { method: "POST", body: formData })
     if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || "Upload failed")
+      let message = "Upload failed"
+      try {
+        const raw = await response.text()
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw)
+            message = parsed?.error || message
+          } catch {
+            message = raw
+          }
+        }
+      } catch {
+        // ignore and keep default message
+      }
+      throw new Error(message)
     }
+
     const data = await response.json()
     const url = data.url as string
     const meta: FileMeta = { url, name: file.name, size: file.size, type: file.type }

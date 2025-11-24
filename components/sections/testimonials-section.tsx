@@ -30,12 +30,11 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
     </svg>
   )
 
-  // Seamless marquee state (component scope)
   const trackX = useMotionValue(0)
   const trackRef = useRef<HTMLDivElement>(null)
   const seqRef = useRef<HTMLDivElement>(null)
   const seqWidthRef = useRef(0)
-  const speed = 60 // px per second
+  const speed = 60 
   const containerRef = useRef<HTMLDivElement>(null)
   const holdUntilRef = useRef<number>(0)
   const [isVisible, setIsVisible] = useState(false)
@@ -43,14 +42,12 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
     typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
   , [])
 
-  // Hover variants for card and stars cascade
   const cardVariants = prefersReduced
     ? { initial: { y: 0 }, hovered: { y: -2 } }
     : { initial: { y: 0 }, hovered: { y: -6 } }
   const starVariants: Variants = {
     initial: { scale: 1, rotateY: 0, y: 0 },
     hovered: (i: number) => ({
-      // progressive enlargement and subtle pop by index
       scale: 1.08 + i * 0.06,
       rotateY: 8 + i * 1.2,
       y: -i * 1,
@@ -61,7 +58,6 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
   useAnimationFrame((t, delta) => {
     if (prefersReduced) return
     if (!isVisible) return
-    // pause auto-scroll while user is interacting
     if (Date.now() < holdUntilRef.current) return
     const dx = (speed * delta) / 1000
     const seqW = seqWidthRef.current
@@ -84,7 +80,6 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
     }
   }, [])
 
-  // Enable manual scroll: wheel (horizontal/vertical) and drag
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
@@ -95,16 +90,13 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
     const onWheel = (e: WheelEvent) => {
       const absX = Math.abs(e.deltaX)
       const absY = Math.abs(e.deltaY)
-      const H_DEADZONE = 4 // px minimal horizontal intent to intercept
+      const H_DEADZONE = 4 
 
-      // Let the page scroll when vertical clearly dominates, unless user forces horizontal with Shift
       if (!e.shiftKey && (absY > absX * 1.2 || absX < H_DEADZONE)) {
-        // ensure no stale pause remains during vertical scroll
         if (holdUntilRef.current > Date.now()) holdUntilRef.current = Date.now() - 1
         return
       }
 
-      // Otherwise, treat as horizontal intent
       e.preventDefault()
       const delta = e.deltaX !== 0 ? e.deltaX : e.deltaY
       const seqW = seqWidthRef.current
@@ -113,7 +105,6 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
       if (next <= -seqW) next += seqW
       if (next >= 0) next -= seqW
       trackX.set(next)
-      // brief pause only for horizontal wheel interactions
       holdUntilRef.current = Date.now() + HOLD_WHEEL_MS
     }
 
@@ -122,12 +113,11 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
     let lastX = 0
     let startX = 0
     const onPointerDown = (e: PointerEvent) => {
-      if (e.button !== 0) return // primary button only
+      if (e.button !== 0) return 
       dragging = true
       dragged = false
       startX = lastX = e.clientX
       ;(e.target as Element).setPointerCapture?.(e.pointerId)
-      // don't pause yet; wait for actual movement
     }
     const onPointerMove = (e: PointerEvent) => {
       if (!dragging) return
@@ -167,7 +157,6 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
     }
   }, [])
 
-  // Load testimonials from API (BD) uniquement si aucune donnée n'a été fournie côté serveur
   useEffect(() => {
     if (initialTestimonials && initialTestimonials.length) return
 
@@ -183,7 +172,6 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
       }
     }
     load()
-    // option: could refetch on interval if needed
     return () => {
       cancelled = true
     }
@@ -191,22 +179,18 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
 
   const hasTestimonials = testimonials.length > 0
 
-  // Ensure we always have enough cards to visually fill the marquee track
   const visibleTestimonials = useMemo(() => {
     if (!testimonials.length) return []
     const MIN_CARDS = 4
     const result: Testimonial[] = []
 
-    // Repeat testimonials until we reach at least MIN_CARDS
     while (result.length < Math.max(MIN_CARDS, testimonials.length)) {
       result.push(...testimonials)
     }
 
-    // Trim to the exact target length
     return result.slice(0, Math.max(MIN_CARDS, testimonials.length))
   }, [testimonials])
 
-  // Observe visibility of the section to avoid running marquee when offscreen
   useEffect(() => {
     const section = sectionRef.current
     if (!section) return
@@ -238,15 +222,13 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* decorative layer */}
       <div className="relative mx-auto text-center">
-        <h2 className="testimonials-title font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-wide leading-tight text-white uppercase text-balance mb-4 sm:mb-5 md:mb-6 lg:mb-7">
+        <h2 className="testimonials-title font-display text-3xl sm:text-4xl md:text-5xl lg:text-[64px] font-extrabold tracking-wide  text-white uppercase text-balance mb-4 sm:mb-5 md:mb-6 lg:mb-7">
           {t.testimonials.headingLine1}
           <br />
           <span className="text-[#ff6b35]">{t.testimonials.headingLine2}</span>
         </h2>
 
-        {/* Cards row - auto-scrolling marquee (seamless) with manual user control */}
         <div ref={containerRef} className="mt-6 sm:mt-8 md:mt-9 lg:mt-10 relative overflow-visible z-10 cursor-grab active:cursor-grabbing select-none touch-pan-y md:touch-auto">
           <motion.div ref={trackRef} className="flex gap-5 sm:gap-6 md:gap-7 lg:gap-8 will-change-transform" style={{ x: trackX }}>
             <div ref={seqRef} className="flex gap-5 sm:gap-6 md:gap-7 lg:gap-8">
@@ -337,11 +319,9 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
             </div>
           </motion.div>
         </div>
-        {/* subtle premium edge haze (hidden on mobile) */}
 
       </div>
 
-      {/* bottom stamp */}
       <div className="relative mt-12 sm:mt-14 flex flex-col items-center justify-center">
         <div className="text-white/80 text-xs sm:text-sm mb-3 sm:mb-4">
           Designing with <span className="text-[#ff6b35]">❤</span> from our HQ in
