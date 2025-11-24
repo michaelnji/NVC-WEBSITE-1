@@ -27,7 +27,6 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
   const [isLoading, setIsLoading] = useState(!initialMembers)
   const [isVisible, setIsVisible] = useState(false)
 
-  // Lazy-load: déclencher le fetch uniquement quand la section entre dans le viewport
   useEffect(() => {
     const node = sectionRef.current
     if (!node) return
@@ -97,18 +96,14 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
     }
   }, [hasEntered, initialMembers])
 
-  // Base card sizes
   const CARD_W = 180
   const CARD_H = 220
 
-  // Dev-only flag: enable/disable vertical yoyo animation for all columns
   const ENABLE_YOYO = false
 
-  // Desktop: keep 7 columns static
   const desktopCounts = [5, 4, 4, 3, 4, 4, 5]
   const desktopShifts = [0, 150, 300, 450, 300, 150, 0]
 
-  // Mobile/Tablet: exactly 3 columns, auto-scrolling horizontally
   const mobileCols = 3
   const mobileCountPerCol = [3, 3, 3]
 
@@ -117,7 +112,6 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
     isPlaceholder?: boolean
   }
 
-  // Construire une liste de cartes pour alimenter toutes les colonnes (desktop) puis mobile/tablette
   const allCards: TeamCard[] = useMemo(() => {
     const totalDesktopCards = desktopCounts.reduce((acc, n) => acc + n, 0)
     const base = members
@@ -159,16 +153,16 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
   )
   const mobileTrackRef = useRef<HTMLDivElement>(null)
   const mobileTrackX = useMotionValue(0)
-  const MOBILE_SPEED = 30 // px/s
+  const MOBILE_SPEED = 30 
   useAnimationFrame((_, delta) => {
     if (typeof window === "undefined") return
     if (!isVisible) return
-    if (window.innerWidth >= 1024) return // mobile + tablet only
+    if (window.innerWidth >= 1024) return 
     const el = mobileTrackRef.current
     if (!el) return
     const totalW = el.scrollWidth
     if (!totalW) return
-    const seqW = totalW / 3 // one 3-column sequence
+    const seqW = totalW / 3 
     let next = mobileTrackX.get() - (MOBILE_SPEED * delta) / 1000
     if (next <= -seqW) next += seqW
     mobileTrackX.set(next)
@@ -181,17 +175,17 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
       ref={sectionRef}
       className="relative z-40 py-20 md:py-28 lg:py-32  lg:px-16    overflow-hidden lg:min-h-[70vh] xl:min-h-[80vh]"
     >
-      <div className="relative z-30  mx-auto text-center">
+      <div className="relative z-30    mx-auto text-center">
           <Reveal>
-            <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-6xl font-bold leading-[1.05] tracking-wide text-balance mb-3 sm:mb-4 md:mb-5 lg:mb-6">
+            <h2 className="font-display items-center text-4xl sm:text-5xl md:text-6xl lg:text-[64px] font-bold tracking-wide text-balance mb-3 sm:mb-4 md:mb-5 lg:mb-[8px]">
               <span className="text-[#1e1e1e]">{t.teamIntro.titlePart1} </span>
               <span className="text-[#F15A25]">{t.teamIntro.titleEmphasis}</span>
-              <span className="text-[#1e1e1e]"> {t.teamIntro.titlePart2}</span>
+              <span className="text-[#F15A25]"> {t.teamIntro.titlePart2}</span>
             </h2>
           </Reveal>
 
           <Reveal delay={0.08}>
-            <p className="mt-2 md:mt-3 max-w-2xl mx-auto text-sm md:text-base text-[#1e1e1e]/80 text-pretty leading-relaxed">
+            <p className=" max-w-2xl mx-auto text-sm md:text-base text-[#1e1e1e] text-pretty leading-relaxed">
               {t.teamIntro.descriptionPart1}
               <span className="text-[#F15A25] font-semibold">{t.teamIntro.descriptionEmphasis}</span>
             </p>
@@ -228,7 +222,6 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
                 style={{ width: `${width}px`, height: `${height}px` }}
               >
                 <div className="relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
-                  {/* Front face: loading skeleton ou contenu */}
                   <div className="absolute inset-0 w-full h-full rounded-xl overflow-hidden [backface-visibility:hidden] bg-black">
                     {isSkeleton ? (
                       <div className="relative w-full h-full bg-[#050505]">
@@ -253,7 +246,6 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
                     )}
                   </div>
 
-                  {/* Back face: infos du membre ou placeholder */}
                   <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#F15A25] to-[#ff7a4d] rounded-xl [backface-visibility:hidden] [transform:rotateY(180deg)] p-4 flex flex-col items-center justify-center">
                     {isSkeleton ? null : member ? (
                       <div className="w-full flex flex-col items-center justify-center text-center space-y-2">
@@ -330,7 +322,6 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
 
           return (
             <>
-              {/* Mobile & tablet: auto-scrolling 3 columns (pixel loop) */}
               <div className="lg:hidden relative overflow-hidden mt-10 [mask-image:linear-gradient(to_top,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_10%,rgba(0,0,0,0.25)_22%,rgba(0,0,0,0.55)_38%,rgba(0,0,0,0.8)_50%,#000_62%)] [webkit-mask-image:linear-gradient(to_top,rgba(0,0,0,0)_0%,rgba(0,0,0,0.08)_10%,rgba(0,0,0,0.25)_22%,rgba(0,0,0,0.55)_38%,rgba(0,0,0,0.8)_50%,#000_62%)] [mask-size:100%_100%] [webkit-mask-size:100%_100%]">
                 <motion.div
                   ref={mobileTrackRef}
@@ -361,7 +352,6 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
                 </motion.div>
               </div>
 
-              {/* Desktop: 7 columns, optional deterministic yoyo (pixel-driven) */}
               {ENABLE_YOYO ? (
                 <div className="hidden lg:grid relative z-10 h-[640px] md:h-[760px] overflow-hidden grid grid-cols-7 gap-x-3 md:gap-x-3 items-start [mask-image:linear-gradient(to_bottom,white_0%,white_85%,transparent_100%)] [webkit-mask-image:linear-gradient(to_bottom,white_0%,white_85%,transparent_100%)]">
                   {desktopColumnsWithSkeletons.map((cardsOrPlaceholders, colIdx) => (

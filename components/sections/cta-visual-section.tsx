@@ -12,7 +12,6 @@ export default function CtaVisualSection() {
   const sectionRef = useRef<HTMLElement | null>(null)
   const isInView = useInView(sectionRef, { amount: 0.3 })
 
-  // Animation de l'overlay au scroll (entrée/sortie du viewport), plus rapide
   useEffect(() => {
     if (isInView) {
       controls.start({ opacity: 0.7, transition: { duration: 3, ease: "easeOut" } })
@@ -51,7 +50,7 @@ export default function CtaVisualSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.1}}
-              className="font-display text-white font-extrabold tracking-wide leading-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl uppercase mb-4 sm:mb-5 md:mb-6 lg:mb-7 xl:mb-8"
+              className="font-display text-white font-extrabold tracking-wide  text-3xl sm:text-4xl md:text-5xl lg:text-[80px] uppercase mb-4 sm:mb-5 md:mb-6 lg:mb-[10px]"
               style={{ fontFamily: 'Bigger, sans-serif' }}
             >
               {t.cta_visual.title1}
@@ -64,7 +63,7 @@ export default function CtaVisualSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="mt-2 sm:mt-3 md:mt-4 lg:mt-[8px] text-white/90 text-sm sm:text-base md:text-lg lg:text-xl max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto leading-relaxed"
+              className=" text-white text-sm sm:text-base md:text-lg lg:text-[18px] max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl "
             >
               {t.cta_visual.subtitle}
             </motion.p>
