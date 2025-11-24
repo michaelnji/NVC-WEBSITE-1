@@ -91,13 +91,11 @@ export function MobileMenu({ isOpen, onClose, activeItem, menuItems }: MobileMen
                   >
                     <Link href={item.href} onClick={handleItemClick} className="relative group">
                       <motion.span
-                        className="text-2xl sm:text-3xl md:text-4xl font-bold block py-2 px-4 sm:py-3 sm:px-6 relative"
-                        animate={{
-                          color: activeItem === item.name ? "#F15A25" : "#ffffff",
-                        }}
+                        className={`text-2xl sm:text-3xl md:text-4xl font-bold block py-2 px-4 sm:py-3 sm:px-6 relative transition-colors duration-300 ${
+                          activeItem === item.name ? "text-brand" : "text-white group-hover:text-brand"
+                        }`}
                         whileHover={{
                           scale: 1.04,
-                          color: "#F15A25",
                         }}
                         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                       >
@@ -119,7 +117,7 @@ export function MobileMenu({ isOpen, onClose, activeItem, menuItems }: MobileMen
                       {activeItem === item.name && (
                         <motion.div
                           layoutId="mobileActiveUnderline"
-                          className="absolute -bottom-1 left-6 right-6 h-0.5 bg-gradient-to-r from-transparent via-[#F15A25] to-transparent rounded-full"
+                          className="absolute -bottom-1 left-6 right-6 h-0.5 bg-gradient-to-r from-transparent via-brand to-transparent rounded-full"
                           initial={false}
                           transition={{
                             type: "spring",
@@ -131,7 +129,7 @@ export function MobileMenu({ isOpen, onClose, activeItem, menuItems }: MobileMen
 
                       {/* Hover glow effect */}
                       <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-[#F15A25]/0 via-[#F15A25]/20 to-[#F15A25]/0 blur-3xl rounded-full opacity-0 group-hover:opacity-100"
+                        className="absolute inset-0 bg-gradient-to-r from-brand/0 via-brand/20 to-brand/0 blur-3xl rounded-full opacity-0 group-hover:opacity-100"
                         transition={{ duration: 0.5 }}
                       />
                     </Link>
@@ -158,7 +156,7 @@ export function MobileMenu({ isOpen, onClose, activeItem, menuItems }: MobileMen
                 animate={{ opacity: 0.4 }}
                 exit={{ opacity: 0 }}
                 transition={{ delay: 0.7, duration: 0.6 }}
-                className="absolute bottom-8 sm:bottom-10 text-[#F15A25]/40 text-xs sm:text-sm font-mono tracking-wider"
+                className="absolute bottom-8 sm:bottom-10 text-brand/40 text-xs sm:text-sm font-mono tracking-wider"
               >
                 NEW VISION CREATIVES
               </motion.div>
@@ -169,7 +167,7 @@ export function MobileMenu({ isOpen, onClose, activeItem, menuItems }: MobileMen
                   key={i}
                   className="absolute w-1.5 h-1.5 rounded-full"
                   style={{
-                    background: i % 2 === 0 ? "#F15A25" : "#00d9ff",
+                    background: i % 2 === 0 ? "var(--color-brand)" : "var(--color-brand-accent-blue)",
                   }}
                   initial={{
                     x: typeof window !== "undefined" ? Math.random() * window.innerWidth : 0,

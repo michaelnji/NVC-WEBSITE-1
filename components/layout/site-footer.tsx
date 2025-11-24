@@ -17,26 +17,25 @@ export default function SiteFooter() {
 
   return (
     <footer
-      className="w-full  bg-[url('/Calque_1.png')]  font-sans overflow-hidden -mt-8 md:-mt-10 lg:-mt-16  "
-      style={{ backgroundColor: "#FCDBCF" }}
+      className="w-full bg-[url('/Calque_1.png')] font-sans overflow-hidden -mt-8 md:-mt-10 lg:-mt-16 bg-brand-cream"
     >
       <div className="w-full px-4 md:px-8 lg:px-12 xl:px-16 py-12 mt-20 md:py-16 lg:py-15">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 lg:gap-15 place-items-center lg:items-start">
           <div className="flex flex-col gap-3 items-center lg:items-start">
             <FooterLogo />
-            <p className="text-[#1e1e1e] text-sm md:text-base font-medium text-center lg:text-left">{t.footer.tagline}</p>
+            <p className="text-brand-ink text-sm md:text-base font-medium text-center lg:text-left">{t.footer.tagline}</p>
           </div>
           <div className="flex flex-col gap-3  lg:ml-15 items-center lg:items-start">
-            <h4 className="text-[#1e1e1e] text-base md:text-lg font-semibold text-center lg:text-left">{t.footer.expertise.title}</h4>
-            <nav className="flex flex-col gap-2 text-[#1e1e1e] text-sm md:text-base text-center lg:text-left">
+            <h4 className="text-brand-ink text-base md:text-lg font-semibold text-center lg:text-left">{t.footer.expertise.title}</h4>
+            <nav className="flex flex-col gap-2 text-brand-ink text-sm md:text-base text-center lg:text-left">
               {t.footer.expertise.items.map((label, i) => (
                 <Link
                   key={`expertise-${i}`}
                   href="/projets"
-                  className="group inline-block relative transition-colors duration-200 hover:text-[#F15A25]"
+                  className="group inline-block relative transition-colors duration-200 hover:text-brand"
                 >
                   <span className="relative">{label}
-                    <span className="absolute left-0 -bottom-0.5 h-[2px] w-full bg-[#F15A25] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                    <span className="absolute left-0 -bottom-0.5 h-[2px] w-full bg-brand scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
                   </span>
                 </Link>
               ))}
@@ -44,8 +43,8 @@ export default function SiteFooter() {
           </div>
 
           <div className="flex flex-col gap-3 items-center  lg:items-start">
-            <h4 className="text-[#1e1e1e] text-base md:text-lg font-semibold text-center lg:text-left">{t.footer.about.title}</h4>
-            <nav className="flex flex-col gap-2 text-[#1e1e1e] text-sm md:text-base text-center lg:text-left">
+            <h4 className="text-brand-ink text-base md:text-lg font-semibold text-center lg:text-left">{t.footer.about.title}</h4>
+            <nav className="flex flex-col gap-2 text-brand-ink text-sm md:text-base text-center lg:text-left">
               {t.footer.about.items.map((label, i) => {
                 const normalized = label.toLowerCase()
                 const href = normalized.includes("portfolio")
@@ -58,10 +57,10 @@ export default function SiteFooter() {
                   <Link
                     key={`about-${i}`}
                     href={href}
-                    className="group inline-block relative transition-colors duration-200 hover:text-[#F15A25]"
+                    className="group inline-block relative transition-colors duration-200 hover:text-brand"
                   >
                     <span className="relative">{label}
-                      <span className="absolute left-0 -bottom-0.5 h-[2px] w-full bg-[#F15A25] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                      <span className="absolute left-0 -bottom-0.5 h-[2px] w-full bg-brand scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
                     </span>
                   </Link>
                 )
@@ -70,19 +69,19 @@ export default function SiteFooter() {
           </div>
 
           <div className="flex flex-col gap-3 items-center lg:items-start">
-            <h4 className="text-[#1e1e1e] text-base md:text-lg font-semibold text-center lg:text-left">{t.footer.social.title}</h4>
-            <nav className="flex flex-col gap-2 text-[#1e1e1e] text-sm md:text-base text-center lg:text-left">
+            <h4 className="text-brand-ink text-base md:text-lg font-semibold text-center lg:text-left">{t.footer.social.title}</h4>
+            <nav className="flex flex-col gap-2 text-brand-ink text-sm md:text-base text-center lg:text-left">
               {t.footer.social.items.map((label, i) => (
                 <Link
                   key={`social-${i}`}
                   href={socialLinks[label.toLowerCase() as keyof typeof socialLinks] ?? "#"}
-                  className="group inline-block relative transition-colors duration-200 hover:text-[#F15A25]"
+                  className="group inline-block relative transition-colors duration-200 hover:text-brand"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
                 >
                   <span className="relative">{label}
-                    <span className="absolute left-0 -bottom-0.5 h-[2px] w-full bg-[#F15A25] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                    <span className="absolute left-0 -bottom-0.5 h-[2px] w-full bg-brand scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
                   </span>
                 </Link>
               ))}
@@ -95,11 +94,9 @@ export default function SiteFooter() {
           <div className="relative group w-full flex justify-center overflow-hidden -mb-2 sm:-mb-6 lg:-mb-6 pt-10">
             <div className="relative block w-full select-none">
               <h2
-                className="w-full text-center font-extrabold uppercase leading-[0.88] tracking-wide"
+                className="w-full text-center font-extrabold uppercase leading-[0.88] tracking-wide font-display text-brand-ink-strong"
                 style={{
-                  fontFamily: 'Bigger, var(--font-montserrat), sans-serif',
                   fontSize: 'clamp(3.25rem, 8vw + 0.5rem, 9rem)',
-                  color: '#0f0f0f',
                   marginBottom: '-0.5rem',
                 }}
               >
@@ -113,9 +110,8 @@ export default function SiteFooter() {
                 transition={{ duration: 0.9, ease: 'easeInOut' }}
               >
                 <h2
-                  className="w-full text-center font-extrabold uppercase leading-[0.88] tracking-wide text-primary"
+                  className="w-full text-center font-extrabold uppercase leading-[0.88] tracking-wide font-display text-primary"
                   style={{
-                    fontFamily: 'Bigger, var(--font-montserrat), sans-serif',
                     fontSize: 'clamp(3.25rem, 8vw + 0.5rem, 9rem)',
                     marginBottom: '-0.5rem',
                   }}

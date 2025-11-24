@@ -25,7 +25,7 @@ export function CTAButton({ href, children, className = "" }: CTAButtonProps) {
   const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"])
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"])
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current) return
 
     const rect = ref.current.getBoundingClientRect()
@@ -62,7 +62,7 @@ export function CTAButton({ href, children, className = "" }: CTAButtonProps) {
       >
         {/* Animated glow background */}
         <motion.div
-          className="absolute -inset-1 bg-gradient-to-r from-[#F15A25] via-[#FF7A47] to-[#F15A25] rounded-full opacity-0 blur-xl"
+          className="absolute -inset-1 bg-gradient-to-r from-brand via-brand-soft to-brand rounded-full opacity-0 blur-xl"
           animate={{
             opacity: isHovered ? [0.4, 0.7, 0.4] : 0,
             scale: isHovered ? [1, 1.1, 1] : 1,
@@ -80,7 +80,7 @@ export function CTAButton({ href, children, className = "" }: CTAButtonProps) {
             {[...Array(6)].map((_, i) => (
               <motion.div
                 key={i}
-                className="absolute w-1 h-1 bg-[#F15A25] rounded-full"
+                className="absolute w-1 h-1 bg-brand rounded-full"
                 initial={{
                   x: 0,
                   y: 0,
@@ -108,7 +108,7 @@ export function CTAButton({ href, children, className = "" }: CTAButtonProps) {
 
         {/* Main button */}
         <motion.button
-          className="relative bg-gradient-to-r from-[#F15A25] to-[#FF7A47] text-white font-semibold px-6 py-2.5 rounded-full text-sm shadow-lg shadow-[#F15A25]/30 overflow-hidden"
+          className="relative bg-gradient-to-r from-brand to-brand-soft text-white font-semibold px-6 py-2.5 rounded-full text-sm shadow-lg shadow-brand/30 overflow-hidden"
           style={{
             transformStyle: "preserve-3d",
             transform: "translateZ(20px)",
@@ -181,7 +181,7 @@ export function CTAButton({ href, children, className = "" }: CTAButtonProps) {
 
         {/* 3D shadow */}
         <motion.div
-          className="absolute inset-0 bg-[#F15A25]/40 rounded-full blur-md"
+          className="absolute inset-0 bg-brand/40 rounded-full blur-md"
           style={{
             transform: "translateZ(-10px)",
             transformStyle: "preserve-3d",

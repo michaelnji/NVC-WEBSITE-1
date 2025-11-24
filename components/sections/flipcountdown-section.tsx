@@ -26,7 +26,7 @@ export function FlipCountdownSection() {
     <main
       className="relative overflow-hidden min-h-screen flex items-center justify-center px-4 py-8"
       style={{
-        backgroundColor: "#0f0f0f",
+        backgroundColor: "var(--brand-ink-strong)",
         backgroundImage: "url('/background%20temoignages.svg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -36,12 +36,12 @@ export function FlipCountdownSection() {
     >
       <div className="relative z-10 w-full max-w-6xl text-center py-12 px-4 sm:py-16 sm:px-8 md:py-20 md:px-10 bg-white rounded-3xl">
         <h1 className="font-display uppercase text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-7xl  font-bold leading-[1.1] text-balance tracking-wide mb-3 sm:mb-4 md:mb-5 lg:mb-[8px]">
-          <span className="text-[#020202]">We’re still cooking </span>
-          <span className="text-[#F15A25]">the good stuff.</span>
+          <span className="text-brand-ink-strong">We’re still cooking </span>
+          <span className="text-brand">the good stuff.</span>
         </h1>
-        <p className="subtext text-normal text-black font-sans text-[10px] sm:text-lg md:text-xl mb-8 sm:mb-10 md:mb-12 text-black-400   px-4">
+        <p className="subtext text-normal text-brand-ink font-sans text-[10px] sm:text-lg md:text-xl mb-8 sm:mb-10 md:mb-12 px-4">
           <span>We’re putting </span>
-          <span className="text-[#F15A25]">the final touches </span>
+          <span className="text-brand">the final touches </span>
           <span>on ours ... we’ll be live before the caffeine wears off.</span>
         </p>
 

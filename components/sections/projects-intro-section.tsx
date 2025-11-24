@@ -194,9 +194,9 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
   return (
     <div
       ref={sectionRef}
-      className="relative bg-[url('/Calque_1.png')] py-50 sm:py-32 lg:py-40 xl:py-48 px-4 md:px-8 lg:px-12 xl:px-16 -my-35  sm:-my-32 lg:-my-16 lg:min-h-[75vh] xl:min-h-[80vh]"
+      className="relative bg-[url('/Calque_1.png')] py-50 sm:py-32 lg:py-40 xl:py-48 px-4 md:px-8 lg:px-12 xl:px-16 -my-35  sm:-my-32 lg:-my-16 lg:min-h-[75vh] xl:min-h-[80vh] bg-brand-cream"
       style={{
-        backgroundColor: "#FCDBCF",
+        backgroundColor: "var(--brand-cream)",
         zIndex: 1,
       }}
     >
@@ -204,15 +204,15 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
         {/* Title */}
         <div className="text-center mb-4 sm:mb-6 md:mb-8 lg:mb-[8px]">
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[64px] font-bold  tracking-wide uppercase mb-2 sm:mb-3 md:mb-4 lg:mb-[8px]">
-            <span className="text-[#1e1e1e]">{t.projectsIntro.titlePart1} </span>
-            <span className="text-[#F15A25]">{t.projectsIntro.titleHighlight}</span>
-            <span className="text-[#1e1e1e]"> {t.projectsIntro.titlePart2}</span>
+            <span className="text-brand-ink">{t.projectsIntro.titlePart1} </span>
+            <span className="text-brand">{t.projectsIntro.titleHighlight}</span>
+            <span className="text-brand-ink"> {t.projectsIntro.titlePart2}</span>
           </h2>
         </div>
         <div className="text-center mb-6 md:mb-8 lg:mb-10 max-w-3xl mx-auto">
-          <p className="text-sm md:text-base lg:text-lg text-[#1e1e1e]/80 ">
+          <p className="text-sm md:text-base lg:text-lg text-brand-ink/80 ">
             {t.projectsIntro.descriptionPart1}
-            <span className="text-[#F15A25] font-semibold">{t.projectsIntro.descriptionHighlight}</span>
+            <span className="text-brand font-semibold">{t.projectsIntro.descriptionHighlight}</span>
           </p>
         </div>
         {/* Filtres services : 4 slots max, même forme (pills) sur mobile et desktop */}
@@ -222,7 +222,7 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
               Array.from({ length: SERVICE_SLOTS }).map((_, idx) => (
                 <div
                   key={idx}
-                  className="relative h-8 md:h-9 w-24 md:w-32 lg:w-40 rounded-full overflow-hidden bg-[#111]"
+                  className="relative h-8 md:h-9 w-24 md:w-32 lg:w-40 rounded-full overflow-hidden bg-brand-surface-dark"
                 >
                   <div className="absolute inset-0">
                     <Shimmer />
@@ -241,8 +241,8 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                     whileTap={{ scale: 0.95 }}
                     className={`px-3 md:px-5 py-1.5 md:py-2 rounded-full text-sm md:text-base font-medium transition-all duration-300 ${
                       activeServiceId === slot.id
-                        ? "bg-[#1e1e1e] text-white shadow-lg"
-                        : "bg-white/50 text-[#1e1e1e] hover:bg-white/80"
+                        ? "bg-brand-ink text-white shadow-lg"
+                        : "bg-white/50 text-brand-ink hover:bg-white/80"
                     }`}
                   >
                     {slot.title}
@@ -253,7 +253,7 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.35, delay: idx * 0.05, ease: "easeOut" }}
-                    className="px-3 md:px-5 py-1.5 md:py-2 rounded-full text-sm md:text-base font-medium bg-[#111] text-white/90 flex items-center justify-center"
+                    className="px-3 md:px-5 py-1.5 md:py-2 rounded-full text-sm md:text-base font-medium bg-brand-surface-dark text-white/90 flex items-center justify-center"
                   >
                     <AvailableSlotCard
                       title="Slot available"
@@ -332,7 +332,7 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                       className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 aspect-square"
                     >
                       {it.isPlaceholder ? (
-                        <div className="flex h-full w-full items-center justify-center bg-[#111] text-center px-3">
+                        <div className="flex h-full w-full items-center justify-center bg-brand-surface-dark text-center px-3">
                           <AvailableSlotCard
                             title="Slot available"
                             description="Add a new project for this category in the admin to showcase it here."
@@ -371,7 +371,7 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                       className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 col-span-2 row-span-2 h-[518px]"
                     >
                       {filledItems[0].isPlaceholder ? (
-                        <div className="flex h-full w-full items-center justify-center bg-[#111] text-center px-6">
+                        <div className="flex h-full w-full items-center justify-center bg-brand-surface-dark text-center px-6">
                           <AvailableSlotCard
                             title="Highlight slot"
                             description="Add a highlight project for this category in the admin to feature it here."
@@ -409,7 +409,7 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                         className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
                       >
                         {filledItems[1].isPlaceholder ? (
-                          <div className="flex h-[260px] w-full items-center justify-center bg-[#111] text-center px-4">
+                          <div className="flex h-[260px] w-full items-center justify-center bg-brand-surface-dark text-center px-4">
                             <AvailableSlotCard
                               title="Slot available"
                               description="Add another project in the admin to complete this showcase row."
@@ -446,7 +446,7 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                           className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
                         >
                           {filledItems[2].isPlaceholder ? (
-                            <div className="flex h-[244px] w-full items-center justify-center bg-[#111] text-center px-3">
+                            <div className="flex h-[244px] w-full items-center justify-center bg-brand-surface-dark text-center px-3">
                               <AvailableSlotCard
                                 title="Slot available"
                                 description="Add more projects in the admin to fill this gallery slot."
@@ -480,7 +480,7 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                           className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
                         >
                           {filledItems[3].isPlaceholder ? (
-                            <div className="flex h-[244px] w-full items-center justify-center bg-[#111] text-center px-3">
+                            <div className="flex h-[244px] w-full items-center justify-center bg-brand-surface-dark text-center px-3">
                               <AvailableSlotCard
                                 title="Slot available"
                                 description="Add more projects in the admin to fill this gallery slot."
@@ -523,7 +523,7 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                   }`}
                 >
                   {item.isPlaceholder ? (
-                    <div className="flex h-full w-full items-center justify-center bg-[#111] text-center px-4">
+                    <div className="flex h-full w-full items-center justify-center bg-brand-surface-dark text-center px-4">
                       <AvailableSlotCard
                         title="Slot available"
                         description="Add more projects in the admin to fill this gallery."
@@ -564,7 +564,7 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
 
 function ProjectCardSkeleton({ className = "" }: { className?: string }) {
   return (
-    <div className={`group relative rounded-2xl overflow-hidden bg-[#111] shadow-lg ${className}`}>
+    <div className={`group relative rounded-2xl overflow-hidden bg-brand-surface-dark shadow-lg ${className}`}>
       <div className="absolute inset-0">
         <Shimmer />
       </div>

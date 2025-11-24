@@ -135,7 +135,7 @@ export function ProjectsManager() {
     return (
       <div className="min-h-[260px] flex items-center justify-center">
         <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#F15A25] border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand border-t-transparent" />
           <p>Chargement des services…</p>
         </div>
       </div>
@@ -160,7 +160,7 @@ export function ProjectsManager() {
             <TabsTrigger
               key={service.id}
               value={service.id}
-              className="px-3 py-1.5 text-xs sm:text-sm rounded-full border border-transparent data-[state=active]:border-[#F15A25] data-[state=active]:bg-[#F15A25] data-[state=active]:text-white text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              className="px-3 py-1.5 text-xs sm:text-sm rounded-full border border-transparent data-[state=active]:border-brand data-[state=active]:bg-brand data-[state=active]:text-white text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
             >
               {service.title}
             </TabsTrigger>

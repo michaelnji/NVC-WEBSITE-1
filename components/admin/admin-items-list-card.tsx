@@ -33,7 +33,7 @@ export function AdminItemsListCard({
 
       {isFetching ? (
         <div className="h-full min-h-[320px] flex items-center justify-center">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#F15A25] border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand border-t-transparent" />
         </div>
       ) : count === 0 ? (
         <div className="h-full min-h-[320px] flex flex-col items-center justify-center text-sm text-muted-foreground text-center">

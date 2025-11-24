@@ -171,7 +171,7 @@ export function Navbar() {
                   priority
                 />
                 <motion.div
-                  className="absolute inset-0 bg-[#F15A25]/20 blur-xl rounded-full"
+                  className="absolute inset-0 bg-brand/20 blur-xl rounded-full"
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileHover={{ opacity: 1, scale: 1.2 }}
                   transition={{ duration: 0.3 }}
@@ -208,16 +208,13 @@ export function Navbar() {
                       }}
                     >
                       <motion.span
-                        className="relative z-10 inline-block"
-                        animate={{
-                          color:
-                            activeItem === item.name
-                              ? "#F15A25"
-                              : hoveredItem === item.name
-                                ? "#FF7A47"
-                                : "hsl(var(--muted-foreground))",
-                        }}
-                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        className={`relative z-10 inline-block transition-colors duration-300 ${
+                          activeItem === item.name
+                            ? "text-brand"
+                            : hoveredItem === item.name
+                              ? "text-brand-soft"
+                              : "text-muted-foreground"
+                        }`}
                       >
                         <span className="inline-flex gap-[1px]">
                           {item.name.split("").map((char, i) => (
@@ -250,9 +247,9 @@ export function Navbar() {
                             damping: 30,
                           }}
                         >
-                          <div className="w-full h-full bg-gradient-to-r from-[#F15A25] to-[#FF7A47] rounded-full" />
+                          <div className="w-full h-full bg-gradient-to-r from-brand to-brand-soft rounded-full" />
                           <motion.div
-                            className="absolute inset-0 bg-gradient-to-r from-[#F15A25] to-[#FF7A47] blur-md"
+                            className="absolute inset-0 bg-gradient-to-r from-brand to-brand-soft blur-md"
                             animate={{
                               opacity: [0.5, 1, 0.5],
                             }}
@@ -268,14 +265,14 @@ export function Navbar() {
                       {hoveredItem === item.name && activeItem !== item.name && (
                         <>
                           <motion.div
-                            className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#F15A25] to-transparent"
+                            className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-brand to-transparent"
                             initial={{ opacity: 0, scaleX: 0 }}
                             animate={{ opacity: 1, scaleX: 1 }}
                             exit={{ opacity: 0, scaleX: 0 }}
                             transition={{ duration: 0.4, ease: "easeOut" }}
                           />
                           <motion.div
-                            className="absolute bottom-0 left-1/2 w-1 h-1 bg-[#F15A25] rounded-full blur-sm"
+                            className="absolute bottom-0 left-1/2 w-1 h-1 bg-brand rounded-full blur-sm"
                             initial={{ opacity: 0, y: 0, x: "-50%" }}
                             animate={{
                               opacity: [0, 1, 0],
@@ -314,7 +311,7 @@ export function Navbar() {
         </div>
 
         <motion.div
-          className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#F15A25]/50 to-transparent"
+          className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-brand/50 to-transparent"
           animate={{
             opacity: [0.3, 0.6, 0.3],
           }}

@@ -39,8 +39,7 @@ export default function CtaVisualSection() {
 
           {/* Couche de couleur découpée par AngledPanel, animée à l'opacité au scroll */}
           <motion.div
-            className="absolute inset-0 z-10"
-            style={{ backgroundColor: "#F15A25" }}
+            className="absolute inset-0 z-10 bg-brand"
             animate={controls}
           />
 
@@ -51,11 +50,10 @@ export default function CtaVisualSection() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.1}}
               className="font-display text-white font-extrabold tracking-wide  text-3xl sm:text-4xl md:text-5xl lg:text-[80px] uppercase mb-4 sm:mb-5 md:mb-6 lg:mb-[10px]"
-              style={{ fontFamily: 'Bigger, sans-serif' }}
             >
               {t.cta_visual.title1}
               <br />
-              <span className="text-[#F9C22E]">{t.cta_visual.title2}</span>
+              <span className="text-brand-accent">{t.cta_visual.title2}</span>
             </motion.h2>
 
             <motion.p

@@ -178,16 +178,16 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
       <div className="relative z-30    mx-auto text-center">
           <Reveal>
             <h2 className="font-display items-center text-4xl sm:text-5xl md:text-6xl lg:text-[64px] font-bold tracking-wide text-balance mb-3 sm:mb-4 md:mb-5 lg:mb-[8px]">
-              <span className="text-[#1e1e1e]">{t.teamIntro.titlePart1} </span>
-              <span className="text-[#F15A25]">{t.teamIntro.titleEmphasis}</span>
-              <span className="text-[#F15A25]"> {t.teamIntro.titlePart2}</span>
+              <span className="text-brand-ink">{t.teamIntro.titlePart1} </span>
+              <span className="text-brand">{t.teamIntro.titleEmphasis}</span>
+              <span className="text-brand"> {t.teamIntro.titlePart2}</span>
             </h2>
           </Reveal>
 
           <Reveal delay={0.08}>
-            <p className=" max-w-2xl mx-auto text-sm md:text-base text-[#1e1e1e] text-pretty leading-relaxed">
+            <p className=" max-w-2xl mx-auto text-sm md:text-base text-brand-ink text-pretty leading-relaxed">
               {t.teamIntro.descriptionPart1}
-              <span className="text-[#F15A25] font-semibold">{t.teamIntro.descriptionEmphasis}</span>
+              <span className="text-brand font-semibold">{t.teamIntro.descriptionEmphasis}</span>
             </p>
           </Reveal>
 
@@ -218,13 +218,13 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
             const isPlaceholder = data?.isPlaceholder || !member
             return (
               <div
-                className="group rounded-xl cursor-pointer [perspective:1000px]"
+                className="group rounded-2xl overflow-hidden cursor-pointer [perspective:1000px]"
                 style={{ width: `${width}px`, height: `${height}px` }}
               >
                 <div className="relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
                   <div className="absolute inset-0 w-full h-full rounded-xl overflow-hidden [backface-visibility:hidden] bg-black">
                     {isSkeleton ? (
-                      <div className="relative w-full h-full bg-[#050505]">
+                      <div className="relative w-full h-full bg-brand-surface-deep">
                         <div className="absolute inset-0">
                           <Shimmer />
                         </div>
@@ -237,7 +237,7 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="flex w-full h-full items-center justify-center bg-[#111] px-4 text-center">
+                      <div className="flex w-full h-full items-center justify-center bg-brand-surface-dark px-4 text-center rounded-3xl overflow-hidden">
                         <AvailableSlotCard
                           title="Slot available"
                           description=""
@@ -246,7 +246,7 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
                     )}
                   </div>
 
-                  <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#F15A25] to-[#ff7a4d] rounded-xl [backface-visibility:hidden] [transform:rotateY(180deg)] p-4 flex flex-col items-center justify-center">
+                  <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-brand to-brand-soft rounded-3xl [backface-visibility:hidden] [transform:rotateY(180deg)] p-4 flex flex-col items-center justify-center">
                     {isSkeleton ? null : member ? (
                       <div className="w-full flex flex-col items-center justify-center text-center space-y-2">
                         <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-18 md:h-18 rounded-full bg-black/15 shadow-inner flex items-center justify-center ring-1 ring-white/25 mb-1">

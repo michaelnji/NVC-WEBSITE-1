@@ -69,7 +69,7 @@ function TimeUnit({ value, label, fast }: { value: number; label: string; fast?:
         <FlipCard digit={digits[0]} fast={fast} />
         <FlipCard digit={digits[1]} fast={fast} />
       </div>
-      <span className="text-xs font-display sm:text-xl md:text-2xl lg:text-5xl trackking-balance font-black text-[#ff5722]">{label}</span>
+      <span className="text-xs font-display sm:text-xl md:text-2xl lg:text-5xl trackking-balance font-black text-brand">{label}</span>
     </div>
   )
 }
@@ -106,7 +106,7 @@ function FlipCard({ digit, fast }: { digit: string; fast?: boolean }) {
       <div className="absolute inset-0 z-10">
         <div className="absolute top-0 left-0 right-0 h-1/2 bg-black rounded-t-md sm:rounded-t-xl md:rounded-t-2xl overflow-hidden">
           <div className="absolute inset-0 flex items-start justify-center pt-0">
-            <span className="font-display mt-[8px] lg:mt-[12px] text-3xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-[#ff5722] leading-none">
+            <span className="font-display mt-[8px] lg:mt-[12px] text-3xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-brand leading-none">
               {isFlipping ? nextDigit : currentDigit}
             </span>
           </div>
@@ -115,7 +115,7 @@ function FlipCard({ digit, fast }: { digit: string; fast?: boolean }) {
 
         <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-black rounded-b-md sm:rounded-b-xl md:rounded-b-2xl overflow-hidden">
           <div className="absolute inset-0 flex items-end justify-center pb-0">
-            <span className="font-display -translate-y-[4px] lg:translate-y-[12px] text-3xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-[#ff5722] leading-none">
+            <span className="font-display -translate-y-[4px] lg:translate-y-[12px] text-3xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-brand leading-none">
               {bottomDigit}
             </span>
           </div>
@@ -135,7 +135,7 @@ function FlipCard({ digit, fast }: { digit: string; fast?: boolean }) {
           <div className="relative w-full h-full">
             <div className="absolute top-0 left-0 right-0 h-full bg-black rounded-t-lg sm:rounded-t-xl md:rounded-t-2xl overflow-hidden">
               <div className="absolute inset-0 flex items-start justify-center pt-0">
-                <span className="font-display mt-[8px] lg:mt-[12px] text-3xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-[#ff5722] leading-none">
+                <span className="font-display mt-[8px] lg:mt-[12px] text-3xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-brand leading-none">
                   {currentDigit}
                 </span>
               </div>
@@ -157,7 +157,7 @@ function FlipCard({ digit, fast }: { digit: string; fast?: boolean }) {
           <div className="relative w-full h-full">
             <div className="absolute top-0 left-0 right-0 h-full bg-black rounded-b-lg sm:rounded-b-xl md:rounded-b-2xl overflow-hidden">
               <div className="absolute inset-0 flex items-end justify-center pb-0">
-                <span className="font-display -translate-y-[4px] lg:translate-y-[12px] text-3xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-[#ff5722] leading-none">
+                <span className="font-display -translate-y-[4px] lg:translate-y-[12px] text-3xl sm:text-6xl md:text-7xl lg:text-9xl font-black text-brand leading-none">
                   {nextDigit}
                 </span>
               </div>
@@ -179,8 +179,8 @@ function Separator() {
   return (
     <div className="flex flex-col -mt-[15px] items-center justify-center">
       <div className="h-6 sm:h-10 md:h-14 lg:h-16" />
-      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-3 md:h-3 mb-3 rounded-full bg-[#ff5722]" />
-      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-3 md:h-3 rounded-full bg-[#ff5722]" />
+      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-3 md:h-3 mb-3 rounded-full bg-brand" />
+      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-3 md:h-3 rounded-full bg-brand" />
       <div className="h-6 sm:h-10 md:h-14 lg:h-16" />
     </div>
   )

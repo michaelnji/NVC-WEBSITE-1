@@ -20,15 +20,14 @@ export function HeroSection({ initialHeroImages }: HeroSectionProps) {
   return (
     <div className="relative min-h-screen flex flex-col items-start overflow-hidden  px-6 md:px-12 lg:px-16 xl:px-24 2xl:px-32 3xl:px-40 max-w-full ">
       <div className="relative w-full max-w-full min-h-screen overflow-hidden">
-        {/* Hero content */}
         <div className="relative z-10 w-full max-w-full min-h-screen flex flex-col lg:flex-row pt-25 lg:pt-0 overflow-hidden">
           <div className="font-500 w-full lg:w-1/2  flex items-center justify-center lg:justify-start  pt-10 lg:pt-0">
             <div className="text-center lg:text-left max-w-full lg:pr-[50px] ">
               <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[80px]  font-bold mb-[10px]  tracking-wide ">
                 <span className="text-foreground">{t.hero.title}</span>
                 <span className="text-white">{t.hero.line2} </span>
-                <span className="text-[#F15A25]">{t.hero.line3Emotions}</span>
-                <span className="text-[#F15A25]">{t.hero.line3ThatStick}</span>
+                <span className="text-brand">{t.hero.line3Emotions}</span>
+                <span className="text-brand">{t.hero.line3ThatStick}</span>
               </h1>
               <p className="font-sans   text-sm sm:text-base md:text-lg lg:text-[18px] ">
                 {t.hero.subtitle}
@@ -150,7 +149,7 @@ function ScrollingGallery({ initialImages }: ScrollingGalleryProps) {
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
-                  className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-[#050505] border border-white/[0.03] w-full"
+                  className="relative rounded-2xl overflow-hidden flex-shrink-0 bg-brand-surface-deep border border-white/[0.03] w-full"
                   style={{ height: 300 }}
                 >
                   <div className="absolute inset-0">
@@ -307,7 +306,7 @@ function MobileCarousel({
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="relative rounded-lg overflow-hidden flex-shrink-0 bg-[#050505] border border-white/10 mr-3"
+              className="relative rounded-lg overflow-hidden flex-shrink-0 bg-brand-surface-deep border border-white/10 mr-3"
               style={{
                 width: `${mobileWidth}px`,
                 height: `${mobileHeight}px`,

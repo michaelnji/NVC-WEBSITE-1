@@ -68,7 +68,7 @@ export function CustomCursor() {
   return (
     <>
       <motion.div
-        className="fixed top-0 left-0 w-2 h-2 bg-[#FFBA00] rounded-full pointer-events-none z-[9999]"
+        className="fixed top-0 left-0 w-2 h-2 bg-brand-accent rounded-full pointer-events-none z-[9999]"
         style={{
           x: cursorXSpring,
           y: cursorYSpring,
@@ -82,7 +82,7 @@ export function CustomCursor() {
       />
       
       <motion.div
-        className="fixed top-0 left-0 w-10 h-10 border-2 border-[#F15A25]/40 rounded-full pointer-events-none z-[9998]"
+        className="fixed top-0 left-0 w-10 h-10 border-2 border-brand/40 rounded-full pointer-events-none z-[9998]"
         style={{
           x: outerX,
           y: outerY,
@@ -98,7 +98,7 @@ export function CustomCursor() {
 
       {isHovering && (
         <motion.div
-          className="fixed top-0 left-0 w-20 h-20 bg-[#FFBA00]/12 rounded-full pointer-events-none z-[9997] blur-xl"
+          className="fixed top-0 left-0 w-20 h-20 bg-brand-accent/12 rounded-full pointer-events-none z-[9997] blur-xl"
           style={{
             x: outerX,
             y: outerY,

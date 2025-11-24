@@ -60,7 +60,7 @@ export function ButtonAdmin({
         type={type}
         onClick={handleClick}
         disabled={disabled || isLoading}
-        className={`${fullWidth ? "w-full" : ""} rounded-md border border-[#F15A25] bg-[#F15A25] text-white px-3 py-2 text-sm hover:opacity-90 transition-opacity inline-flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed ${className}`}
+        className={`${fullWidth ? "w-full" : ""} rounded-md border border-brand bg-brand text-white px-3 py-2 text-sm hover:opacity-90 transition-opacity inline-flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed ${className}`}
       >
         {isLoading && (
           <span className="inline-flex h-3 w-3 items-center justify-center">

@@ -39,7 +39,7 @@ export function AdminConfirmModal({
           <button
             type="button"
             onClick={onConfirm}
-            className="rounded-md bg-[#F15A25] px-3 py-1.5 text-xs md:text-sm text-white hover:opacity-90 transition-opacity"
+            className="rounded-md bg-brand px-3 py-1.5 text-xs md:text-sm text-white hover:opacity-90 transition-opacity"
           >
             {confirmLabel}
           </button>

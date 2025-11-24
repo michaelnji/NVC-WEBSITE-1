@@ -20,10 +20,10 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
 
   const Star = ({ filled }: { filled: boolean }) => (
     <svg
-      className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5"
+      className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-brand"
       viewBox="0 0 24 24"
-      fill={filled ? "#ff6b35" : "none"}
-      stroke="#ff6b35"
+      fill={filled ? "currentColor" : "none"}
+      stroke="currentColor"
       strokeWidth="2"
     >
       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z" />
@@ -215,7 +215,7 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
       id="testimonials"
       className="relative z-10 pt-20 sm:pt-24 md:pt-32 lg:pt-40 pb-20 sm:pb-24 md:pb-32 lg:pb-40 -mt-8 md:-mt-10 lg:-mt-12 xl:-mt-14 2xl:-mt-16 overflow-x-hidden lg:min-h-[75vh] xl:min-h-[85vh]"
       style={{
-        backgroundColor: "#0f0f0f",
+        backgroundColor: "var(--brand-ink-strong)",
         backgroundImage: "url('/background%20temoignages.svg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -226,7 +226,7 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
         <h2 className="testimonials-title font-display text-3xl sm:text-4xl md:text-5xl lg:text-[64px] font-extrabold tracking-wide  text-white uppercase text-balance mb-4 sm:mb-5 md:mb-6 lg:mb-7">
           {t.testimonials.headingLine1}
           <br />
-          <span className="text-[#ff6b35]">{t.testimonials.headingLine2}</span>
+          <span className="text-brand">{t.testimonials.headingLine2}</span>
         </h2>
 
         <div ref={containerRef} className="mt-6 sm:mt-8 md:mt-9 lg:mt-10 relative overflow-visible z-10 cursor-grab active:cursor-grabbing select-none touch-pan-y md:touch-auto">
@@ -252,16 +252,16 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
                           </motion.div>
                         ))}
                       </motion.div>
-                      <h3 className="font-display text-lg sm:text-xl md:text-2xl text-[#1e1e1e] leading-tight mb-2 whitespace-pre-line uppercase font-extrabold tracking-wider transition-transform duration-500 group-hover:translate-x-1">
+                      <h3 className="font-display text-lg sm:text-xl md:text-2xl text-brand-ink leading-tight mb-2 whitespace-pre-line uppercase font-extrabold tracking-wider transition-transform duration-500 group-hover:translate-x-1">
                         {item.title}
                       </h3>
-                      <p className="text-[#1e1e1e]/80 text-xs sm:text-sm md:text-base leading-relaxed mb-2 break-words whitespace-pre-line transition-transform duration-500 group-hover:translate-x-[2px]">{item.description}</p>
+                      <p className="text-brand-ink/80 text-xs sm:text-sm md:text-base leading-relaxed mb-2 break-words whitespace-pre-line transition-transform duration-500 group-hover:translate-x-[2px]">{item.description}</p>
                       <div className="flex flex-col items-center justify-center mt-auto transition-transform duration-500 group-hover:-translate-y-1">
-                        <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-[#d9d9d9] shadow-inner flex items-center justify-center ring-1 ring-black/10 mb-2">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-brand-gray-soft shadow-inner flex items-center justify-center ring-1 ring-black/10 mb-2">
                           <ImageWithSkeleton src={item.photo_url || "/avatar.svg"} alt={item.author_name} wrapperClassName="w-full h-full" className="w-full h-full rounded-full object-cover" />
                         </div>
-                        <p className="text-[#1e1e1e] font-semibold leading-tight">{item.author_name}</p>
-                        <p className="text-[#ff6b35] text-xs sm:text-sm leading-tight">{item.position}</p>
+                        <p className="text-brand-ink font-semibold leading-tight">{item.author_name}</p>
+                        <p className="text-brand text-xs sm:text-sm leading-tight">{item.position}</p>
                       </div>
                     </motion.div>
                   ))
@@ -324,7 +324,7 @@ export default function TestimonialsSection({ initialTestimonials }: Testimonial
 
       <div className="relative mt-12 sm:mt-14 flex flex-col items-center justify-center">
         <div className="text-white/80 text-xs sm:text-sm mb-3 sm:mb-4">
-          Designing with <span className="text-[#ff6b35]">❤</span> from our HQ in
+          Designing with <span className="text-brand">❤</span> from our HQ in
         </div>
         <motion.div 
           className="relative cursor-pointer"

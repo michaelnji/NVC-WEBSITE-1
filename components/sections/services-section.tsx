@@ -22,7 +22,8 @@ export default function ServicesSection({ initialServices }: ServicesSectionProp
   const [isLoading, setIsLoading] = useState(!initialServices)
   const [hasEntered, setHasEntered] = useState(false)
 
-  // Déclencher le chargement uniquement quand la section entre dans le viewport
+
+
   useEffect(() => {
     const node = sectionRef.current
     if (!node) return
@@ -77,26 +78,24 @@ export default function ServicesSection({ initialServices }: ServicesSectionProp
       className="relative z-40 py-20 md:py-28 lg:py-32  lg:px-16  overflow-hidden lg:min-h-[70vh] xl:min-h-[80vh]"
     >
          <div ref={sectionRef} className="w-full h-full">
-        {/* Header Section */}
         <div className="text-center mb-6 sm:mb-10 md:mb-14 lg:mb-[50px]">
           <div className="flex justify-center mb-3 sm:mb-4 md:mb-[12px]">
             <SectionEyebrow>{t.services.subtitle}</SectionEyebrow>
           </div>
           <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[64px] font-bold mb-3 sm:mb-4 md:mb-5 lg:mb-[10px] tracking-wide text-balance uppercase">
-            <span className="text-[#1e1e1e]">{t.services.titlePart1} </span>
-            <span className="text-[#f15a25]">{t.services.titlePart2}</span>
+            <span className="text-brand-ink">{t.services.titlePart1} </span>
+            <span className="text-brand">{t.services.titlePart2}</span>
           </h1>
           <div className="font-sans">
-            <p className="text-[#1e1e1e] text-xs sm:text-[18px] ">
+            <p className="text-brand-ink text-xs sm:text-[18px] ">
               {t.services.description}
             </p>
-            <p className="text-[#1e1e1e] text-xs sm:text-[18px] ">
+            <p className="text-brand-ink text-xs sm:text-[18px] ">
               {t.services.descriptionPrefix}{" "}
-              <span className="text-[#f15a25] font-semibold">{t.services.descriptionHighlight}</span>
+              <span className="text-brand font-semibold">{t.services.descriptionHighlight}</span>
             </p>
           </div>
         </div>
-
         <div className="px-4 pb-60 sm:pb-0 sm:px-4 md:px-8">
           <ServicesGrid
             sectionRef={sectionRef}
@@ -262,11 +261,11 @@ function ServiceCard({ service, isPlaceholder }: ServiceCardProps) {
           <div
             className="px-5 py-5 sm:px-7 sm:pt-7 flex-shrink-0 transition-all duration-300 ease-out"
           >
-            <h2 className="text-sm sm:text-base md:text-lg mb-1.5 font-sans font-bold text-[#1e1e1e] leading-tight tracking-wide">
+            <h2 className="text-sm sm:text-base md:text-lg mb-1.5 font-sans font-bold text-brand-ink leading-tight tracking-wide">
               {service?.title}
             </h2>
             <p
-              className={`font-sans text-[#404040] text-xs sm:text-sm leading-relaxed whitespace-pre-line max-w-xs sm:max-w-sm md:max-w-md break-words transition-all duration-300 ease-out ${
+              className={`font-sans text-brand-ink text-xs sm:text-sm leading-relaxed whitespace-pre-line max-w-xs sm:max-w-sm md:max-w-md break-words transition-all duration-300 ease-out ${
                 isHovered ? "md:max-h-0 md:opacity-0 md:overflow-hidden" : "opacity-100 max-h-[200px]"
               }`}
             >
@@ -294,7 +293,7 @@ function ServiceCard({ service, isPlaceholder }: ServiceCardProps) {
 
 function ServiceCardSkeleton() {
   return (
-    <div className="bg-[#050505] rounded-[18px] overflow-hidden flex flex-col w-full shadow-sm mb-4 md:mb-0 h-[350px] md:h-auto md:min-h-[360px] lg:min-h-[380px] xl:min-h-[420px] 2xl:min-h-[460px]">
+    <div className="bg-brand-surface-deep rounded-[18px] overflow-hidden flex flex-col w-full shadow-sm mb-4 md:mb-0 h-[350px] md:h-auto md:min-h-[360px] lg:min-h-[380px] xl:min-h-[420px] 2xl:min-h-[460px]">
       <div className="pl-5 py-5 sm:pl-7 sm:pt-7 flex-shrink-0">
         <div className="h-4 w-32 rounded-full bg-gradient-to-r from-white/10 via-white/40 to-white/10 animate-pulse mb-2" />
         <div className="h-3 w-48 rounded-full bg-gradient-to-r from-white/5 via-white/25 to-white/5 animate-pulse" />

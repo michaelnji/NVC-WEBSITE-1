@@ -26,7 +26,7 @@ export function Button({
     "relative rounded-full font-medium transition-all duration-300 inline-flex items-center justify-center"
 
   const variantStyles = {
-    primary: "bg-gradient-to-r from-[#F15A25] to-[#FF7A47] text-white shadow-lg shadow-[#F15A25]/30",
+    primary: "bg-gradient-to-r from-brand to-brand-soft text-white shadow-lg shadow-brand/30",
     secondary: "bg-white/10 text-white border border-white/20 backdrop-blur-sm",
     ghost: "bg-transparent text-white hover:bg-white/10",
   }

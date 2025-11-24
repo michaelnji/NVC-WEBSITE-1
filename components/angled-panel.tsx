@@ -7,7 +7,7 @@ interface AngledPanelProps {
 }
 
 export function AngledPanel({
-  color = "#F15A25",
+  color = "var(--brand-primary)",
   className = "",
   children,
 }: AngledPanelProps) {

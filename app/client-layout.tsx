@@ -76,7 +76,7 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
     <ThemeProvider>
       <LanguageProvider>
         <NextTopLoader
-          color="#F15A25"
+          color="var(--color-brand)"
           initialPosition={0.08}
           crawlSpeed={200}
           height={3}
@@ -84,7 +84,7 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
           showSpinner={false}
           easing="ease"
           speed={200}
-          shadow="0 0 10px #F15A25,0 0 5px #F15A25"
+          shadow="0 0 10px var(--color-brand),0 0 5px var(--color-brand)"
         />
 
         {init && isHome && isDesktop && (
@@ -106,7 +106,7 @@ export const ClientLayout = ({ children }: { children: React.ReactNode }) => {
                   },
                 },
                 color: {
-                  value: ["#F15A25", "#FF4500", "#FF6347", "#FFD700", "#FFA500"],
+                  value: ["var(--color-brand)", "var(--color-brand-soft)", "var(--color-brand-accent)"],
                 },
                 shape: {
                   type: ["triangle", "polygon"],

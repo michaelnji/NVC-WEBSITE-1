@@ -21,9 +21,9 @@ export function WhatsAppButton({ href, target = "_blank", rel = "noopener norefe
       href={href}
       target={target}
       rel={rel}
-      className={`group relative inline-flex items-center gap-2 sm:gap-3 bg-[#e09e00] text-[#1e1e1e] font-semibold rounded-full text-sm sm:text-base transition-colors duration-500 shadow-lg whitespace-nowrap justify-center w-[260px] h-12 sm:h-14 overflow-hidden ${className}`}
+      className={`group relative inline-flex items-center gap-2 sm:gap-3 bg-brand-accent text-brand-ink font-semibold rounded-full text-sm sm:text-base transition-colors duration-500 shadow-lg whitespace-nowrap justify-center w-[260px] h-12 sm:h-14 overflow-hidden ${className}`}
     >
-      <div className="pointer-events-none absolute -top-full -left-full w-[300%] h-[300%] bg-[#FFBA00] transform rotate-45 -translate-x-full -translate-y-full group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-700 ease-out" />
+      <div className="pointer-events-none absolute -top-full -left-full w-[300%] h-[300%] bg-brand-accent transform rotate-45 -translate-x-full -translate-y-full group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-700 ease-out" />
       <span className="relative z-10 inline-flex items-center gap-2 sm:gap-3 transition-colors duration-500">
         {children}
       </span>
@@ -40,14 +40,14 @@ interface SecondaryProps extends BaseProps {
 export function SecondaryCTAButton({ href, onClick, className = "", variant = "outline", children }: SecondaryProps) {
   const base = "group relative inline-flex items-center gap-2 sm:gap-3 font-semibold rounded-full text-sm sm:text-base transition-colors duration-500 whitespace-nowrap justify-center w-[260px] h-12 sm:h-14 overflow-hidden"
   const outline = "bg-transparent border-2 border-foreground/20 text-foreground"
-  const dark = "bg-[#1e1e1e] text-white border-transparent"
+  const dark = "bg-brand-ink text-white border-transparent"
   const variantClass = variant === "dark" ? dark : outline
   const content = (
     <motion.div
       className={`${base} ${variantClass} ${className}`}
       onClick={onClick}
     >
-      <div className="pointer-events-none absolute -top-full -left-full w-[300%] h-[300%] bg-[#F15A25] transform rotate-45 -translate-x-full -translate-y-full group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-700 ease-out" />
+      <div className="pointer-events-none absolute -top-full -left-full w-[300%] h-[300%] bg-brand transform rotate-45 -translate-x-full -translate-y-full group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-700 ease-out" />
       <span className="relative z-10 inline-flex items-center gap-2 sm:gap-3 group-hover:text-white transition-colors duration-500">
         {children}
       </span>

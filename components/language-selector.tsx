@@ -17,7 +17,7 @@ export function LanguageSelector() {
       className="relative inline-flex items-center backdrop-blur-sm rounded-full p-1 border border-white/20 overflow-hidden"
     >
       <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-[#F15A25]/20 via-[#FF7A47]/20 to-[#F15A25]/20"
+        className="absolute inset-0 bg-gradient-to-r from-brand/20 via-brand-soft/20 to-brand/20"
         initial={{ x: "-100%" }}
         animate={{ x: isHovered ? "100%" : "-100%" }}
         transition={{ duration: 1.5, ease: "easeInOut" }}
@@ -27,7 +27,7 @@ export function LanguageSelector() {
       <motion.div
         className="absolute w-9 h-9 rounded-full shadow-lg"
         style={{
-          background: "linear-gradient(135deg, #F15A25 0%, #FF7A47 100%)",
+          background: "linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-soft) 100%)",
         }}
         animate={{
           x: language === "Fr" ? 0 : 36,
@@ -39,7 +39,7 @@ export function LanguageSelector() {
         }}
       >
         <motion.div
-          className="absolute inset-0 rounded-full bg-[#F15A25]"
+          className="absolute inset-0 rounded-full bg-brand"
           animate={{
             scale: [1, 1.2, 1],
             opacity: [0.5, 0.2, 0.5],
@@ -62,7 +62,7 @@ export function LanguageSelector() {
         <motion.span
           className="text-sm font-bold"
           animate={{
-            color: language === "Fr" ? "#ffffff" : "#a0a0a0",
+            color: language === "Fr" ? "#ffffff" : "var(--color-brand-gray-muted)",
             scale: language === "Fr" ? 1 : 0.9,
             y: language === "Fr" ? [0, -2, 0] : 0,
           }}
@@ -86,7 +86,7 @@ export function LanguageSelector() {
         <motion.span
           className="text-sm font-bold"
           animate={{
-            color: language === "En" ? "#ffffff" : "#a0a0a0",
+            color: language === "En" ? "#ffffff" : "var(--color-brand-gray-muted)",
             scale: language === "En" ? 1 : 0.9,
             y: language === "En" ? [0, -2, 0] : 0,
           }}

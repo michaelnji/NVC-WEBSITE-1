@@ -29,8 +29,8 @@ export function AdminItemCard({
     <div
       className={`group relative rounded-lg border p-3 transition-all h-full flex flex-col max-w-[200px] mx-[20px] ${
         selected
-          ? "border-[#F15A25] ring-1 ring-[#F15A25]/30"
-          : "border-border hover:border-[#F15A25] hover:ring-1 hover:ring-[#F15A25]/30"
+          ? "border-brand ring-1 ring-brand/30"
+          : "border-border hover:border-brand hover:ring-1 hover:ring-brand/30"
       }`}
     >
       {onDelete && (
@@ -71,7 +71,7 @@ export function AdminItemCard({
       </button>
 
       {selected && (
-        <div className="pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset ring-[#F15A25]/30" />
+        <div className="pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset ring-brand/30" />
       )}
     </div>
   )

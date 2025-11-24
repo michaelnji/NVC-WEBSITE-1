@@ -71,25 +71,25 @@ export default function AdminPage() {
           <aside className={`hidden lg:block h-full overflow-hidden border-r-2 border-border ${sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
             <div className="h-full flex flex-col pt-0 px-3 pb-3">
               <TabsList className="flex flex-col items-stretch gap-2 bg-transparent w-full h-auto">
-                <TabsTrigger value="home" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
+                <TabsTrigger value="home" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
                   <span className="flex items-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 21V12h6v9"/></svg>
                     {L.nav.home}
                   </span>
                 </TabsTrigger>
-                <TabsTrigger value="projets" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
+                <TabsTrigger value="projets" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
                   <span className="flex items-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                     {L.nav.projects}
                   </span>
                 </TabsTrigger>
-                <TabsTrigger value="a-propos" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
+                <TabsTrigger value="a-propos" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
                   <span className="flex items-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7.5 7.5 0 0 1 13 0"/></svg>
                     {L.nav.about}
                   </span>
                 </TabsTrigger>
-                <TabsTrigger value="contact" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
+                <TabsTrigger value="contact" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
                   <span className="flex items-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M4 4h16v16H4z"/><path d="M22 6 12 13 2 6"/></svg>
                     {L.nav.contact}
@@ -127,25 +127,25 @@ export default function AdminPage() {
             {/* Mobile page switcher */}
             <div className="lg:hidden mb-4 px-2">
               <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
-                <TabsTrigger value="home" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
+                <TabsTrigger value="home" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
                   <span className="flex items-center justify-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 21V12h6v9"/></svg>
                     {L.nav.home}
                   </span>
                 </TabsTrigger>
-                <TabsTrigger value="projets" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
+                <TabsTrigger value="projets" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
                   <span className="flex items-center justify-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                     {L.nav.projects}
                   </span>
                 </TabsTrigger>
-                <TabsTrigger value="a-propos" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
+                <TabsTrigger value="a-propos" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
                   <span className="flex items-center justify-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7.5 7.5 0 0 1 13 0"/></svg>
                     {L.nav.about}
                   </span>
                 </TabsTrigger>
-                <TabsTrigger value="contact" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-[#F15A25] data-[state=active]:text-white data-[state=active]:border-[#F15A25]">
+                <TabsTrigger value="contact" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
                   <span className="flex items-center justify-center gap-2.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M4 4h16v16H4z"/><path d="M22 6 12 13 2 6"/></svg>
                     {L.nav.contact}
@@ -243,18 +243,16 @@ function LoginInline() {
       <div className="w-full max-w-sm rounded-xl border-2 border-border bg-card p-6 shadow-sm">
         <div className="mb-5 flex items-center gap-3">
           <Image src="/logo-dark.svg" alt="Logo" width={128} height={32} className="h-8 w-auto" />
-          <div className="h-6 w-px bg-border" />
-          <h1 className="text-xl font-semibold tracking-tight">{L.title}</h1>
         </div>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm text-muted-foreground mb-1">{L.emailLabel}</label>
+              <label className="block text-sm text-muted-foreground mb-1">{L.emailLabel}</label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-[#F15A25]"
+              className="w-full rounded-md border border-brand bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-brand"
               placeholder="you@example.com"
               autoComplete="email"
             />
@@ -284,13 +282,13 @@ function LoginInline() {
           <button
             type="submit"
             disabled={loading || (cooldownUntil !== null && Date.now() < cooldownUntil)}
-            className="w-full rounded-md border border-[#F15A25] bg-[#F15A25] text-white px-4 py-2 font-medium hover:opacity-90 disabled:opacity-60"
+            className="w-full rounded-md border border-brand bg-brand text-white px-4 py-2 font-medium hover:opacity-90 disabled:opacity-60"
           >
             {loading ? L.submitting : remaining > 0 ? `${L.retryIn} ${remaining}s` : L.submit}
           </button>
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">{L.restricted}</span>
-            <button type="button" onClick={onForgot} className="text-[#F15A25] hover:underline">
+            <button type="button" onClick={onForgot} className="text-brand hover:underline">
               {L.forgotPasswordLink}
             </button>
           </div>
