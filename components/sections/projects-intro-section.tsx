@@ -204,17 +204,24 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
     >
       <div className="max-w-7xl mx-auto ">
         {/* Title */}
-        <div className="text-center mb-4 sm:mb-6 md:mb-8 lg:mb-[8px]">
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[64px] font-bold  tracking-wide uppercase mb-2 sm:mb-3 md:mb-4 lg:mb-[8px]">
-            <span className="text-brand-ink">{t.projectsIntro.titlePart1} </span>
+        <div className="text-center mb-4 sm:mb-6 md:mb-8 lg:mb-2">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[64px] font-bold  tracking-wide uppercase mb-2 sm:mb-3 md:mb-4 lg:mb-2">
+            <span className="text-brand-ink">
+              {t.projectsIntro.titlePart1}{" "}
+            </span>
             <span className="text-brand">{t.projectsIntro.titleHighlight}</span>
-            <span className="text-brand-ink"> {t.projectsIntro.titlePart2}</span>
+            <span className="text-brand-ink">
+              {" "}
+              {t.projectsIntro.titlePart2}
+            </span>
           </h2>
         </div>
         <div className="text-center mb-6 md:mb-8 lg:mb-10 max-w-3xl mx-auto">
           <p className="text-sm md:text-base lg:text-lg text-brand-ink/80 ">
             {t.projectsIntro.descriptionPart1}
-            <span className="text-brand font-semibold">{t.projectsIntro.descriptionHighlight}</span>
+            <span className="text-brand font-semibold">
+              {t.projectsIntro.descriptionHighlight}
+            </span>
           </p>
         </div>
         {/* Filtres services : 4 slots max, même forme (pills) sur mobile et desktop */}
@@ -238,7 +245,11 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                     onClick={() => setActiveServiceId(slot.id)}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, delay: idx * 0.05, ease: "easeOut" }}
+                    transition={{
+                      duration: 0.35,
+                      delay: idx * 0.05,
+                      ease: "easeOut",
+                    }}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className={`px-3 md:px-5 py-1.5 md:py-2 rounded-full text-sm md:text-base font-medium transition-all duration-300 ${
@@ -254,13 +265,14 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                     key={`service-slot-${idx}`}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, delay: idx * 0.05, ease: "easeOut" }}
+                    transition={{
+                      duration: 0.35,
+                      delay: idx * 0.05,
+                      ease: "easeOut",
+                    }}
                     className="px-3 md:px-5 py-1.5 md:py-2 rounded-full text-sm md:text-base font-medium bg-brand-surface-dark text-white/90 flex items-center justify-center"
                   >
-                    <AvailableSlotCard
-                      title="Slot available"
-                      description=""
-                    />
+                    <AvailableSlotCard title="Slot available" description="" />
                   </motion.div>
                 )
               )}
@@ -313,7 +325,9 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                     <ProjectCardSkeleton
                       key={idx}
                       className={`aspect-square ${sizeClass} ${
-                        isThree && idx === 2 ? "col-span-2 md:col-span-1 justify-self-center" : ""
+                        isThree && idx === 2
+                          ? "col-span-2 md:col-span-1 justify-self-center"
+                          : ""
                       }`}
                     />
                   ))}
@@ -329,7 +343,11 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                       initial={{ opacity: 0, y: 24 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, amount: 0.3 }}
-                      transition={{ duration: 0.4, delay: idx * 0.06, ease: "easeOut" }}
+                      transition={{
+                        duration: 0.4,
+                        delay: idx * 0.06,
+                        ease: "easeOut",
+                      }}
                       whileHover={{ y: -8, transition: { duration: 0.3 } }}
                       className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 aspect-square"
                     >
@@ -351,8 +369,12 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                           <div className="absolute bottom-0 left-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <h3 className="text-white text-sm font-bold mb-1">{it.title}</h3>
-                            <p className="text-white/80 text-xs">{it.category}</p>
+                            <h3 className="text-white text-sm font-bold mb-1">
+                              {it.title}
+                            </h3>
+                            <p className="text-white/80 text-xs">
+                              {it.category}
+                            </p>
                           </div>
                         </>
                       )}
@@ -361,14 +383,18 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                 </div>
 
                 {/* Desktop: layout spécial */}
-            <div className="hidden lg:grid grid-cols-3 gap-4 md:gap-6 items-stretch w-full">
+                <div className="hidden lg:grid grid-cols-3 gap-4 md:gap-6 items-stretch w-full">
                   {/* Left big (items[0]) */}
                   {filledItems[0] && (
                     <motion.div
                       key={filledItems[0].id}
                       initial={{ opacity: 0, y: 32 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.45, delay: 0.04, ease: "easeOut" }}
+                      transition={{
+                        duration: 0.45,
+                        delay: 0.04,
+                        ease: "easeOut",
+                      }}
                       whileHover={{ y: -8, transition: { duration: 0.3 } }}
                       className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 col-span-2 row-span-2 h-[518px]"
                     >
@@ -390,8 +416,12 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                           <div className="absolute bottom-0 left-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <h3 className="text-white text-2xl font-bold mb-1">{filledItems[0].title}</h3>
-                            <p className="text-white/80 text-sm">{filledItems[0].category}</p>
+                            <h3 className="text-white text-2xl font-bold mb-1">
+                              {filledItems[0].title}
+                            </h3>
+                            <p className="text-white/80 text-sm">
+                              {filledItems[0].category}
+                            </p>
                           </div>
                         </>
                       )}
@@ -406,7 +436,11 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                         key={filledItems[1].id}
                         initial={{ opacity: 0, y: 24 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.45, delay: 0.1, ease: "easeOut" }}
+                        transition={{
+                          duration: 0.45,
+                          delay: 0.1,
+                          ease: "easeOut",
+                        }}
                         whileHover={{ y: -8, transition: { duration: 0.3 } }}
                         className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
                       >
@@ -428,8 +462,12 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                             <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                              <h3 className="text-white text-xl font-bold mb-1">{filledItems[1].title}</h3>
-                              <p className="text-white/80 text-xs md:text-sm">{filledItems[1].category}</p>
+                              <h3 className="text-white text-xl font-bold mb-1">
+                                {filledItems[1].title}
+                              </h3>
+                              <p className="text-white/80 text-xs md:text-sm">
+                                {filledItems[1].category}
+                              </p>
                             </div>
                           </>
                         )}
@@ -443,7 +481,11 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                           key={filledItems[2].id}
                           initial={{ opacity: 0, y: 24 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.45, delay: 0.16, ease: "easeOut" }}
+                          transition={{
+                            duration: 0.45,
+                            delay: 0.16,
+                            ease: "easeOut",
+                          }}
                           whileHover={{ y: -8, transition: { duration: 0.3 } }}
                           className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
                         >
@@ -465,8 +507,12 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                               <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <h3 className="text-white text-lg font-bold mb-1">{filledItems[2].title}</h3>
-                                <p className="text-white/80 text-xs md:text-sm">{filledItems[2].category}</p>
+                                <h3 className="text-white text-lg font-bold mb-1">
+                                  {filledItems[2].title}
+                                </h3>
+                                <p className="text-white/80 text-xs md:text-sm">
+                                  {filledItems[2].category}
+                                </p>
                               </div>
                             </>
                           )}
@@ -477,7 +523,11 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                           key={filledItems[3].id}
                           initial={{ opacity: 0, y: 24 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.45, delay: 0.2, ease: "easeOut" }}
+                          transition={{
+                            duration: 0.45,
+                            delay: 0.2,
+                            ease: "easeOut",
+                          }}
                           whileHover={{ y: -8, transition: { duration: 0.3 } }}
                           className="group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
                         >
@@ -499,8 +549,12 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                               <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <h3 className="text-white text-lg font-bold mb-1">{filledItems[3].title}</h3>
-                                <p className="text-white/80 text-xs md:text-sm">{filledItems[3].category}</p>
+                                <h3 className="text-white text-lg font-bold mb-1">
+                                  {filledItems[3].title}
+                                </h3>
+                                <p className="text-white/80 text-xs md:text-sm">
+                                  {filledItems[3].category}
+                                </p>
                               </div>
                             </>
                           )}
@@ -509,7 +563,6 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                     </div>
                   </div>
                 </div>
-
               </>
             ) : (
               filledItems.map((item, idx) => (
@@ -518,10 +571,16 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                   initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.4, delay: idx * 0.06, ease: "easeOut" }}
+                  transition={{
+                    duration: 0.4,
+                    delay: idx * 0.06,
+                    ease: "easeOut",
+                  }}
                   whileHover={{ y: -8, transition: { duration: 0.3 } }}
                   className={`group relative rounded-2xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-300 aspect-square ${sizeClass} ${
-                    isThree && idx === 2 ? "col-span-2 md:col-span-1 justify-self-center" : ""
+                    isThree && idx === 2
+                      ? "col-span-2 md:col-span-1 justify-self-center"
+                      : ""
                   }`}
                 >
                   {item.isPlaceholder ? (
@@ -542,8 +601,12 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <h3 className="text-white text-lg md:text-xl font-bold mb-1">{item.title}</h3>
-                        <p className="text-white/80 text-xs md:text-sm">{item.category}</p>
+                        <h3 className="text-white text-lg md:text-xl font-bold mb-1">
+                          {item.title}
+                        </h3>
+                        <p className="text-white/80 text-xs md:text-sm">
+                          {item.category}
+                        </p>
                       </div>
                     </>
                   )}
@@ -552,7 +615,7 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
             )}
           </motion.div>
         </AnimatePresence>
-        
+
         <div className="flex justify-center mt-6 md:mt-10">
           <SecondaryCTAButton href="/portfolio" variant="dark">
             <span className="text-sm md:text-base">Our Portfolio</span>
@@ -561,7 +624,7 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function ProjectCardSkeleton({ className = "" }: { className?: string }) {
