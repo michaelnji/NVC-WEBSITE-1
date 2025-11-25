@@ -4,9 +4,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-
-
-  /* Brand palette */
   --brand-primary: #F15A25;
   --brand-primary-soft: #FF7A47;
   --brand-ink: #1E1E1E;
@@ -14,7 +11,8 @@
   --brand-cream: #FCDBCF;
   --brand-accent: #F9C22E;
 
-  /* Neutral brand surfaces / grays / accent blue */
+  --radius: 0.625rem;
+
   --brand-surface-dark: #111111;
   --brand-surface-deep: #050505;
   --brand-gray-soft: #D9D9D9;
@@ -58,12 +56,11 @@
 }
 
 html, body {
-  overscroll-behavior: none; /* empêche le glissement / bounce */
-  overflow-x: hidden;         /* empêche le scroll horizontal */
+  overscroll-behavior: none; 
+  overflow-x: hidden;         
   min-height: 100%;
 }
 @theme inline {
-  /* optional: --font-sans, --font-serif, --font-mono if they are applied in the layout.tsx */
   --font-sans: var(--font-montserrat);
   --font-display: var(--font-display);
   --color-background: var(--background);
@@ -103,7 +100,6 @@ html, body {
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Brand colors */
   --color-brand: var(--brand-primary);
   --color-brand-soft: var(--brand-primary-soft);
   --color-brand-ink: var(--brand-ink);
@@ -133,7 +129,6 @@ html, body {
     perspective: 1000px;
   }
 
-  /* New animation for page falling down */
   .flip-top-fall {
     animation: pageFall 1s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
   }
@@ -142,7 +137,6 @@ html, body {
     animation: fallingShadow 1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
   }
 
-  /* Adding bottom flip animation that rises up */
   .flip-bottom-rise {
     animation: pageRise 1s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
   }
@@ -151,7 +145,6 @@ html, body {
     animation: risingShadow 1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
   }
 
-  /* Shimmer utility */
   .animate-shimmer {
     animation: shimmer 1.5s infinite;
   }
@@ -191,7 +184,6 @@ html, body {
   }
 }
 
-/* Shadow for bottom half animation */
 @keyframes risingShadow {
   0% {
     background-color: rgba(0, 0, 0, 0);
@@ -204,7 +196,6 @@ html, body {
   }
 }
 
-/* Shimmer loading effect */
 @keyframes shimmer {
   0% {
     transform: translateX(-100%);

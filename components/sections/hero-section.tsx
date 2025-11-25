@@ -21,7 +21,7 @@ export function HeroSection({ initialHeroImages }: HeroSectionProps) {
     <div className="relative min-h-screen flex flex-col items-start overflow-hidden  px-6 md:px-12 lg:px-16 xl:px-24 2xl:px-32 3xl:px-40 max-w-full ">
       <div className="relative w-full max-w-full min-h-screen overflow-hidden">
         <div className="relative z-10 w-full max-w-full min-h-screen flex flex-col lg:flex-row pt-25 lg:pt-0 overflow-hidden">
-          <div className="font-500 w-full lg:w-1/2  flex items-center justify-center lg:justify-start  pt-10 lg:pt-0">
+          <div className="w-full lg:w-1/2 flex items-center justify-center lg:justify-start pt-10 lg:pt-0">
             <div className="text-center lg:text-left max-w-full lg:pr-[50px] ">
               <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[80px]  font-bold mb-[10px]  tracking-wide ">
                 <span className="text-foreground">{t.hero.title}</span>

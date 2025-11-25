@@ -19,6 +19,7 @@ const loadedImagesGlobal = new Set<string>()
 export default function ImageWithSkeleton({ src, alt, className = "", wrapperClassName = "", priority = false, eager = false, unoptimized, sizes = "100vw" }: Props) {
   const wasLoaded = useMemo(() => loadedImagesGlobal.has(src), [src])
   const isGif = useMemo(() => src.toLowerCase().includes(".gif"), [src])
+  const isSupabase = useMemo(() => src.includes(".supabase.co"), [src])
   const [loaded, setLoaded] = useState<boolean>(wasLoaded)
   const [errored, setErrored] = useState<boolean>(false)
 
@@ -46,7 +47,7 @@ export default function ImageWithSkeleton({ src, alt, className = "", wrapperCla
           setLoaded(true)
         }}
         className={`object-cover transition-opacity duration-200 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
-        unoptimized={unoptimized ?? isGif}
+        unoptimized={unoptimized ?? (isGif || isSupabase)}
       />
     </div>
   )

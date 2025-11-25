@@ -61,7 +61,8 @@ export function TestimonialsManager() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          rating: Number.parseInt(String(formData.rating)),
+          // rating est déjà un nombre contrôlé, inutile de le reconvertir ici
+          rating: formData.rating,
           order_index: testimonials.length,
         }),
       })
@@ -187,8 +188,16 @@ export function TestimonialsManager() {
               type="number"
               min="1"
               max="5"
-              value={formData.rating}
-              onChange={(e) => setFormData({ ...formData, rating: Number.parseInt(e.target.value) })}
+              value={Number.isNaN(formData.rating) ? "" : formData.rating}
+              onChange={(e) => {
+                const next = e.target.value
+                const parsed = Number.parseInt(next, 10)
+                setFormData({
+                  ...formData,
+                  // Si la saisie n'est pas un nombre, on retombe sur 1 pour éviter NaN
+                  rating: Number.isNaN(parsed) ? 1 : parsed,
+                })
+              }}
             />
           </div>
 

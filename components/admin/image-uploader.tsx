@@ -103,7 +103,7 @@ export function ImageUploader({
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Upload failed"
-      console.error("[v0] Upload error:", errorMessage)
+      console.error(" Upload error:", errorMessage)
       setError(errorMessage)
     } finally {
       setProgress(null)
