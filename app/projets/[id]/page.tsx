@@ -1,7 +1,5 @@
-"use client"
-
 import { FlipCountdownSection } from "@/components/sections/flipcountdown-section";
-export default function ProjetsPage() {
+
+export default function ProjectDetailPage() {
   return <FlipCountdownSection />;
 }
-
