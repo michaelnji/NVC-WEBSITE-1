@@ -17,7 +17,13 @@ export default function SiteFooter() {
 
   return (
     <footer
-      className="w-full bg-[url('/Calque_1.png')] font-sans overflow-hidden -mt-8 md:-mt-10 lg:-mt-16 bg-brand-cream"
+      className="w-full font-sans overflow-hidden -mt-8 md:-mt-10 lg:-mt-16 bg-brand-cream"
+        style={{
+        backgroundImage: "url('/Calque_1.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
       <div className="w-full px-4 md:px-8 lg:px-12 xl:px-16 py-12 mt-20 md:py-16 lg:py-15">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 lg:gap-15 place-items-center lg:items-start">
