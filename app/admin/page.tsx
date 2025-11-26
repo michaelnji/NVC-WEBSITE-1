@@ -1,10 +1,10 @@
 "use client"
 
 import { ButtonAdmin } from "@/components/admin/button-admin";
-import { AdminAboutPage } from "@/components/admin/pages/about";
 import { AdminContactPage } from "@/components/admin/pages/contact";
 import { AdminHomePage } from "@/components/admin/pages/home";
 import { ProjectsManager } from "@/components/admin/projects-manager";
+import { ServicesManager } from "@/components/admin/services-manager";
 import { LanguageSelector } from "@/components/language-selector";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLanguage } from "@/contexts/language-context";
@@ -128,6 +128,27 @@ export default function AdminPage() {
                       <path d="M9 21V12h6v9" />
                     </svg>
                     {L.nav.home}
+                  </span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="services"
+                  className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand"
+                >
+                  <span className="flex items-center gap-2.5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-5 w-5"
+                    >
+                      <rect x="3" y="6" width="18" height="12" rx="2" />
+                      <path d="M3 10h18" />
+                    </svg>
+                    Services
                   </span>
                 </TabsTrigger>
                 <TabsTrigger
@@ -333,7 +354,12 @@ export default function AdminPage() {
 
             {/* A PROPOS */}
             <TabsContent value="a-propos" className="mt-0">
-              <AdminAboutPage />
+              <ProjectsManager />
+            </TabsContent>
+
+            {/* SERVICES */}
+            <TabsContent value="services" className="mt-0">
+              <ServicesManager />
             </TabsContent>
 
             {/* CONTACT */}
