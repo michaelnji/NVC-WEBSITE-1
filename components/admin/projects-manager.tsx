@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import type { Project, Service } from "@/lib/types";
 import { useEffect, useState } from "react";
@@ -46,7 +46,6 @@ export function ProjectsManager() {
     description: "",
     image_url: "",
   });
-
 
   useEffect(() => {
     fetchServices();
@@ -404,12 +403,20 @@ export function ProjectsManager() {
         <TabsContent value="projects">
           <div className="grid grid-cols-1 h-[calc(100vh-220px)] overflow-auto lg:grid-cols-2 gap-4">
             <AdminItemsListCard
-              title={activeService === "ALL" ? "Tous les projets" : "Projets du service sélectionné"}
+              title={
+                activeService === "ALL"
+                  ? "Tous les projets"
+                  : "Projets du service sélectionné"
+              }
               count={projects.length}
               max={projects.length || 0}
               isFetching={isFetchingProjects}
               gridClassName="grid gap-4"
-              emptyMessage={activeService === "ALL" ? "Aucun projet pour l’instant." : "Aucun projet pour ce service pour l’instant."}
+              emptyMessage={
+                activeService === "ALL"
+                  ? "Aucun projet pour l’instant."
+                  : "Aucun projet pour ce service pour l’instant."
+              }
             >
               {projects.map((project) => {
                 const selected = editingProjectId === project.id;
