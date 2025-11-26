@@ -26,7 +26,7 @@ export function ProjectsManager() {
   const [tab, setTab] = useState<"categories" | "projects">("projects");
   const [services, setServices] = useState<Service[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [activeService, setActiveService] = useState<string>("");
+  const [activeService, setActiveService] = useState<string>("ALL");
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchingProjects, setIsFetchingProjects] = useState(true);
   const [isFetchingServices, setIsFetchingServices] = useState(true);
@@ -47,17 +47,41 @@ export function ProjectsManager() {
     image_url: "",
   });
 
+
   useEffect(() => {
     fetchServices();
   }, []);
 
   useEffect(() => {
-    if (activeService) {
+    if (activeService === "ALL") {
+      // Fetch all projects for all services
+      fetchAllProjects();
+    } else if (activeService) {
       fetchProjects(activeService);
     } else {
       setProjects([]);
     }
   }, [activeService]);
+
+  // Fetch all projects for all services
+  const fetchAllProjects = async () => {
+    setIsFetchingProjects(true);
+    try {
+      const res = await fetch(`/api/projects`);
+      if (!res.ok) {
+        console.error("Failed to fetch all projects:", res.status);
+        setProjects([]);
+        return;
+      }
+      const data = await res.json();
+      setProjects(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Failed to fetch all projects:", error);
+      setProjects([]);
+    } finally {
+      setIsFetchingProjects(false);
+    }
+  };
 
   const fetchServices = async () => {
     setIsFetchingServices(true);
@@ -167,6 +191,23 @@ export function ProjectsManager() {
 
   return (
     <div className="space-y-6">
+      {/* Service filter select */}
+      <div className="mb-4 max-w-xs">
+        <Label className="pb-2">Filtrer par service</Label>
+        <Select value={activeService} onValueChange={setActiveService}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Tous les services" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">Tous les services</SelectItem>
+            {services.map((service) => (
+              <SelectItem key={service.id} value={service.id}>
+                {service.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       <Tabs
         value={tab}
         onValueChange={(v) => setTab(v as "categories" | "projects")}
@@ -361,15 +402,14 @@ export function ProjectsManager() {
 
         {/* Projects Tab (existing) */}
         <TabsContent value="projects">
-          {/* ...existing code for projects tab... */}
           <div className="grid grid-cols-1 h-[calc(100vh-220px)] overflow-auto lg:grid-cols-2 gap-4">
             <AdminItemsListCard
-              title="Projets du service sélectionné"
+              title={activeService === "ALL" ? "Tous les projets" : "Projets du service sélectionné"}
               count={projects.length}
               max={projects.length || 0}
               isFetching={isFetchingProjects}
               gridClassName="grid gap-4"
-              emptyMessage="Aucun projet pour ce service pour l’instant."
+              emptyMessage={activeService === "ALL" ? "Aucun projet pour l’instant." : "Aucun projet pour ce service pour l’instant."}
             >
               {projects.map((project) => {
                 const selected = editingProjectId === project.id;
