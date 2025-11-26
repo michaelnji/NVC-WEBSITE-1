@@ -155,6 +155,10 @@ interface Translations {
       createOrEditProject: string;
       projectCategory: string;
       selectCategory: string;
+      theme: string;
+      selectTheme: string;
+      createNewTheme: string;
+      newThemePlaceholder: string;
       image: string;
       projectTitle: string;
       projectTitlePlaceholder: string;
@@ -553,6 +557,10 @@ const translations: Record<Language, Translations> = {
           "Creez ou modifiez un projet pour le service selectionne. Les projets apparaissent dans la section portfolio.",
         projectCategory: "Categorie du Projet",
         selectCategory: "Selectionnez une categorie",
+        theme: "Theme",
+        selectTheme: "Selectionnez ou creez un theme",
+        createNewTheme: "+ Creer un nouveau theme",
+        newThemePlaceholder: "Entrez le nom du nouveau theme",
         image: "Image",
         projectTitle: "Titre du Projet",
         projectTitlePlaceholder: "Titre du projet",
@@ -955,6 +963,10 @@ const translations: Record<Language, Translations> = {
           "Create or edit a project for the selected service. Projects appear in the portfolio section.",
         projectCategory: "Project Category",
         selectCategory: "Select a category",
+        theme: "Theme",
+        selectTheme: "Select or create theme",
+        createNewTheme: "+ Create new theme",
+        newThemePlaceholder: "Enter new theme name",
         image: "Image",
         projectTitle: "Project Title",
         projectTitlePlaceholder: "Project title",

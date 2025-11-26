@@ -39,7 +39,10 @@ export function ProjectsManager() {
     description: "",
     image_url: "",
     service_id: "",
+    theme: "",
   });
+  const [availableThemes, setAvailableThemes] = useState<string[]>([]);
+  const [isCreatingNewTheme, setIsCreatingNewTheme] = useState(false);
   // Category (Service) form state
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
   const [deleteServiceId, setDeleteServiceId] = useState<string | null>(null);
@@ -75,13 +78,25 @@ export function ProjectsManager() {
         return;
       }
       const data = await res.json();
-      setProjects(Array.isArray(data) ? data : []);
+      const projectsData = Array.isArray(data) ? data : [];
+      setProjects(projectsData);
+      // Extract unique themes from all projects
+      extractThemes(projectsData);
     } catch (error) {
       console.error("Failed to fetch all projects:", error);
       setProjects([]);
     } finally {
       setIsFetchingProjects(false);
     }
+  };
+
+  // Extract unique themes from projects
+  const extractThemes = (projectsList: Project[]) => {
+    const themes = projectsList
+      .map((p) => p.theme)
+      .filter((theme): theme is string => !!theme && theme.trim() !== "");
+    const uniqueThemes = Array.from(new Set(themes));
+    setAvailableThemes(uniqueThemes);
   };
 
   const fetchServices = async () => {
@@ -117,7 +132,10 @@ export function ProjectsManager() {
         return;
       }
       const data = await res.json();
-      setProjects(Array.isArray(data) ? data : []);
+      const projectsData = Array.isArray(data) ? data : [];
+      setProjects(projectsData);
+      // Extract unique themes from filtered projects
+      extractThemes(projectsData);
     } catch (error) {
       console.error("Failed to fetch projects:", error);
       setProjects([]);
@@ -142,6 +160,7 @@ export function ProjectsManager() {
         body: JSON.stringify({
           ...projectForm,
           service_id: serviceId,
+          theme: projectForm.theme || null,
           order_index: projects.length,
         }),
       });
@@ -151,8 +170,10 @@ export function ProjectsManager() {
         description: "",
         image_url: "",
         service_id: "",
+        theme: "",
       });
       setEditingProjectId(null);
+      setIsCreatingNewTheme(false);
       await fetchProjects(serviceId);
     } catch (error) {
       console.error("Error:", error);
@@ -436,7 +457,9 @@ export function ProjectsManager() {
                         description: project.description,
                         image_url: project.image_url,
                         service_id: project.service_id || activeService || "",
+                        theme: project.theme || "",
                       });
+                      setIsCreatingNewTheme(false);
                     }}
                     onDelete={() => handleDeleteProject(project.id)}
                   />
@@ -473,6 +496,90 @@ export function ProjectsManager() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Theme selector - only for photography service */}
+                {(() => {
+                  const selectedService = services.find(
+                    (s) => s.id === (projectForm.service_id || activeService)
+                  );
+                  const isPhotography = selectedService?.title
+                    ?.toLowerCase()
+                    .includes("photo");
+
+                  if (!isPhotography) return null;
+
+                  return (
+                    <div className="space-y-3">
+                      <Label className="pb-2">
+                        {t.admin.projects.theme || "Theme"}
+                      </Label>
+                      <div className="flex items-center gap-2">
+                        <Select
+                          value={isCreatingNewTheme ? "new" : projectForm.theme || ""}
+                          onValueChange={(v) => {
+                            if (v === "new") {
+                              setIsCreatingNewTheme(true);
+                              setProjectForm({ ...projectForm, theme: "" });
+                            } else {
+                              setIsCreatingNewTheme(false);
+                              setProjectForm({ ...projectForm, theme: v });
+                            }
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue
+                              placeholder={
+                                t.admin.projects.selectTheme ||
+                                "Select or create theme"
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableThemes.map((theme) => (
+                              <SelectItem key={theme} value={theme}>
+                                {theme}
+                              </SelectItem>
+                            ))}
+                            <SelectItem value="new">
+                              {t.admin.projects.createNewTheme ||
+                                "+ Create new theme"}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {isCreatingNewTheme && (
+                        <div className="space-y-2">
+                          <Input
+                            value={projectForm.theme}
+                            onChange={(e) =>
+                              setProjectForm({
+                                ...projectForm,
+                                theme: e.target.value,
+                              })
+                            }
+                            placeholder={
+                              t.admin.projects.newThemePlaceholder ||
+                              "Enter new theme name"
+                            }
+                            className="w-full"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="text-xs text-muted-foreground hover:text-foreground"
+                            onClick={() => {
+                              setIsCreatingNewTheme(false);
+                              setProjectForm({ ...projectForm, theme: "" });
+                            }}
+                          >
+                            {t.admin.projects.cancel || "Cancel"}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 <div>
                   <Label className="pb-2">{t.admin.projects.image}</Label>
@@ -546,7 +653,9 @@ export function ProjectsManager() {
                           description: "",
                           image_url: "",
                           service_id: "",
+                          theme: "",
                         });
+                        setIsCreatingNewTheme(false);
                       }}
                     >
                       {t.admin.projects.cancel}

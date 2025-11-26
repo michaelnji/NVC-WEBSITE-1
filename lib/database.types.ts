@@ -52,6 +52,7 @@ export type Database = {
           image_url: string
           order_index: number | null
           service_id: string
+          theme: string | null
           title: string
           updated_at: string | null
         }
@@ -62,6 +63,7 @@ export type Database = {
           image_url: string
           order_index?: number | null
           service_id: string
+          theme?: string | null
           title: string
           updated_at?: string | null
         }
@@ -72,6 +74,7 @@ export type Database = {
           image_url?: string
           order_index?: number | null
           service_id?: string
+          theme?: string | null
           title?: string
           updated_at?: string | null
         }
