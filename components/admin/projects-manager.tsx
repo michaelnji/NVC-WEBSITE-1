@@ -1,135 +1,158 @@
 "use client"
+import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal";
+import ImageWithSkeleton from "@/components/image-with-skeleton";
+import { AdminItemCard } from "./admin-item-card";
+import { AdminItemsListCard } from "./admin-items-list-card";
+import { ButtonAdmin } from "./button-admin";
 
-import type React from "react"
-import ImageWithSkeleton from "@/components/image-with-skeleton"
-import { AdminItemCard } from "./admin-item-card"
-import { AdminItemsListCard } from "./admin-items-list-card"
-import { ButtonAdmin } from "./button-admin"
-import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal"
-
-import { useState, useEffect } from "react"
-import type { Service, Project } from "@/lib/types"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ImageUploader } from "./image-uploader"
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import type { Project, Service } from "@/lib/types";
+import { useEffect, useState } from "react";
+import { ImageUploader } from "./image-uploader";
 
 export function ProjectsManager() {
-  const [services, setServices] = useState<Service[]>([])
-  const [projects, setProjects] = useState<Project[]>([])
-  const [activeService, setActiveService] = useState<string>("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [isFetchingProjects, setIsFetchingProjects] = useState(true)
-  const [isFetchingServices, setIsFetchingServices] = useState(true)
-  const [editingProjectId, setEditingProjectId] = useState<string | null>(null)
-  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [tab, setTab] = useState<"categories" | "projects">("projects");
+  const [services, setServices] = useState<Service[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [activeService, setActiveService] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingProjects, setIsFetchingProjects] = useState(true);
+  const [isFetchingServices, setIsFetchingServices] = useState(true);
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const [projectForm, setProjectForm] = useState({
     title: "",
     description: "",
     image_url: "",
-  })
+    service_id: "",
+  });
+  // Category (Service) form state
+  const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
+  const [deleteServiceId, setDeleteServiceId] = useState<string | null>(null);
+  const [serviceForm, setServiceForm] = useState({
+    title: "",
+    description: "",
+    image_url: "",
+  });
 
   useEffect(() => {
-    fetchServices()
-  }, [])
+    fetchServices();
+  }, []);
 
   useEffect(() => {
     if (activeService) {
-      fetchProjects(activeService)
+      fetchProjects(activeService);
     } else {
-      setProjects([])
+      setProjects([]);
     }
-  }, [activeService])
+  }, [activeService]);
 
   const fetchServices = async () => {
-    setIsFetchingServices(true)
+    setIsFetchingServices(true);
     try {
-      const res = await fetch("/api/services")
+      const res = await fetch("/api/services");
       if (!res.ok) {
-        console.error("Failed to fetch services:", res.status)
-        setServices([])
-        return
+        console.error("Failed to fetch services:", res.status);
+        setServices([]);
+        return;
       }
-      const data = await res.json()
-      const arr = Array.isArray(data) ? data : []
-      setServices(arr)
+      const data = await res.json();
+      const arr = Array.isArray(data) ? data : [];
+      setServices(arr);
       if (arr.length > 0 && !activeService) {
-        setActiveService(arr[0].id)
+        setActiveService(arr[0].id);
       }
     } catch (error) {
-      console.error("Failed to fetch services:", error)
-      setServices([])
+      console.error("Failed to fetch services:", error);
+      setServices([]);
     } finally {
-      setIsFetchingServices(false)
+      setIsFetchingServices(false);
     }
-  }
+  };
 
   const fetchProjects = async (serviceId: string) => {
-    setIsFetchingProjects(true)
+    setIsFetchingProjects(true);
     try {
-      const res = await fetch(`/api/projects?service_id=${serviceId}`)
+      const res = await fetch(`/api/projects?service_id=${serviceId}`);
       if (!res.ok) {
-        console.error("Failed to fetch projects:", res.status)
-        setProjects([])
-        return
+        console.error("Failed to fetch projects:", res.status);
+        setProjects([]);
+        return;
       }
-      const data = await res.json()
-      setProjects(Array.isArray(data) ? data : [])
+      const data = await res.json();
+      setProjects(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Failed to fetch projects:", error)
-      setProjects([])
+      console.error("Failed to fetch projects:", error);
+      setProjects([]);
     } finally {
-      setIsFetchingProjects(false)
+      setIsFetchingProjects(false);
     }
-  }
+  };
 
   const handleProjectSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!activeService) return
-    setIsLoading(true)
+    e.preventDefault();
+    const serviceId = projectForm.service_id || activeService;
+    if (!serviceId) return;
+    setIsLoading(true);
     try {
-      const url = editingProjectId ? `/api/projects/${editingProjectId}` : "/api/projects"
-      const method = editingProjectId ? "PUT" : "POST"
+      const url = editingProjectId
+        ? `/api/projects/${editingProjectId}`
+        : "/api/projects";
+      const method = editingProjectId ? "PUT" : "POST";
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...projectForm,
-          service_id: activeService,
+          service_id: serviceId,
           order_index: projects.length,
         }),
-      })
-      if (!response.ok) throw new Error("Failed to save")
-      setProjectForm({ title: "", description: "", image_url: "" })
-      setEditingProjectId(null)
-      await fetchProjects(activeService)
+      });
+      if (!response.ok) throw new Error("Failed to save");
+      setProjectForm({
+        title: "",
+        description: "",
+        image_url: "",
+        service_id: "",
+      });
+      setEditingProjectId(null);
+      await fetchProjects(serviceId);
     } catch (error) {
-      console.error("Error:", error)
+      console.error("Error:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleDeleteProject = (id: string) => {
-    setDeleteId(id)
-  }
+    setDeleteId(id);
+  };
 
   const handleConfirmDelete = async () => {
-    if (!deleteId) return
+    if (!deleteId) return;
     try {
-      await fetch(`/api/projects/${deleteId}`, { method: "DELETE" })
+      await fetch(`/api/projects/${deleteId}`, { method: "DELETE" });
       if (activeService) {
-        await fetchProjects(activeService)
+        await fetchProjects(activeService);
       }
     } catch (error) {
-      console.error("Delete failed:", error)
+      console.error("Delete failed:", error);
     } finally {
-      setDeleteId(null)
+      setDeleteId(null);
     }
-  }
+  };
 
   if (isFetchingServices) {
     return (
@@ -139,139 +162,356 @@ export function ProjectsManager() {
           <p>Chargement des services…</p>
         </div>
       </div>
-    )
-  }
-
-  if (services.length === 0) {
-    return (
-      <Card className="p-6">
-        <p className="text-sm text-muted-foreground">
-          Aucun service n'est encore créé. Créez d'abord un service dans la section "Services" pour pouvoir gérer ses projets.
-        </p>
-      </Card>
-    )
+    );
   }
 
   return (
     <div className="space-y-6">
-      <Tabs value={activeService} onValueChange={setActiveService}>
-        <TabsList className="mb-4 flex flex-wrap gap-2 rounded-md bg-muted/40 p-1.5 border border-border/60">
-          {services.map((service) => (
-            <TabsTrigger
-              key={service.id}
-              value={service.id}
-              className="px-3 py-1.5 text-xs sm:text-sm rounded-full border border-transparent data-[state=active]:border-brand data-[state=active]:bg-brand data-[state=active]:text-white text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-            >
-              {service.title}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <AdminItemsListCard
-            title="Projets du service sélectionné"
-            count={projects.length}
-            max={projects.length || 0}
-            isFetching={isFetchingProjects}
-            emptyMessage="Aucun projet pour ce service pour l’instant."
+      <Tabs
+        value={tab}
+        onValueChange={(v) => setTab(v as "categories" | "projects")}
+      >
+        {/* <TabsList className="mb-4 flex flex-wrap gap-2 rounded-md bg-muted/40 p-1.5 border border-border/60">
+          <TabsTrigger
+            value="categories"
+            className="px-3 py-1.5 text-xs sm:text-sm rounded-full border border-transparent data-[state=active]:border-brand data-[state=active]:bg-brand data-[state=active]:text-white text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
           >
-            {projects.map((project) => {
-              const selected = editingProjectId === project.id
-              return (
-                <AdminItemCard
-                  key={project.id}
-                  imageUrl={project.image_url}
-                  title={project.title}
-                  description={project.description}
-                  selected={selected}
-                  onSelect={() => {
-                    setEditingProjectId(project.id)
-                    setProjectForm({
-                      title: project.title,
-                      description: project.description,
-                      image_url: project.image_url,
-                    })
-                  }}
-                  onDelete={() => handleDeleteProject(project.id)}
-                />
-              )
-            })}
-          </AdminItemsListCard>
+            Catégories
+          </TabsTrigger>
+          <TabsTrigger
+            value="projects"
+            className="px-3 py-1.5 text-xs sm:text-sm rounded-full border border-transparent data-[state=active]:border-brand data-[state=active]:bg-brand data-[state=active]:text-white text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+          >
+            Projets
+          </TabsTrigger>
+        </TabsList> */}
 
-          <Card className="p-6">
-            <div className="mb-2 text-xs text-muted-foreground">
-              Créez ou modifiez un projet pour le service sélectionné. Les projets apparaissent dans la section portfolio.
-            </div>
-            <form onSubmit={handleProjectSubmit} className="space-y-4">
-              <div>
-                <Label className="pb-2">Image</Label>
-                <ImageUploader onUpload={(url) => setProjectForm({ ...projectForm, image_url: url })} />
-                {projectForm.image_url && (
-                  <ImageWithSkeleton
-                    src={projectForm.image_url || "/placeholder.svg"}
-                    alt="Preview"
-                    wrapperClassName="mt-2 h-32 w-32"
-                    className="w-full h-full object-cover rounded"
-                  />
-                )}
-              </div>
-
-              <div>
-                <Label className="pb-2">Titre du Projet</Label>
-                <Input
-                  value={projectForm.title}
-                  onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })}
-                  placeholder="Titre du projet"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label className="pb-2">Description</Label>
-                <Textarea
-                  value={projectForm.description}
-                  onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
-                  placeholder="Description du projet"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
-                <ButtonAdmin
-                  type="submit"
-                  fullWidth={false}
-                  disabled={!projectForm.image_url || isLoading}
-                >
-                  {editingProjectId ? "Mettre à jour Projet" : "Ajouter Projet"}
-                </ButtonAdmin>
-                {editingProjectId && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="text-muted-foreground hover:bg-muted/30 h-9 px-4"
-                    onClick={() => {
-                      setEditingProjectId(null)
-                      setProjectForm({ title: "", description: "", image_url: "" })
+        {/* Categories Tab */}
+        {/* <TabsContent value="categories">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <AdminItemsListCard
+              title="Catégories (Services)"
+              count={services.length}
+              max={services.length || 0}
+              isFetching={isFetchingServices}
+              emptyMessage="Aucune catégorie pour l’instant."
+            >
+              {services.map((service) => {
+                const selected = editingServiceId === service.id;
+                return (
+                  <AdminItemCard
+                    key={service.id}
+                    imageUrl={service.image_url || undefined}
+                    title={service.title}
+                    description={service.description}
+                    selected={selected}
+                    onSelect={() => {
+                      setEditingServiceId(service.id);
+                      setServiceForm({
+                        title: service.title,
+                        description: service.description,
+                        image_url: service.image_url || "",
+                      });
                     }}
-                  >
-                    Annuler
-                  </Button>
-                )}
-              </div>
-            </form>
-          </Card>
-        </div>
-      </Tabs>
+                    onDelete={() => setDeleteServiceId(service.id)}
+                  />
+                );
+              })}
+            </AdminItemsListCard>
 
-      <AdminConfirmModal
-        open={deleteId !== null}
-        title="Supprimer ce projet ?"
-        message="Cette action est irréversible. Le projet sera définitivement supprimé."
-        confirmLabel="Supprimer"
-        cancelLabel="Annuler"
-        onCancel={() => setDeleteId(null)}
-        onConfirm={handleConfirmDelete}
-      />
+            <Card className="p-6">
+              <div className="mb-2 text-xs text-muted-foreground">
+                Créez ou modifiez une catégorie (service). Les catégories sont
+                utilisées pour organiser les projets.
+              </div>
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setIsLoading(true);
+                  try {
+                    const url = editingServiceId
+                      ? `/api/services/${editingServiceId}`
+                      : "/api/services";
+                    const method = editingServiceId ? "PUT" : "POST";
+                    const response = await fetch(url, {
+                      method,
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        ...serviceForm,
+                        order_index: services.length,
+                      }),
+                    });
+                    if (!response.ok) throw new Error("Failed to save");
+                    setServiceForm({
+                      title: "",
+                      description: "",
+                      image_url: "",
+                    });
+                    setEditingServiceId(null);
+                    await fetchServices();
+                  } catch (error) {
+                    console.error("Error:", error);
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                className="space-y-4"
+              >
+                <div>
+                  <Label className="pb-2">Image</Label>
+                  <ImageUploader
+                    onUpload={(url) =>
+                      setServiceForm({ ...serviceForm, image_url: url })
+                    }
+                  />
+                  {serviceForm.image_url && (
+                    <ImageWithSkeleton
+                      src={serviceForm.image_url || "/placeholder.svg"}
+                      alt="Preview"
+                      wrapperClassName="mt-2 h-32 w-32"
+                      className="w-full h-full object-cover rounded"
+                    />
+                  )}
+                </div>
+
+                <div>
+                  <Label className="pb-2">Titre de la Catégorie</Label>
+                  <Input
+                    value={serviceForm.title}
+                    onChange={(e) =>
+                      setServiceForm({ ...serviceForm, title: e.target.value })
+                    }
+                    placeholder="Titre de la catégorie"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label className="pb-2">Description</Label>
+                  <Textarea
+                    value={serviceForm.description}
+                    onChange={(e) =>
+                      setServiceForm({
+                        ...serviceForm,
+                        description: e.target.value,
+                      })
+                    }
+                    placeholder="Description de la catégorie"
+                    required
+                  />
+                </div>
+
+                <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
+                  <ButtonAdmin
+                    type="submit"
+                    fullWidth={false}
+                    disabled={
+                      !serviceForm.title ||
+                      !serviceForm.description ||
+                      isLoading
+                    }
+                  >
+                    {editingServiceId
+                      ? "Mettre à jour Catégorie"
+                      : "Ajouter Catégorie"}
+                  </ButtonAdmin>
+                  {editingServiceId && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="text-muted-foreground hover:bg-muted/30 h-9 px-4"
+                      onClick={() => {
+                        setEditingServiceId(null);
+                        setServiceForm({
+                          title: "",
+                          description: "",
+                          image_url: "",
+                        });
+                      }}
+                    >
+                      Annuler
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </Card>
+          </div>
+          <AdminConfirmModal
+            open={deleteServiceId !== null}
+            title="Supprimer cette catégorie ?"
+            message="Cette action est irréversible. La catégorie sera définitivement supprimée."
+            confirmLabel="Supprimer"
+            cancelLabel="Annuler"
+            onCancel={() => setDeleteServiceId(null)}
+            onConfirm={async () => {
+              if (!deleteServiceId) return;
+              try {
+                await fetch(`/api/services/${deleteServiceId}`, {
+                  method: "DELETE",
+                });
+                await fetchServices();
+              } catch (error) {
+                console.error("Delete failed:", error);
+              } finally {
+                setDeleteServiceId(null);
+              }
+            }}
+          />
+        </TabsContent> */}
+
+        {/* Projects Tab (existing) */}
+        <TabsContent value="projects">
+          {/* ...existing code for projects tab... */}
+          <div className="grid grid-cols-1 h-[calc(100vh-220px)] overflow-auto lg:grid-cols-2 gap-4">
+            <AdminItemsListCard
+              title="Projets du service sélectionné"
+              count={projects.length}
+              max={projects.length || 0}
+              isFetching={isFetchingProjects}
+              emptyMessage="Aucun projet pour ce service pour l’instant."
+            >
+              {projects.map((project) => {
+                const selected = editingProjectId === project.id;
+                return (
+                  <AdminItemCard
+                    key={project.id}
+                    imageUrl={project.image_url}
+                    title={project.title}
+                    description={project.description}
+                    selected={selected}
+                    onSelect={() => {
+                      setEditingProjectId(project.id);
+                      setProjectForm({
+                        title: project.title,
+                        description: project.description,
+                        image_url: project.image_url,
+                        service_id: project.service_id || activeService || "",
+                      });
+                    }}
+                    onDelete={() => handleDeleteProject(project.id)}
+                  />
+                );
+              })}
+            </AdminItemsListCard>
+
+            <Card className="p-6 overflow-auto">
+              <div className="mb-2 text-xs text-muted-foreground">
+                Créez ou modifiez un projet pour le service sélectionné. Les
+                projets apparaissent dans la section portfolio.
+              </div>
+              <form onSubmit={handleProjectSubmit} className="space-y-4">
+                <div>
+                  <Label className="pb-2">Catégorie du Projet</Label>
+                  <Select
+                    value={projectForm.service_id || activeService}
+                    onValueChange={(v) =>
+                      setProjectForm({ ...projectForm, service_id: v })
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Sélectionnez une catégorie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {services.map((service) => (
+                        <SelectItem key={service.id} value={service.id}>
+                          {service.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="pb-2">Image</Label>
+                  <ImageUploader
+                    onUpload={(url) =>
+                      setProjectForm({ ...projectForm, image_url: url })
+                    }
+                  />
+                  {projectForm.image_url && (
+                    <ImageWithSkeleton
+                      src={projectForm.image_url || "/placeholder.svg"}
+                      alt="Preview"
+                      wrapperClassName="mt-2 h-32 w-32"
+                      className="w-full h-full object-cover rounded"
+                    />
+                  )}
+                </div>
+
+                <div>
+                  <Label className="pb-2">Titre du Projet</Label>
+                  <Input
+                    value={projectForm.title}
+                    onChange={(e) =>
+                      setProjectForm({ ...projectForm, title: e.target.value })
+                    }
+                    placeholder="Titre du projet"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label className="pb-2">Description</Label>
+                  <Textarea
+                    value={projectForm.description}
+                    onChange={(e) =>
+                      setProjectForm({
+                        ...projectForm,
+                        description: e.target.value,
+                      })
+                    }
+                    placeholder="Description du projet"
+                    required
+                  />
+                </div>
+
+                <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
+                  <ButtonAdmin
+                    type="submit"
+                    fullWidth={false}
+                    disabled={
+                      !projectForm.image_url ||
+                      !projectForm.service_id ||
+                      isLoading
+                    }
+                  >
+                    {editingProjectId
+                      ? "Mettre à jour Projet"
+                      : "Ajouter Projet"}
+                  </ButtonAdmin>
+                  {editingProjectId && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="text-muted-foreground hover:bg-muted/30 h-9 px-4"
+                      onClick={() => {
+                        setEditingProjectId(null);
+                        setProjectForm({
+                          title: "",
+                          description: "",
+                          image_url: "",
+                          service_id: "",
+                        });
+                      }}
+                    >
+                      Annuler
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </Card>
+          </div>
+          <AdminConfirmModal
+            open={deleteId !== null}
+            title="Supprimer ce projet ?"
+            message="Cette action est irréversible. Le projet sera définitivement supprimé."
+            confirmLabel="Supprimer"
+            cancelLabel="Annuler"
+            onCancel={() => setDeleteId(null)}
+            onConfirm={handleConfirmDelete}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
-  )
+  );
 }

@@ -47,7 +47,7 @@ export default function AdminPage() {
     return <LoginInline />
   }
   return (
-    <div className="grid min-h-screen grid-rows-[auto_1fr] bg-background/60 backdrop-blur-sm supports-backdrop-filter:bg-background/60 overflow-hidden overscroll-none">
+    <div className="grid h-screen grid-rows-[auto_1fr] bg-background/60 backdrop-blur-sm supports-backdrop-filter:bg-background/60 overflow-hidden overscroll-none">
       <div className="border-b-2 border-border bg-background/60 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="w-full px-4 lg:px-6 py-3">
           <div
@@ -83,11 +83,11 @@ export default function AdminPage() {
         <div
           className={`w-full px-2 lg:px-4 py-4 grid grid-cols-1 ${
             sidebarOpen ? "lg:grid-cols-[210px_1fr]" : "lg:grid-cols-[0px_1fr]"
-          } gap-0 lg:gap-4 h-full overflow-hidden`}
+          } gap-0 lg:gap-4 h-full overflow-auto`}
         >
           {/* Sidebar: pages */}
           <aside
-            className={`hidden lg:block h-full overflow-hidden border-r-2 border-border ${
+            className={`hidden lg:block h-[calc(100vh-105px)] overflow-hidden border-r-2 border-border ${
               sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}
           >
@@ -210,7 +210,7 @@ export default function AdminPage() {
           </aside>
 
           {/* Content area */}
-          <main className="min-w-0 w-full px-2 lg:px-6 h-full overflow-auto overscroll-contain">
+          <main className="min-w-0 w-full px-2 lg:px-6 h-[calc(100vh-105px)] overflow-hidden overscroll-contain">
             {/* Mobile page switcher */}
             <div className="lg:hidden mb-4 px-2">
               <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
