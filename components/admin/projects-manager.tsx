@@ -424,7 +424,7 @@ export function ProjectsManager() {
 
         {/* Projects Tab (existing) */}
         <TabsContent value="projects">
-          <div className="grid grid-cols-1 h-[calc(100vh-220px)] overflow-auto lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 h-[calc(100vh-300px)] overflow-auto lg:grid-cols-2 gap-4">
             <AdminItemsListCard
               title={
                 activeService === "ALL"
@@ -515,7 +515,9 @@ export function ProjectsManager() {
                       </Label>
                       <div className="flex items-center gap-2">
                         <Select
-                          value={isCreatingNewTheme ? "new" : projectForm.theme || ""}
+                          value={
+                            isCreatingNewTheme ? "new" : projectForm.theme || ""
+                          }
                           onValueChange={(v) => {
                             if (v === "new") {
                               setIsCreatingNewTheme(true);
