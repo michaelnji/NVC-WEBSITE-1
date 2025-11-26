@@ -12,12 +12,10 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
-export default function AdminPage() {
+function AdminContent() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [checking, setChecking] = useState(true);
-  const [session, setSession] = useState<any>(null);
   const { t } = useLanguage();
   const L = t.admin;
   const searchParams = useSearchParams();
@@ -25,34 +23,6 @@ export default function AdminPage() {
   const defaultTab = searchParams.get("tab") || "home";
   const [tab, setTab] = useState(defaultTab);
 
-  useEffect(() => {
-    const supabase = createSupabaseBrowserClient();
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setChecking(false);
-    });
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event: any, sess: any) => {
-        setSession(sess);
-      }
-    );
-    return () => {
-      // @ts-ignore optional unsubscribe
-      listener?.subscription?.unsubscribe?.();
-    };
-  }, []);
-
-  if (checking) {
-    return (
-      <div className=" min-h-screen grid place-items-center bg-background/60 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
-        <div className="text-sm text-muted-foreground">{L.loading}</div>
-      </div>
-    );
-  }
-
-  if (!session) {
-    return <LoginInline />;
-  }
   // Helper to change tab and update URL param
   const handleTabChange = (value: string) => {
     setTab(value);
@@ -370,6 +340,54 @@ export default function AdminPage() {
         </div>
       </Tabs>
     </div>
+  );
+}
+
+export default function AdminPage() {
+  const [checking, setChecking] = useState(true);
+  const [session, setSession] = useState<any>(null);
+  const { t } = useLanguage();
+  const L = t.admin;
+
+  useEffect(() => {
+    const supabase = createSupabaseBrowserClient();
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setChecking(false);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event: any, sess: any) => {
+        setSession(sess);
+      }
+    );
+    return () => {
+      // @ts-ignore optional unsubscribe
+      listener?.subscription?.unsubscribe?.();
+    };
+  }, []);
+
+  if (checking) {
+    return (
+      <div className=" min-h-screen grid place-items-center bg-background/60 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
+        <div className="text-sm text-muted-foreground">{L.loading}</div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return <LoginInline />;
+  }
+
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen grid place-items-center bg-background/60 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
+          <div className="text-sm text-muted-foreground">{L.loading}</div>
+        </div>
+      }
+    >
+      <AdminContent />
+    </Suspense>
   );
 }
 
