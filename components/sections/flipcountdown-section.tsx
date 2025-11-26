@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, type MouseEvent } from "react"
-import { FlipCountdown } from "@/components/flip-count-down"
-import { CTAButton } from "@/components/cta-button"
-import { useLanguage } from "@/contexts/language-context"
+import { CTAButton } from "@/components/cta-button";
+import { FlipCountdown } from "@/components/flip-count-down";
 import ImageWithSkeleton from "@/components/image-with-skeleton"
+import { useLanguage } from "@/contexts/language-context";
+import { useState, type MouseEvent } from "react";
 
 export function FlipCountdownSection() {
   const { t } = useLanguage()
@@ -35,14 +35,16 @@ export function FlipCountdownSection() {
       onMouseMove={handleMouseMove}
     >
       <div className="relative z-10 w-full max-w-6xl text-center py-12 px-4 sm:py-16 sm:px-8 md:py-20 md:px-10 bg-white rounded-3xl">
-        <h1 className="font-display uppercase text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-7xl  font-bold leading-[1.1] text-balance tracking-wide mb-3 sm:mb-4 md:mb-5 lg:mb-[8px]">
-          <span className="text-brand-ink-strong">We’re still cooking </span>
-          <span className="text-brand">the good stuff.</span>
+        <h1 className="font-display uppercase text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-7xl  font-bold leading-[1.1] text-balance tracking-wide mb-3 sm:mb-4 md:mb-5 lg:mb-2">
+          <span className="text-brand-ink-strong">
+            {t.common.comingSoon.title1}
+          </span>
+          <span className="text-brand">{t.common.comingSoon.title2}</span>
         </h1>
         <p className="subtext text-normal text-brand-ink font-sans text-[10px] sm:text-lg md:text-xl mb-8 sm:mb-10 md:mb-12 px-4">
-          <span>We’re putting </span>
-          <span className="text-brand">the final touches </span>
-          <span>on ours ... we’ll be live before the caffeine wears off.</span>
+          <span>{t.common.comingSoon.subtitle1}</span>
+          <span className="text-brand">{t.common.comingSoon.subtitle2}</span>
+          <span>{t.common.comingSoon.subtitle3}</span>
         </p>
 
         <div className="countdown flex justify-center">
@@ -146,5 +148,5 @@ export function FlipCountdownSection() {
         />
       </div>
     </main>
-  )
+  );
 }

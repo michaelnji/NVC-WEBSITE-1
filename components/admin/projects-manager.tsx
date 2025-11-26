@@ -1,6 +1,7 @@
 "use client"
 import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal";
 import ImageWithSkeleton from "@/components/image-with-skeleton";
+import { useLanguage } from "@/contexts/language-context";
 import { AdminItemCard } from "./admin-item-card";
 import { AdminItemsListCard } from "./admin-items-list-card";
 import { ButtonAdmin } from "./button-admin";
@@ -23,6 +24,7 @@ import { useEffect, useState } from "react";
 import { ImageUploader } from "./image-uploader";
 
 export function ProjectsManager() {
+  const { t } = useLanguage();
   const [tab, setTab] = useState<"categories" | "projects">("projects");
   const [services, setServices] = useState<Service[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -182,7 +184,7 @@ export function ProjectsManager() {
       <div className="min-h-[260px] flex items-center justify-center">
         <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand border-t-transparent" />
-          <p>Chargement des services…</p>
+          <p>{t.admin.loading}</p>
         </div>
       </div>
     );
@@ -192,13 +194,13 @@ export function ProjectsManager() {
     <div className="space-y-6">
       {/* Service filter select */}
       <div className="mb-4 max-w-xs">
-        <Label className="pb-2">Filtrer par service</Label>
+        <Label className="pb-2">{t.admin.projects.filterByService}</Label>
         <Select value={activeService} onValueChange={setActiveService}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Tous les services" />
+            <SelectValue placeholder={t.admin.projects.allServices} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">Tous les services</SelectItem>
+            <SelectItem value="ALL">{t.admin.projects.allServices}</SelectItem>
             {services.map((service) => (
               <SelectItem key={service.id} value={service.id}>
                 {service.title}
@@ -405,8 +407,8 @@ export function ProjectsManager() {
             <AdminItemsListCard
               title={
                 activeService === "ALL"
-                  ? "Tous les projets"
-                  : "Projets du service sélectionné"
+                  ? t.admin.projects.allProjects
+                  : t.admin.projects.selectedServiceProjects
               }
               count={projects.length}
               max={projects.length || 0}
@@ -414,8 +416,8 @@ export function ProjectsManager() {
               gridClassName="grid gap-4"
               emptyMessage={
                 activeService === "ALL"
-                  ? "Aucun projet pour l’instant."
-                  : "Aucun projet pour ce service pour l’instant."
+                  ? t.admin.projects.noProjects
+                  : t.admin.projects.noProjectsForService
               }
             >
               {projects.map((project) => {
@@ -444,12 +446,13 @@ export function ProjectsManager() {
 
             <Card className="p-6 overflow-auto">
               <div className="mb-2 text-xs text-muted-foreground">
-                Créez ou modifiez un projet pour le service sélectionné. Les
-                projets apparaissent dans la section portfolio.
+                {t.admin.projects.createOrEditProject}
               </div>
               <form onSubmit={handleProjectSubmit} className="space-y-4">
                 <div>
-                  <Label className="pb-2">Catégorie du Projet</Label>
+                  <Label className="pb-2">
+                    {t.admin.projects.projectCategory}
+                  </Label>
                   <Select
                     value={projectForm.service_id || activeService}
                     onValueChange={(v) =>
@@ -457,7 +460,9 @@ export function ProjectsManager() {
                     }
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Sélectionnez une catégorie" />
+                      <SelectValue
+                        placeholder={t.admin.projects.selectCategory}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {services.map((service) => (
@@ -470,7 +475,7 @@ export function ProjectsManager() {
                 </div>
 
                 <div>
-                  <Label className="pb-2">Image</Label>
+                  <Label className="pb-2">{t.admin.projects.image}</Label>
                   <ImageUploader
                     onUpload={(url) =>
                       setProjectForm({ ...projectForm, image_url: url })
@@ -487,19 +492,21 @@ export function ProjectsManager() {
                 </div>
 
                 <div>
-                  <Label className="pb-2">Titre du Projet</Label>
+                  <Label className="pb-2">
+                    {t.admin.projects.projectTitle}
+                  </Label>
                   <Input
                     value={projectForm.title}
                     onChange={(e) =>
                       setProjectForm({ ...projectForm, title: e.target.value })
                     }
-                    placeholder="Titre du projet"
+                    placeholder={t.admin.projects.projectTitlePlaceholder}
                     required
                   />
                 </div>
 
                 <div>
-                  <Label className="pb-2">Description</Label>
+                  <Label className="pb-2">{t.admin.projects.description}</Label>
                   <Textarea
                     value={projectForm.description}
                     onChange={(e) =>
@@ -508,7 +515,7 @@ export function ProjectsManager() {
                         description: e.target.value,
                       })
                     }
-                    placeholder="Description du projet"
+                    placeholder={t.admin.projects.projectDescriptionPlaceholder}
                     required
                   />
                 </div>
@@ -524,8 +531,8 @@ export function ProjectsManager() {
                     }
                   >
                     {editingProjectId
-                      ? "Mettre à jour Projet"
-                      : "Ajouter Projet"}
+                      ? t.admin.projects.updateProject
+                      : t.admin.projects.addProject}
                   </ButtonAdmin>
                   {editingProjectId && (
                     <Button
@@ -542,7 +549,7 @@ export function ProjectsManager() {
                         });
                       }}
                     >
-                      Annuler
+                      {t.admin.projects.cancel}
                     </Button>
                   )}
                 </div>
@@ -551,10 +558,10 @@ export function ProjectsManager() {
           </div>
           <AdminConfirmModal
             open={deleteId !== null}
-            title="Supprimer ce projet ?"
-            message="Cette action est irréversible. Le projet sera définitivement supprimé."
-            confirmLabel="Supprimer"
-            cancelLabel="Annuler"
+            title={t.admin.projects.deleteProjectTitle}
+            message={t.admin.projects.deleteProjectMessage}
+            confirmLabel={t.admin.projects.delete}
+            cancelLabel={t.admin.projects.cancel}
             onCancel={() => setDeleteId(null)}
             onConfirm={handleConfirmDelete}
           />

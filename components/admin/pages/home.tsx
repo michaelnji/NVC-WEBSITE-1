@@ -5,30 +5,49 @@ import { ProjectsManager } from "@/components/admin/projects-manager";
 import { ServicesManager } from "@/components/admin/services-manager";
 import { TeamManager } from "@/components/admin/team-manager";
 import { TestimonialsManager } from "@/components/admin/testimonials-manager";
+import { useLanguage } from "@/contexts/language-context";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 export function AdminHomePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
   const [section, setSection] = useState<
     null | "hero" | "services" | "projects" | "team" | "testimonials"
   >(null);
 
   if (section === null) {
+    const cards = [
+      {
+        key: "hero",
+        title: t.admin.nav.home,
+        desc: t.admin.descriptions?.hero ?? "",
+      },
+      {
+        key: "services",
+        title: t.admin.nav.projects,
+        desc: t.admin.descriptions?.services ?? "",
+      },
+      {
+        key: "projects",
+        title: t.admin.nav.projects,
+        desc: t.admin.descriptions?.projects ?? "",
+      },
+      {
+        key: "team",
+        title: t.admin.nav.about,
+        desc: t.admin.descriptions?.team ?? "",
+      },
+      {
+        key: "testimonials",
+        title: t.admin.panelTitle,
+        desc: t.admin.descriptions?.testimonials ?? "",
+      },
+    ];
     return (
       <div className="mt-2 sm:mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4">
-        {[
-          { key: "hero", title: "Hero", desc: "Images et textes d’en-tête" },
-          { key: "services", title: "Services", desc: "Cartes services" },
-          {
-            key: "projects",
-            title: "Projets",
-            desc: "Projets liés aux services",
-          },
-          { key: "team", title: "Team", desc: "Membres de l’équipe" },
-          { key: "testimonials", title: "Témoignages", desc: "Avis clients" },
-        ].map((card) => (
+        {cards.map((card) => (
           <button
             key={card.key}
             onClick={() => setSection(card.key as any)}
@@ -53,26 +72,25 @@ export function AdminHomePage() {
         <button
           onClick={() => setSection(null)}
           className="text-[0.9rem] rounded-md border border-border px-2.5 py-1.5 hover:bg-accent hover:text-accent-foreground transition-colors"
-          aria-label="Back to sections"
+          aria-label={t.common?.buttons?.backHome || "Back to sections"}
         >
           ←
         </button>
         <div>
           <h2 className="text-[1.15rem] lg:text-[1.35rem] font-semibold tracking-tight leading-snug">
-            {section === "hero" && "Hero"}
-            {section === "services" && "Services"}
-            {section === "projects" && "Projets"}
-            {section === "team" && "Team"}
-            {section === "testimonials" && "Témoignages"}
+            {section === "hero" && t.admin.nav.home}
+            {section === "services" && t.admin.nav.projects}
+            {section === "projects" && t.admin.nav.projects}
+            {section === "team" && t.admin.nav.about}
+            {section === "testimonials" && t.admin.panelTitle}
           </h2>
           <p className="text-[0.85rem] lg:text-sm text-muted-foreground mt-0.5">
-            {section === "hero" &&
-              "Gérez les images et métadonnées de la section Hero."}
-            {section === "services" && "Gérez les services proposés."}
-            {section === "projects" &&
-              "Gérez les projets associés à chaque service."}
-            {section === "team" && "Gérez les membres de l’équipe."}
-            {section === "testimonials" && "Gérez les avis clients."}
+            {section === "hero" && (t.admin.descriptions?.hero ?? "")}
+            {section === "services" && (t.admin.descriptions?.services ?? "")}
+            {section === "projects" && (t.admin.descriptions?.projects ?? "")}
+            {section === "team" && (t.admin.descriptions?.team ?? "")}
+            {section === "testimonials" &&
+              (t.admin.descriptions?.testimonials ?? "")}
           </p>
         </div>
       </div>
