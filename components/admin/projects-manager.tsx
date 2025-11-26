@@ -424,7 +424,7 @@ export function ProjectsManager() {
 
         {/* Projects Tab (existing) */}
         <TabsContent value="projects">
-          <div className="grid grid-cols-1 h-[calc(100vh-300px)] overflow-auto lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 h-[calc(100vh-250px)] overflow-auto lg:grid-cols-2 gap-4">
             <AdminItemsListCard
               title={
                 activeService === "ALL"
