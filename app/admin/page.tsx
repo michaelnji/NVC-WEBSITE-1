@@ -1,39 +1,46 @@
 "use client"
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AdminHomePage } from "@/components/admin/pages/home"
-import { AdminProjectsPage } from "@/components/admin/pages/projects"
-import { AdminAboutPage } from "@/components/admin/pages/about"
-import { AdminContactPage } from "@/components/admin/pages/contact"
-import Link from "next/link"
-import Image from "next/image"
-import { useEffect, useState } from "react"
-import { LanguageSelector } from "@/components/language-selector"
-import { useLanguage } from "@/contexts/language-context"
-import { createSupabaseBrowserClient } from "@/lib/supabase/browser"
-import { ButtonAdmin } from "@/components/admin/button-admin"
+import { ButtonAdmin } from "@/components/admin/button-admin";
+import { AdminAboutPage } from "@/components/admin/pages/about";
+import { AdminContactPage } from "@/components/admin/pages/contact";
+import { AdminHomePage } from "@/components/admin/pages/home";
+import { ProjectsManager } from "@/components/admin/projects-manager";
+import { LanguageSelector } from "@/components/language-selector";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLanguage } from "@/contexts/language-context";
+import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function AdminPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [checking, setChecking] = useState(true)
-  const [session, setSession] = useState<any>(null)
-  const { t } = useLanguage()
-  const L = t.admin
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [checking, setChecking] = useState(true);
+  const [session, setSession] = useState<any>(null);
+  const { t } = useLanguage();
+  const L = t.admin;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const defaultTab = searchParams.get("tab") || "home";
+  const [tab, setTab] = useState(defaultTab);
 
   useEffect(() => {
-    const supabase = createSupabaseBrowserClient()
+    const supabase = createSupabaseBrowserClient();
     supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session)
-      setChecking(false)
-    })
-    const { data: listener } = supabase.auth.onAuthStateChange((_event: any, sess: any) => {
-      setSession(sess)
-    })
+      setSession(data.session);
+      setChecking(false);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event: any, sess: any) => {
+        setSession(sess);
+      }
+    );
     return () => {
       // @ts-ignore optional unsubscribe
-      listener?.subscription?.unsubscribe?.()
-    }
-  }, [])
+      listener?.subscription?.unsubscribe?.();
+    };
+  }, []);
 
   if (checking) {
     return (
@@ -44,8 +51,16 @@ export default function AdminPage() {
   }
 
   if (!session) {
-    return <LoginInline />
+    return <LoginInline />;
   }
+  // Helper to change tab and update URL param
+  const handleTabChange = (value: string) => {
+    setTab(value);
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    params.set("tab", value);
+    router.replace(`?${params.toString()}`);
+  };
+
   return (
     <div className="grid h-screen grid-rows-[auto_1fr] bg-background/60 backdrop-blur-sm supports-backdrop-filter:bg-background/60 overflow-hidden overscroll-none">
       <div className="border-b-2 border-border bg-background/60 backdrop-blur supports-backdrop-filter:bg-background/60">
@@ -79,7 +94,7 @@ export default function AdminPage() {
       </div>
 
       {/* Outer Tabs: site pages */}
-      <Tabs defaultValue="home" className="w-full">
+      <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
         <div
           className={`w-full px-2 lg:px-4 py-4 grid grid-cols-1 ${
             sidebarOpen ? "lg:grid-cols-[210px_1fr]" : "lg:grid-cols-[0px_1fr]"
@@ -238,6 +253,7 @@ export default function AdminPage() {
                 </TabsTrigger>
                 <TabsTrigger
                   value="projets"
+                  onClick={() => handleTabChange("projets")}
                   className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand"
                 >
                   <span className="flex items-center justify-center gap-2.5">
@@ -311,7 +327,8 @@ export default function AdminPage() {
 
             {/* PROJETS */}
             <TabsContent value="projets" className="mt-0">
-              <AdminProjectsPage />
+              {/* Use ProjectsManager directly for consistency */}
+              <ProjectsManager />
             </TabsContent>
 
             {/* A PROPOS */}

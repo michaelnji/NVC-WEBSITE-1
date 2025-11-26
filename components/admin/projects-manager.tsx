@@ -368,6 +368,7 @@ export function ProjectsManager() {
               count={projects.length}
               max={projects.length || 0}
               isFetching={isFetchingProjects}
+              gridClassName="grid gap-4"
               emptyMessage="Aucun projet pour ce service pour l’instant."
             >
               {projects.map((project) => {
