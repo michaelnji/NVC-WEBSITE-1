@@ -52,10 +52,10 @@ export function SecondaryCTAButton({ href, onClick, className = "", variant = "o
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
-          className="absolute inset-y-[-80%] left-[-20%] w-[80%] bg-brand skew-x-[-18deg] origin-left transform -translate-x-full transition-transform duration-500 ease-out group-hover:translate-x-0"
+          className="absolute inset-y-[-80%] left-[-20%] w-[80%] bg-brand-accent skew-x-[-18deg] origin-left transform -translate-x-full transition-transform duration-500 ease-out group-hover:translate-x-0"
         />
         <div
-          className="absolute inset-y-[-80%] right-[-20%] w-[80%] bg-brand skew-x-[-18deg] origin-right transform translate-x-full transition-transform duration-500 ease-out group-hover:translate-x-0"
+          className="absolute inset-y-[-80%] right-[-20%] w-[80%] bg-brand-accent skew-x-[-18deg] origin-right transform translate-x-full transition-transform duration-500 ease-out group-hover:translate-x-0"
         />
       </div>
       <span className={`relative z-10 inline-flex items-center gap-2 sm:gap-3 transition-colors duration-500 ${textHoverClass}`}>

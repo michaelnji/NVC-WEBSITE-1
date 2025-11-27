@@ -16,7 +16,7 @@ export function AvailableSlotCard({
   const hasDescription = Boolean(description)
   return (
     <div
-      className={`flex-1 flex flex-col items-center justify-center px-6 text-center  ${className}`}
+      className={`flex-1 flex flex-col items-center justify-center px-6 text-center ${className}`}
     >
       <h2
         className={`text-xs sm:text-sm md:text-base font-sans font-bold text-white leading-tight tracking-wide ${

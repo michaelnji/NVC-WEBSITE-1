@@ -69,41 +69,101 @@ export function ProjectsStoriesSection() {
   const trackRef = useRef<HTMLDivElement | null>(null)
   const [scrollRange, setScrollRange] = useState(0)
   const [viewportWidth, setViewportWidth] = useState(0)
+  const [initialOffset, setInitialOffset] = useState(0)
+  const [viewportHeight, setViewportHeight] = useState(800)
+  const cardRefs = useRef<HTMLElement[]>([])
+  const [activeIndex, setActiveIndex] = useState(0)
+
+  const SCROLL_START_OFFSET = 0.1
+  const SCROLL_END_OFFSET = 0.8
+  const EXTRA_SCROLL_PADDING = 100
+  const CARD_WIDTH_PX = 960
+  const EXTRA_VERTICAL_SPACE = 200
+
+  const isMobileViewport = viewportWidth < 1024
 
   useEffect(() => {
     const measure = () => {
       if (!trackRef.current) return
       const contentWidth = trackRef.current.scrollWidth
-      const vw = window.innerWidth
-      setScrollRange(contentWidth - vw)
+      const vw = window.innerWidth || 0
+      const vh = window.innerHeight || 800
+      const actualCardWidth = Math.min(CARD_WIDTH_PX, vw * 0.96)
+      const centerOffset = (vw - actualCardWidth) / 2
+
+      setInitialOffset(centerOffset)
+      setScrollRange(contentWidth - vw + EXTRA_SCROLL_PADDING + centerOffset)
       setViewportWidth(vw)
+      setViewportHeight(vh)
     }
 
     measure()
     window.addEventListener("resize", measure)
     return () => window.removeEventListener("resize", measure)
-  }, [projects])
+  }, [projects, EXTRA_SCROLL_PADDING])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (typeof window === "undefined") return
+      const cards = cardRefs.current
+      if (!cards.length) return
+
+      const viewportCenterX = window.innerWidth / 2
+      let bestIdx = 0
+      let bestDist = Number.POSITIVE_INFINITY
+
+      cards.forEach((el, idx) => {
+        if (!el) return
+        const rect = el.getBoundingClientRect()
+        const cardCenterX = rect.left + rect.width / 2
+        const dist = Math.abs(cardCenterX - viewportCenterX)
+        if (dist < bestDist) {
+          bestDist = dist
+          bestIdx = idx
+        }
+      })
+
+      setActiveIndex(bestIdx)
+    }
+
+    handleScroll()
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    window.addEventListener("resize", handleScroll)
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("resize", handleScroll)
+    }
+  }, [projects.length])
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start start", "end end"],
+    offset: ["start center", "end center"],
   })
 
-  // Transformer le progress vertical (0-1) en déplacement horizontal
-  const x = useTransform(scrollYProgress, [0, 1], [0, -scrollRange])
+  const scrollInputRange = isMobileViewport
+    ? [0, 0.05, 0.95, 1]
+    : [0, SCROLL_START_OFFSET, SCROLL_END_OFFSET, 1]
+
+  const x = useTransform(
+    scrollYProgress,
+    scrollInputRange,
+    [initialOffset, initialOffset, -scrollRange + initialOffset, -scrollRange + initialOffset],
+  )
 
   const cardWidth = "w-[960px] max-w-[96vw]"
 
   return (
     <section
       ref={sectionRef}
-      className="relative -mt-10 bg-brand-cream"
+      id="projects-stories-section"
+      className="relative lg:-mt-13 bg-brand-cream"
       style={{
-        height: `${scrollRange + (typeof window !== "undefined" ? window.innerHeight : 800)}px`,
+        height: `${scrollRange + viewportHeight + EXTRA_VERTICAL_SPACE}px`,
       }}
     >
       <div
-        className="sticky top-0 h-screen overflow-hidden py-20 sm:py-24 md:py-28 lg:py-32 flex flex-col justify-center"
+        className="sticky top-10 sm:top-14 md:top-16 lg:-top-10 overflow-hidden py-10 sm:py-12 md:py-16 lg:py-[120px] flex flex-col items-center justify-center"
         style={{
           backgroundImage: "url('/Calque_1.png')",
           backgroundSize: "cover",
@@ -112,70 +172,115 @@ export function ProjectsStoriesSection() {
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 w-full">
-          <div className="text-center mb-10 sm:mb-12 md:mb-14">
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-extrabold uppercase tracking-wide text-brand-ink">
+          <motion.div
+            className="text-center mb-10 sm:mb-12 md:mb-14"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-[64px] font-extrabold uppercase tracking-wide text-brand-ink">
               THE STORIES WE&apos;RE <span className="text-brand">MOST PROUD OF</span>
             </h2>
-          </div>
+          </motion.div>
         </div>
 
-        <div className="relative overflow-visible select-none w-full pl-4 sm:pl-6 md:pl-8">
-          <motion.div ref={trackRef} className="flex gap-8 will-change-transform" style={{ x }}>
+        <div className="relative overflow-visible select-none w-full">
+          <motion.div
+            ref={trackRef}
+            className="flex gap-8 will-change-transform"
+            style={{ x }}
+            initial={{ opacity: 0, scale: 0.96, y: 20 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
             {projects.map((project, i) => (
               <motion.article
                 key={`${project.id}-${i}`}
+                ref={(el) => {
+                  if (el) cardRefs.current[i] = el
+                }}
                 className={`${cardWidth} aspect-[16/9] rounded-[32px] bg-[#1e1e1e]/96 shadow-[0_18px_60px_rgba(0,0,0,0.45)] overflow-hidden flex-shrink-0 relative group`}
                 whileHover={{ y: -8 }}
                 transition={{ type: "spring", stiffness: 220, damping: 26 }}
               >
-                <ImageWithSkeleton
-                  src={project.image || "/placeholder.svg"}
-                  alt={project.title}
-                  wrapperClassName="w-full h-full"
-                  className="w-full h-full object-cover transition-opacity duration-500"
-                />
-                <div className="absolute inset-0 bg-black/55" />
+                <motion.div
+                  className="w-full h-full will-change-transform"
+                  initial={false}
+                  animate={{ scale: activeIndex === i ? 1.06 : 1 }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                >
+                  <ImageWithSkeleton
+                    src={project.image || "/placeholder.svg"}
+                    alt={project.title}
+                    wrapperClassName="w-full h-full"
+                    className="w-full h-full object-cover transition-opacity duration-500"
+                  />
+                </motion.div>
 
-                <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8 md:p-10">
-                  <div className="flex-1 flex flex-col items-center justify-center text-center gap-3">
-                    <p className="font-display text-2xl sm:text-3xl md:text-4xl text-white font-extrabold tracking-[0.25em] uppercase">
+                <motion.div
+                  className="absolute inset-0 bg-linear-to-t from-brand-ink/90 via-brand-ink/60 to-transparent"
+                  initial={false}
+                  animate={{ opacity: activeIndex === i ? 1 : 0 }}
+                  transition={{ duration: 0.3 }}
+                />
+
+                <motion.div
+                  className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8 md:p-10"
+                  initial={false}
+                  animate={{ opacity: activeIndex === i ? 1 : 0 }}
+                  transition={{ duration: 0.35 }}
+                >
+                  <motion.div
+                    className="flex-1 flex flex-col items-center justify-center text-center gap-3"
+                    initial={false}
+                    animate={
+                      activeIndex === i
+                        ? { scale: 1, opacity: 1 }
+                        : { scale: 0.9, opacity: 0 }
+                    }
+                    transition={{ duration: 0.35 }}
+                  >
+                    <p className="font-display text-3xl md:text-5xl lg:text-7xl text-white uppercase mb-2">
                       VIEW PROJECT
                     </p>
-                  </div>
+                    <div className="w-12 h-0.5 bg-brand mx-auto" />
+                  </motion.div>
 
-                  <div className="flex items-end justify-between text-[10px] sm:text-xs md:text-sm text-white/80">
+                  <div className="flex items-start justify-between text-[10px] sm:text-xs md:text-sm text-white">
                     <div className="space-y-1">
-                      <p>
-                        <span className="font-semibold tracking-[0.2em] mr-1">CLIENT :</span>
-                        <span>{project.client}</span>
+                      <p className="flex items-baseline gap-2">
+                        <span className="font-semibold font-display lg:text-[24px]">CLIENT : </span>
+                        <span className="text-[10px] sm:text-xs md:text-sm">{project.client}</span>
                       </p>
-                      <p>
-                        <span className="font-semibold tracking-[0.2em] mr-1">YEAR :</span>
-                        <span>{project.year}</span>
+                      <p className="flex items-baseline gap-2">
+                        <span className="font-semibold font-display lg:text-[24px]">YEAR : </span>
+                        <span className="text-[10px] sm:text-xs md:text-sm">{project.year}</span>
                       </p>
                     </div>
 
                     <div className="space-y-1">
-                      <p>
-                        <span className="font-semibold tracking-[0.2em] mr-1">LOCATION :</span>
-                        <span>{project.location}</span>
+                      <p className="flex items-baseline gap-2">
+                        <span className="font-semibold font-display lg:text-[24px]">LOCATION : </span>
+                        <span className="text-[10px] sm:text-xs md:text-sm">{project.location}</span>
                       </p>
-                      <p>
-                        <span className="font-semibold tracking-[0.2em] mr-1">CATEGORY :</span>
-                      </p>
-                      <div className="flex flex-wrap gap-2 justify-end">
-                        {project.categories.map((cat) => (
-                          <span
-                            key={cat}
-                            className="inline-flex items-center rounded-full border border-brand bg-black/90 px-3 py-0.5 text-[11px] sm:text-xs md:text-sm font-medium text-brand shadow-[0_4px_10px_rgba(0,0,0,0.45)]"
-                          >
-                            {cat}
-                          </span>
-                        ))}
+                      <div className="flex items-baseline gap-3">
+                        <span className="font-semibold font-display lg:text-[24px]">CATEGORY : </span>
+                        <div className="flex flex-wrap gap-2 max-w-[260px]">
+                          {project.categories.map((cat) => (
+                            <span
+                              key={cat}
+                              className="inline-flex items-center rounded-full border border-brand bg-black/90 px-3 py-0.5 text-[11px] sm:text-xs md:text-sm font-medium text-brand shadow-[0_4px_10px_rgba(0,0,0,0.45)]"
+                            >
+                              {cat}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </motion.article>
             ))}
           </motion.div>

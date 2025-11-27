@@ -148,6 +148,14 @@ html, body {
   .animate-shimmer {
     animation: shimmer 1.5s infinite;
   }
+
+  .partners-marquee {
+    display: inline-flex;
+    align-items: center;
+    gap: 2.5rem;
+    min-width: max-content;
+    animation: partners-marquee 35s linear infinite;
+  }
 }
 
 @keyframes pageFall {
@@ -202,5 +210,14 @@ html, body {
   }
   100% {
     transform: translateX(200%);
+  }
+}
+
+@keyframes partners-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
   }
 }
