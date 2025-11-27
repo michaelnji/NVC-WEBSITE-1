@@ -118,7 +118,7 @@ export default function ProjectsListSection() {
             {
               id: "videography",
               label: "Videography",
-              labelFr: "Vidéographie",
+              labelFr: "Videographie",
               count: categoryCounts["videography"] || 0,
             },
           ];
@@ -183,7 +183,9 @@ export default function ProjectsListSection() {
               <>
                 NOUS NE LIVRONS PAS JUSTE DES PROJETS.
                 <br />
-                NOUS CRÉONS DES <span className="text-brand">EXPÉRIENCES</span>.
+                >
+                NOUS CREONS DES <span className="text-brand">EXPERIENCES</span>.
+              </motion.h1>
               </>
             )}
           </h2>
@@ -353,7 +355,7 @@ export default function ProjectsListSection() {
                   <p className="text-md md:text-lg text-brand-ink/60 mb-8">
                     {language === "En"
                       ? "We're working on exciting projects in this category. Check back soon!"
-                      : "Nous travaillons sur des projets passionnants dans cette catégorie. Revenez bientôt !"}
+                      : "Nous travaillons sur des projets passionnants dans cette categorie. Revenez bientot !"}
                   </p>
                   {activeFilter !== "all" && (
                     <motion.button

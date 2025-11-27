@@ -1,35 +1,40 @@
 "use client"
 
-import React from "react"
+import { useLanguage } from "@/contexts/language-context";
 
 type AvailableSlotCardProps = {
-  title?: string
-  description?: string
-  className?: string
-}
+  title?: string;
+  description?: string;
+  className?: string;
+};
 
 export function AvailableSlotCard({
-  title = "Slot available",
-  description = "Add more items in the admin to fill this gallery slot.",
+  title,
+  description,
   className = "",
 }: AvailableSlotCardProps) {
-  const hasDescription = Boolean(description)
+  const { t } = useLanguage();
+  const finalTitle = title ? t.common.slotAvailable.title : "";
+  const finalDescription = description
+    ? t.common.slotAvailable.description
+    : "";
+  const hasDescription = Boolean(description);
   return (
     <div
       className={`flex-1 flex flex-col items-center justify-center px-6 text-center ${className}`}
     >
       <h2
-        className={`text-xs sm:text-sm md:text-base font-sans font-bold text-white leading-tight tracking-wide ${
+        className={`text-xs sm:text-sm  font-sans font-bold text-white leading-tight tracking-wide ${
           hasDescription ? "mb-2" : "mb-0"
         }`}
       >
-        {title}
+        {finalTitle}
       </h2>
-      {description && (
-        <p className="font-sans text-white/75 text-xs sm:text-sm leading-relaxed max-w-xs">
-          {description}
+      {finalDescription && (
+        <p className="font-sans text-white/75 text-xs  leading-relaxed max-w-xs">
+          {finalDescription}
         </p>
       )}
     </div>
-  )
+  );
 }

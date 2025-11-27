@@ -1,16 +1,26 @@
 "use client"
 
+import { useLanguage } from "@/contexts/language-context";
 import { useState } from "react"
 
 export function AdminAboutPage() {
   const [section, setSection] = useState<null | "intro" | "equipe">(null)
+  const { t } = useLanguage();
 
   if (section === null) {
     return (
       <div className="mt-2 sm:mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4">
         {[
-          { key: "intro", title: "Introduction", desc: "Texte et visuels d’introduction" },
-          { key: "equipe", title: "Équipe", desc: "Présentation élargie de l’équipe" },
+          {
+            key: "intro",
+            title: t.admin.pages.about.intro.title,
+            desc: t.admin.pages.about.intro.desc,
+          },
+          {
+            key: "equipe",
+            title: t.admin.pages.about.team.title,
+            desc: t.admin.pages.about.team.desc,
+          },
         ].map((card) => (
           <button
             key={card.key}
@@ -20,12 +30,14 @@ export function AdminAboutPage() {
             <div className="mb-1.5 lg:mb-2 text-[1.05rem] lg:text-[1.15rem] font-semibold tracking-tight leading-snug">
               {card.title}
             </div>
-            <p className="text-[0.85rem] lg:text-sm text-muted-foreground">{card.desc}</p>
+            <p className="text-[0.85rem] lg:text-sm text-muted-foreground">
+              {card.desc}
+            </p>
             <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-transparent group-hover:ring-border/80" />
           </button>
         ))}
       </div>
-    )
+    );
   }
 
   return (
@@ -40,24 +52,28 @@ export function AdminAboutPage() {
         </button>
         <div>
           <h2 className="text-[1.15rem] lg:text-[1.35rem] font-semibold tracking-tight leading-snug">
-            {section === "intro" && "Introduction"}
-            {section === "equipe" && "Équipe"}
+            {section === "intro" && t.admin.pages.about.intro.title}
+            {section === "equipe" && t.admin.pages.about.team.title}
           </h2>
           <p className="text-[0.85rem] lg:text-sm text-muted-foreground mt-0.5">
-            {section === "intro" && "Gérez le contenu d’introduction de la page À propos."}
-            {section === "equipe" && "Gérez la présentation élargie de l’équipe."}
+            {section === "intro" && t.admin.pages.about.intro.manage}
+            {section === "equipe" && t.admin.pages.about.team.manage}
           </p>
         </div>
       </div>
 
       <div className="rounded-xl border border-border bg-card p-3 lg:p-4 min-h-[40vh]">
         {section === "intro" && (
-          <p className="text-sm text-muted-foreground">Contenu À propos à définir.</p>
+          <p className="text-sm text-muted-foreground">
+            {t.admin.pages.about.intro.placeholder}
+          </p>
         )}
         {section === "equipe" && (
-          <p className="text-sm text-muted-foreground">Gestion équipe (peut réutiliser TeamManager).</p>
+          <p className="text-sm text-muted-foreground">
+            {t.admin.pages.about.team.placeholder}
+          </p>
         )}
       </div>
     </div>
-  )
+  );
 }

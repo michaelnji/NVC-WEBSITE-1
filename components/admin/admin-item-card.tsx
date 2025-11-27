@@ -27,7 +27,7 @@ export function AdminItemCard({
 }: AdminItemCardProps) {
   return (
     <div
-      className={`group relative rounded-lg border p-3 transition-all h-full flex flex-col max-w-[200px] mx-[20px] ${
+      className={`group relative rounded-lg border p-3 transition-all h-full flex flex-col  ${
         selected
           ? "border-brand ring-1 ring-brand/30"
           : "border-border hover:border-brand hover:ring-1 hover:ring-brand/30"
@@ -37,10 +37,10 @@ export function AdminItemCard({
         <button
           type="button"
           onClick={(e) => {
-            e.stopPropagation()
-            onDelete()
+            e.stopPropagation();
+            onDelete();
           }}
-          className="absolute -right-3 -top-3 z-20 inline-flex h-7 w-7 items-center justify-center rounded-full bg-red-600 text-sm font-semibold text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100 hover:bg-red-700"
+          className="absolute -right-3 -top-3 z-20 inline-flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-sm font-semibold text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100 hover:bg-red-600"
         >
           ×
         </button>
@@ -61,11 +61,13 @@ export function AdminItemCard({
           />
           <div className="min-w-0 ml-2 flex-1 flex flex-col gap-1">
             <p className="font-medium truncate">{title}</p>
-            {description !== undefined && description !== null && description !== "" && (
-              <p className="text-xs text-muted-foreground line-clamp-2 whitespace-pre-line">
-                {description}
-              </p>
-            )}
+            {description !== undefined &&
+              description !== null &&
+              description !== "" && (
+                <p className="text-xs text-muted-foreground line-clamp-2 whitespace-pre-line">
+                  {description}
+                </p>
+              )}
           </div>
         </div>
       </button>
@@ -74,7 +76,7 @@ export function AdminItemCard({
         <div className="pointer-events-none absolute inset-0 rounded-lg ring-1 ring-inset ring-brand/30" />
       )}
     </div>
-  )
+  );
   
   
   

@@ -225,7 +225,7 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
           </p>
         </div>
         {/* Filtres services : 4 slots max, même forme (pills) sur mobile et desktop */}
-        <div className="flex flex-wrap justify-center gap-2 md:gap-6 mb-6 md:mb-8 lg:mb-10 min-h-[40px]">
+        <div className="flex flex-wrap justify-center gap-2 md:gap-6 mb-6 md:mb-8 lg:mb-10 min-h-10">
           {isFetchingServices
             ? // Skeletons de chargement (4 pills noirs avec shimmer)
               Array.from({ length: SERVICE_SLOTS }).map((_, idx) => (

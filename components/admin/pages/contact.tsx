@@ -1,16 +1,26 @@
 "use client"
 
+import { useLanguage } from "@/contexts/language-context";
 import { useState } from "react"
 
 export function AdminContactPage() {
   const [section, setSection] = useState<null | "infos" | "reseaux">(null)
+  const { t } = useLanguage();
 
   if (section === null) {
     return (
       <div className="mt-2 sm:mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4">
         {[
-          { key: "infos", title: "Infos", desc: "Coordonnées, email, téléphone" },
-          { key: "reseaux", title: "Réseaux", desc: "Liens réseaux sociaux et CTA" },
+          {
+            key: "infos",
+            title: t.admin.pages.contact.infos.title,
+            desc: t.admin.pages.contact.infos.desc,
+          },
+          {
+            key: "reseaux",
+            title: t.admin.pages.contact.networks.title,
+            desc: t.admin.pages.contact.networks.desc,
+          },
         ].map((card) => (
           <button
             key={card.key}
@@ -20,12 +30,14 @@ export function AdminContactPage() {
             <div className="mb-1.5 lg:mb-2 text-[1.05rem] lg:text-[1.15rem] font-semibold tracking-tight leading-snug">
               {card.title}
             </div>
-            <p className="text-[0.85rem] lg:text-sm text-muted-foreground">{card.desc}</p>
+            <p className="text-[0.85rem] lg:text-sm text-muted-foreground">
+              {card.desc}
+            </p>
             <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-transparent group-hover:ring-border/80" />
           </button>
         ))}
       </div>
-    )
+    );
   }
 
   return (
@@ -40,24 +52,28 @@ export function AdminContactPage() {
         </button>
         <div>
           <h2 className="text-[1.15rem] lg:text-[1.35rem] font-semibold tracking-tight leading-snug">
-            {section === "infos" && "Infos"}
-            {section === "reseaux" && "Réseaux"}
+            {section === "infos" && t.admin.pages.contact.infos.title}
+            {section === "reseaux" && t.admin.pages.contact.networks.title}
           </h2>
           <p className="text-[0.85rem] lg:text-sm text-muted-foreground mt-0.5">
-            {section === "infos" && "Gérez les coordonnées et informations de contact."}
-            {section === "reseaux" && "Gérez les liens sociaux et appels à l’action."}
+            {section === "infos" && t.admin.pages.contact.infos.manage}
+            {section === "reseaux" && t.admin.pages.contact.networks.manage}
           </p>
         </div>
       </div>
 
       <div className="rounded-xl border border-border bg-card p-3 lg:p-4">
         {section === "infos" && (
-          <p className="text-sm text-muted-foreground">Coordonnées/CTA à définir.</p>
+          <p className="text-sm text-muted-foreground">
+            {t.admin.pages.contact.infos.placeholder}
+          </p>
         )}
         {section === "reseaux" && (
-          <p className="text-sm text-muted-foreground">Liens sociaux à définir.</p>
+          <p className="text-sm text-muted-foreground">
+            {t.admin.pages.contact.networks.placeholder}
+          </p>
         )}
       </div>
     </div>
-  )
+  );
 }

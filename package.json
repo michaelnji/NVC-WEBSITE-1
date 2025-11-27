@@ -6,7 +6,8 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "eslint .",
-    "start": "next start"
+    "start": "next start",
+    "gen-types": "pnpm dlx supabase gen types typescript --project-id attdfibdvebtrqvwjcin --schema public > lib/database.types.ts"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",

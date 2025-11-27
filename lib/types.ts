@@ -22,6 +22,7 @@ export interface Project {
   title: string
   description: string
   image_url: string
+  theme?: string | null
   order_index: number
   created_at: string
 }

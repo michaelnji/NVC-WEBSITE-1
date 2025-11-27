@@ -1,20 +1,22 @@
 "use client"
 
-import type React from "react"
-import ImageWithSkeleton from "@/components/image-with-skeleton"
-import { useState, useEffect } from "react"
-import type { Testimonial } from "@/lib/types"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { ImageUploader } from "./image-uploader"
-import { AdminItemsListCard } from "./admin-items-list-card"
-import { AdminItemCard } from "./admin-item-card"
-import { ButtonAdmin } from "./button-admin"
-import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal"
+import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal";
+import ImageWithSkeleton from "@/components/image-with-skeleton";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useLanguage } from "@/contexts/language-context";
+import type { Testimonial } from "@/lib/types";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { AdminItemCard } from "./admin-item-card";
+import { AdminItemsListCard } from "./admin-items-list-card";
+import { ButtonAdmin } from "./button-admin";
+import { ImageUploader } from "./image-uploader";
 
 export function TestimonialsManager() {
+  const { t } = useLanguage();
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isFetching, setIsFetching] = useState(true)
@@ -61,11 +63,11 @@ export function TestimonialsManager() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          // rating est déjà un nombre contrôlé, inutile de le reconvertir ici
+          // rating est déjà un nombre controlé, inutile de le reconvertir ici
           rating: formData.rating,
           order_index: testimonials.length,
         }),
-      })
+      });
 
       if (!response.ok) throw new Error("Failed to save")
 
@@ -107,11 +109,11 @@ export function TestimonialsManager() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <AdminItemsListCard
-        title="Témoignages existants"
+        title={t.admin.testimonials.existingTestimonials}
         count={testimonials.length}
         max={999}
         isFetching={isFetching}
-        emptyMessage="Aucun témoignage pour l’instant."
+        emptyMessage={t.admin.testimonials.noTestimonials}
       >
         {testimonials.map((testimonial) => (
           <AdminItemCard
@@ -121,7 +123,7 @@ export function TestimonialsManager() {
             description={testimonial.description}
             selected={editingId === testimonial.id}
             onSelect={() => {
-              setEditingId(testimonial.id)
+              setEditingId(testimonial.id);
               setFormData({
                 author_name: testimonial.author_name,
                 title: testimonial.title,
@@ -129,7 +131,7 @@ export function TestimonialsManager() {
                 position: testimonial.position || "",
                 photo_url: testimonial.photo_url || "",
                 rating: testimonial.rating,
-              })
+              });
             }}
             onDelete={() => handleDelete(testimonial.id)}
             imageSizeClass="h-16 w-16 mr-3 rounded-full"
@@ -140,70 +142,82 @@ export function TestimonialsManager() {
 
       <Card className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
         <div className="mb-2 text-xs text-muted-foreground">
-          Créez ou modifiez un témoignage. Ces témoignages alimentent la section "Témoignages" du site.
+          {t.admin.testimonials.createOrEditTestimonial}
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label>Nom de l'auteur</Label>
+            <Label>{t.admin.testimonials.authorName}</Label>
             <Input
               value={formData.author_name}
-              onChange={(e) => setFormData({ ...formData, author_name: e.target.value })}
-              placeholder="Nom"
+              onChange={(e) =>
+                setFormData({ ...formData, author_name: e.target.value })
+              }
+              placeholder={t.admin.testimonials.authorNamePlaceholder}
               required
             />
           </div>
 
           <div>
-            <Label>Poste / Rôle</Label>
+            <Label>{t.admin.testimonials.positionRole}</Label>
             <Input
               value={formData.position}
-              onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-              placeholder="Ex: CEO, Directrice Marketing…"
+              onChange={(e) =>
+                setFormData({ ...formData, position: e.target.value })
+              }
+              placeholder={t.admin.testimonials.positionRolePlaceholder}
             />
           </div>
 
           <div>
-            <Label>Titre</Label>
+            <Label>{t.admin.testimonials.title}</Label>
             <Input
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="Titre du témoignage"
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
+              placeholder={t.admin.testimonials.titlePlaceholder}
               required
             />
           </div>
 
           <div>
-            <Label>Description</Label>
+            <Label>{t.admin.testimonials.testimonialDescription}</Label>
             <Textarea
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Contenu du témoignage"
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              placeholder={
+                t.admin.testimonials.testimonialDescriptionPlaceholder
+              }
               required
             />
           </div>
 
           <div>
-            <Label>Note (1-5)</Label>
+            <Label>{t.admin.testimonials.rating}</Label>
             <Input
               type="number"
               min="1"
               max="5"
               value={Number.isNaN(formData.rating) ? "" : formData.rating}
               onChange={(e) => {
-                const next = e.target.value
-                const parsed = Number.parseInt(next, 10)
+                const next = e.target.value;
+                const parsed = Number.parseInt(next, 10);
                 setFormData({
                   ...formData,
                   // Si la saisie n'est pas un nombre, on retombe sur 1 pour éviter NaN
                   rating: Number.isNaN(parsed) ? 1 : parsed,
-                })
+                });
               }}
             />
           </div>
 
           <div>
-            <Label>Photo</Label>
-            <ImageUploader onUpload={(url) => setFormData({ ...formData, photo_url: url })} />
+            <Label>{t.admin.team.photo}</Label>
+            <ImageUploader
+              onUpload={(url) => setFormData({ ...formData, photo_url: url })}
+            />
             {formData.photo_url && (
               <ImageWithSkeleton
                 src={formData.photo_url || "/placeholder.svg"}
@@ -216,7 +230,10 @@ export function TestimonialsManager() {
 
           <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
             <ButtonAdmin type="submit" disabled={isLoading} fullWidth={false}>
-              {editingId ? "Mettre à jour" : "Ajouter"} Témoignage
+              {editingId
+                ? t.admin.testimonials.updateTestimonial
+                : t.admin.testimonials.addTestimonial}{" "}
+              {t.admin.testimonials.testimonial}
             </ButtonAdmin>
             {editingId && (
               <ButtonAdmin
@@ -224,7 +241,7 @@ export function TestimonialsManager() {
                 fullWidth={false}
                 className="bg-transparent text-muted-foreground border-transparent hover:bg-muted/30 h-9 px-4"
                 onClick={() => {
-                  setEditingId(null)
+                  setEditingId(null);
                   setFormData({
                     author_name: "",
                     title: "",
@@ -232,10 +249,10 @@ export function TestimonialsManager() {
                     position: "",
                     photo_url: "",
                     rating: 5,
-                  })
+                  });
                 }}
               >
-                Annuler
+                {t.admin.projects.cancel}
               </ButtonAdmin>
             )}
           </div>
@@ -244,13 +261,13 @@ export function TestimonialsManager() {
 
       <AdminConfirmModal
         open={deleteId !== null}
-        title="Supprimer ce témoignage ?"
-        message="Cette action est irréversible. Le témoignage sera définitivement supprimé."
-        confirmLabel="Supprimer"
-        cancelLabel="Annuler"
+        title={t.admin.testimonials.deleteTestimonialTitle}
+        message={t.admin.testimonials.deleteTestimonialMessage}
+        confirmLabel={t.admin.projects.delete}
+        cancelLabel={t.admin.projects.cancel}
         onCancel={() => setDeleteId(null)}
         onConfirm={handleConfirmDelete}
       />
     </div>
-  )
+  );
 }
