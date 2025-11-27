@@ -8,7 +8,6 @@ import { useLanguage } from "@/contexts/language-context";
 import type { Project } from "@/lib/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { AngledPanel } from "../angled-panel";
 
 interface Category {
   id: string;
@@ -159,7 +158,7 @@ export default function ProjectsListSection() {
   };
 
   return (
-         <section
+    <section
       ref={sectionRef}
       className="relative overflow-hidden bg-white py-20 md:pt-28 lg:py-70 px-6 md:px-12 lg:px-16 xl:px-24 2xl:px-32"
     >
@@ -183,9 +182,7 @@ export default function ProjectsListSection() {
               <>
                 NOUS NE LIVRONS PAS JUSTE DES PROJETS.
                 <br />
-                >
                 NOUS CREONS DES <span className="text-brand">EXPERIENCES</span>.
-              </motion.h1>
               </>
             )}
           </h2>
