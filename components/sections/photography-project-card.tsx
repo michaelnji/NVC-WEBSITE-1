@@ -76,7 +76,7 @@ export default function PhotographyProjectCard({
           {/* Metadata - Theme Only */}
           <div className="text-brand-ink mt-4 md:flex justify-between">
             <p className="text-brand-gray-muted md:text-background uppercase tracking-wider text-xs md:text-xl md:font-display font-semibold mb-2">
-              {language === "En" ? "THEME" : "THÈME"}
+              {language === "En" ? "THEME" : "THEME"}
             </p>
             <p className="text-brand-ink font-medium text-base">
               {project.description || "N/A"}

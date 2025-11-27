@@ -2,17 +2,17 @@
 
 import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal";
 import ImageWithSkeleton from "@/components/image-with-skeleton";
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/contexts/language-context";
 import type { Testimonial } from "@/lib/types";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { AdminItemCard } from "./admin-item-card";
 import { AdminItemsListCard } from "./admin-items-list-card";
-import { ButtonAdmin } from "./button-admin"
+import { ButtonAdmin } from "./button-admin";
 import { ImageUploader } from "./image-uploader";
 
 export function TestimonialsManager() {
@@ -63,11 +63,11 @@ export function TestimonialsManager() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          // rating est déjà un nombre contrôlé, inutile de le reconvertir ici
+          // rating est déjà un nombre controlé, inutile de le reconvertir ici
           rating: formData.rating,
           order_index: testimonials.length,
         }),
-      })
+      });
 
       if (!response.ok) throw new Error("Failed to save")
 

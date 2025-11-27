@@ -14,6 +14,9 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
+// Force dynamic rendering for this page
+export const dynamic = 'force-dynamic';
+
 function AdminContent() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { t } = useLanguage();
