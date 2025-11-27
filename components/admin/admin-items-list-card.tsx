@@ -32,16 +32,16 @@ export function AdminItemsListCard({
       </div>
 
       {isFetching ? (
-        <div className="h-full min-h-[320px] flex items-center justify-center">
+        <div className="h-full min-h-80 flex items-center justify-center">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand border-t-transparent" />
         </div>
       ) : count === 0 ? (
-        <div className="h-full min-h-[320px] flex flex-col items-center justify-center text-sm text-muted-foreground text-center">
+        <div className="h-full min-h-80 flex flex-col items-center justify-center text-sm text-muted-foreground text-center">
           {emptyMessage}
         </div>
       ) : (
         <div className={gridClassName}>{children}</div>
       )}
     </Card>
-  )
+  );
 }

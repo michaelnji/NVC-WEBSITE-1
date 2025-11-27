@@ -1,5 +1,6 @@
 "use client"
 
+import { useLanguage } from "@/contexts/language-context";
 import type React from "react"
 import { useRef, useState } from "react"
 
@@ -31,13 +32,14 @@ export function ImageUploader({
   const [progress, setProgress] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const { t } = useLanguage();
 
   const uploadOne = async (file: File) => {
     const formData = new FormData()
     formData.append("file", file)
     const response = await fetch("/api/upload", { method: "POST", body: formData })
     if (!response.ok) {
-      let message = "Upload failed"
+      let message = t.common.upload.uploadFailed;
       try {
         const raw = await response.text()
         if (raw) {
@@ -102,7 +104,8 @@ export function ImageUploader({
         else if (onUpload) onUpload(meta.url)
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Upload failed"
+      const errorMessage =
+        err instanceof Error ? err.message : t.common.upload.uploadFailed;
       console.error(" Upload error:", errorMessage)
       setError(errorMessage)
     } finally {
@@ -129,33 +132,36 @@ export function ImageUploader({
         disabled={isLoading || isUploading}
         onClick={() => {
           if (inputRef.current) {
-            inputRef.current.click()
+            inputRef.current.click();
           }
         }}
         className="inline-flex w-fit items-center justify-center gap-2 rounded-md border border-[#F15A25] bg-[#F15A25] px-3 py-2 text-xs font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {(isLoading || isUploading) && (
           <span className="inline-flex h-3 w-3 items-center justify-center">
-            <span className="h-3 w-3 animate-spin rounded-full border-[2px] border-white/70 border-t-transparent" />
+            <span className="h-3 w-3 animate-spin rounded-full border-2 border-white/70 border-t-transparent" />
           </span>
         )}
         {isLoading || isUploading
           ? progress
-            ? `Envoi en cours (${progress})`
-            : "Envoi en cours..."
+            ? `${t.common.upload.uploadInProgress} (${progress})`
+            : `${t.common.upload.uploadInProgress}...`
           : multiple
-          ? "Choisir des images"
-          : "Choisir une image"}
+          ? t.common.upload.chooseImages
+          : t.common.upload.chooseImage}
       </button>
 
       <p className="text-[11px] text-muted-foreground">
-        Formats acceptés : JPG, PNG, GIF. Taille raisonnable recommandée pour de bonnes performances.
+        Formats acceptés : JPG, PNG, GIF. Taille raisonnable recommandée pour de
+        bonnes performances.
       </p>
 
       {progress && (
-        <p className="text-[11px] text-muted-foreground">Téléversement : {progress}</p>
+        <p className="text-[11px] text-muted-foreground">
+          Téléversement : {progress}
+        </p>
       )}
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
-  )
+  );
 }

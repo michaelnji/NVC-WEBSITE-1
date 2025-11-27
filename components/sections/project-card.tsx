@@ -82,9 +82,9 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
             </div>
 
             <div>
-              <p className="text-brand-gray-muted uppercase tracking-wider text-xs mb-1">
-                {language === "En" ? "YEAR" : "ANNÉE"}
-              </p>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                {language === "En" ? "YEAR" : "ANNEE"}
+              </div>
               <p className="text-brand-ink font-medium">
                 {new Date(project.created_at).getFullYear()}
               </p>
@@ -92,7 +92,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
 
             <div className="col-span-2">
               <p className="text-brand-gray-muted uppercase tracking-wider text-xs mb-1">
-                {language === "En" ? "CATEGORY" : "CATÉGORIE"}
+                {language === "En" ? "CATEGORY" : "CATEGORIE"}
               </p>
               <p className="text-brand-ink font-medium">
                 {project.description || "N/A"}

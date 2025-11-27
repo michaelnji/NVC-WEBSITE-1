@@ -1,20 +1,22 @@
 "use client"
 
-import type React from "react"
-import ImageWithSkeleton from "@/components/image-with-skeleton"
-import { useState, useEffect } from "react"
-import type { TeamMember } from "@/lib/types"
+import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal";
+import ImageWithSkeleton from "@/components/image-with-skeleton";
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ImageUploader } from "./image-uploader"
-import { AdminItemsListCard } from "./admin-items-list-card"
-import { AdminItemCard } from "./admin-item-card"
+import { useLanguage } from "@/contexts/language-context";
+import type { TeamMember } from "@/lib/types";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { AdminItemCard } from "./admin-item-card";
+import { AdminItemsListCard } from "./admin-items-list-card";
 import { ButtonAdmin } from "./button-admin"
-import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal"
+import { ImageUploader } from "./image-uploader";
 
 export function TeamManager() {
+  const { t } = useLanguage();
   const [members, setMembers] = useState<TeamMember[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isFetching, setIsFetching] = useState(true)
@@ -99,17 +101,17 @@ export function TeamManager() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <AdminItemsListCard
-        title="Membres existants"
+        title={t.admin.team.existingMembers}
         count={members.length}
         max={999}
         isFetching={isFetching}
-        emptyMessage="Aucun membre pour l’instant."
+        emptyMessage={t.admin.team.noMembers}
       >
         {members.map((member) => {
-          const selected = editingId === member.id
+          const selected = editingId === member.id;
           const combinedDescription = member.description
             ? `${member.position}\n${member.description}`
-            : member.position
+            : member.position;
           return (
             <AdminItemCard
               key={member.id}
@@ -118,57 +120,65 @@ export function TeamManager() {
               description={combinedDescription}
               selected={selected}
               onSelect={() => {
-                setEditingId(member.id)
+                setEditingId(member.id);
                 setFormData({
                   name: member.name,
                   position: member.position,
                   description: member.description || "",
                   photo_url: member.photo_url || "",
-                })
+                });
               }}
               onDelete={() => handleDelete(member.id)}
             />
-          )
+          );
         })}
       </AdminItemsListCard>
 
       <Card className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
         <div className="mb-2 text-xs text-muted-foreground">
-          Créez ou modifiez un membre de l’équipe. Ces membres alimentent la section "Team" du site.
+          {t.admin.team.createOrEditMember}
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label>Nom</Label>
+            <Label>{t.admin.team.name}</Label>
             <Input
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="Nom du membre"
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+              placeholder={t.admin.team.namePlaceholder}
               required
             />
           </div>
 
           <div>
-            <Label>Poste</Label>
+            <Label>{t.admin.team.position}</Label>
             <Input
               value={formData.position}
-              onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-              placeholder="Poste/Titre"
+              onChange={(e) =>
+                setFormData({ ...formData, position: e.target.value })
+              }
+              placeholder={t.admin.team.positionPlaceholder}
               required
             />
           </div>
 
           <div>
-            <Label>Description</Label>
+            <Label>{t.admin.projects.description}</Label>
             <Textarea
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Description optionnelle"
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              placeholder={t.admin.team.descriptionOptional}
             />
           </div>
 
           <div>
-            <Label>Photo</Label>
-            <ImageUploader onUpload={(url) => setFormData({ ...formData, photo_url: url })} />
+            <Label>{t.admin.team.photo}</Label>
+            <ImageUploader
+              onUpload={(url) => setFormData({ ...formData, photo_url: url })}
+            />
             {formData.photo_url && (
               <ImageWithSkeleton
                 src={formData.photo_url || "/placeholder.svg"}
@@ -181,7 +191,8 @@ export function TeamManager() {
 
           <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
             <ButtonAdmin type="submit" disabled={isLoading} fullWidth={false}>
-              {editingId ? "Mettre à jour" : "Ajouter"} Membre
+              {editingId ? t.admin.team.updateMember : t.admin.team.addMember}{" "}
+              {t.admin.team.member}
             </ButtonAdmin>
             {editingId && (
               <ButtonAdmin
@@ -189,11 +200,16 @@ export function TeamManager() {
                 fullWidth={false}
                 className="bg-transparent text-muted-foreground border-transparent hover:bg-muted/30 h-9 px-4"
                 onClick={() => {
-                  setEditingId(null)
-                  setFormData({ name: "", position: "", description: "", photo_url: "" })
+                  setEditingId(null);
+                  setFormData({
+                    name: "",
+                    position: "",
+                    description: "",
+                    photo_url: "",
+                  });
                 }}
               >
-                Annuler
+                {t.admin.projects.cancel}
               </ButtonAdmin>
             )}
           </div>
@@ -202,13 +218,13 @@ export function TeamManager() {
 
       <AdminConfirmModal
         open={deleteId !== null}
-        title="Supprimer ce membre ?"
-        message="Cette action est irréversible. Le membre sera définitivement supprimé."
-        confirmLabel="Supprimer"
-        cancelLabel="Annuler"
+        title={t.admin.team.deleteMemberTitle}
+        message={t.admin.team.deleteMemberMessage}
+        confirmLabel={t.admin.projects.delete}
+        cancelLabel={t.admin.projects.cancel}
         onCancel={() => setDeleteId(null)}
         onConfirm={handleConfirmDelete}
       />
     </div>
-  )
+  );
 }

@@ -1,61 +1,63 @@
 "use client"
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AdminHomePage } from "@/components/admin/pages/home"
-import { AdminProjectsPage } from "@/components/admin/pages/projects"
-import { AdminAboutPage } from "@/components/admin/pages/about"
-import { AdminContactPage } from "@/components/admin/pages/contact"
-import Link from "next/link"
-import Image from "next/image"
-import { useEffect, useState } from "react"
-import { LanguageSelector } from "@/components/language-selector"
-import { useLanguage } from "@/contexts/language-context"
-import { createSupabaseBrowserClient } from "@/lib/supabase/browser"
-import { ButtonAdmin } from "@/components/admin/button-admin"
+import { ButtonAdmin } from "@/components/admin/button-admin";
+import { AdminContactPage } from "@/components/admin/pages/contact";
+import { AdminHomePage } from "@/components/admin/pages/home";
+import { ProjectsManager } from "@/components/admin/projects-manager";
+import { ServicesManager } from "@/components/admin/services-manager";
+import { LanguageSelector } from "@/components/language-selector";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLanguage } from "@/contexts/language-context";
+import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
-export default function AdminPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [checking, setChecking] = useState(true)
-  const [session, setSession] = useState<any>(null)
-  const { t } = useLanguage()
-  const L = t.admin
+// Force dynamic rendering for this page
+export const dynamic = 'force-dynamic';
 
-  useEffect(() => {
-    const supabase = createSupabaseBrowserClient()
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session)
-      setChecking(false)
-    })
-    const { data: listener } = supabase.auth.onAuthStateChange((_event: any, sess: any) => {
-      setSession(sess)
-    })
-    return () => {
-      // @ts-ignore optional unsubscribe
-      listener?.subscription?.unsubscribe?.()
-    }
-  }, [])
+function AdminContent() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { t } = useLanguage();
+  const L = t.admin;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const defaultTab = searchParams.get("tab") || "home";
+  const [tab, setTab] = useState(defaultTab);
 
-  if (checking) {
-    return (
-      <div className=" min-h-screen grid place-items-center bg-background/60 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
-        <div className="text-sm text-muted-foreground">{L.loading}</div>
-      </div>
-    )
-  }
+  // Helper to change tab and update URL param
+  const handleTabChange = (value: string) => {
+    setTab(value);
+    const params = new URLSearchParams(Array.from(searchParams.entries()));
+    params.set("tab", value);
+    router.replace(`?${params.toString()}`);
+  };
 
-  if (!session) {
-    return <LoginInline />
-  }
   return (
-    <div className="grid min-h-screen grid-rows-[auto_1fr] bg-background/60 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60 overflow-hidden overscroll-none">
-      <div className="border-b-2 border-border bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="grid h-screen grid-rows-[auto_1fr] bg-background/60 backdrop-blur-sm supports-backdrop-filter:bg-background/60 overflow-hidden overscroll-none">
+      <div className="border-b-2 border-border bg-background/60 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="w-full px-4 lg:px-6 py-3">
-          <div className={`h-14 items-center ${sidebarOpen ? "lg:grid lg:grid-cols-[210px_1fr]" : "lg:grid lg:grid-cols-[0px_1fr]"}`}>
+          <div
+            className={`h-14 items-center ${
+              sidebarOpen
+                ? "lg:grid lg:grid-cols-[210px_1fr]"
+                : "lg:grid lg:grid-cols-[0px_1fr]"
+            }`}
+          >
             <div className="hidden lg:flex items-center relative ">
-               <Image src="/logo-dark.svg" alt="Logo" width={140} height={36} className="h-9 w-auto" />
+              <Image
+                src="/logo-dark.svg"
+                alt="Logo"
+                width={140}
+                height={36}
+                className="h-9 w-auto"
+              />
             </div>
             <div className="relative flex items-center justify-end">
-              <h1 className="absolute left-1/2 -translate-x-1/2 translate-y-[2px] text-xl md:text-[40px] font-display uppercase tracking-wider leading-none">{L.panelTitle}</h1>
+              <h1 className="absolute left-1/2 -translate-x-1/2 translate-y-0.5 text-xl md:text-[40px] font-display uppercase tracking-wider leading-none">
+                {L.panelTitle}
+              </h1>
               <div className="flex items-center gap-3">
                 <LanguageSelector />
               </div>
@@ -65,33 +67,125 @@ export default function AdminPage() {
       </div>
 
       {/* Outer Tabs: site pages */}
-      <Tabs defaultValue="home" className="w-full">
-        <div className={`w-full px-2 lg:px-4 py-4 grid grid-cols-1 ${sidebarOpen ? "lg:grid-cols-[210px_1fr]" : "lg:grid-cols-[0px_1fr]"} gap-0 lg:gap-4 h-full overflow-hidden`}>
+      <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
+        <div
+          className={`w-full px-2 lg:px-4 py-4 grid grid-cols-1 ${
+            sidebarOpen ? "lg:grid-cols-[210px_1fr]" : "lg:grid-cols-[0px_1fr]"
+          } gap-0 lg:gap-4 h-full overflow-auto`}
+        >
           {/* Sidebar: pages */}
-          <aside className={`hidden lg:block h-full overflow-hidden border-r-2 border-border ${sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+          <aside
+            className={`hidden lg:block h-[calc(100vh-105px)] overflow-hidden border-r-2 border-border ${
+              sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+          >
             <div className="h-full flex flex-col pt-0 px-3 pb-3">
               <TabsList className="flex flex-col items-stretch gap-2 bg-transparent w-full h-auto">
-                <TabsTrigger value="home" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
+                <TabsTrigger
+                  value="home"
+                  className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand"
+                >
                   <span className="flex items-center gap-2.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 21V12h6v9"/></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-5 w-5"
+                    >
+                      <path d="M3 10.5 12 3l9 7.5" />
+                      <path d="M5 10v10h14V10" />
+                      <path d="M9 21V12h6v9" />
+                    </svg>
                     {L.nav.home}
                   </span>
                 </TabsTrigger>
-                <TabsTrigger value="projets" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
+                <TabsTrigger
+                  value="services"
+                  className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand"
+                >
                   <span className="flex items-center gap-2.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-5 w-5"
+                    >
+                      <rect x="3" y="6" width="18" height="12" rx="2" />
+                      <path d="M3 10h18" />
+                    </svg>
+                    Services
+                  </span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="projets"
+                  className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand"
+                >
+                  <span className="flex items-center gap-2.5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-5 w-5"
+                    >
+                      <rect x="3" y="3" width="7" height="7" />
+                      <rect x="14" y="3" width="7" height="7" />
+                      <rect x="14" y="14" width="7" height="7" />
+                      <rect x="3" y="14" width="7" height="7" />
+                    </svg>
                     {L.nav.projects}
                   </span>
                 </TabsTrigger>
-                <TabsTrigger value="a-propos" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
+                <TabsTrigger
+                  value="a-propos"
+                  className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand"
+                >
                   <span className="flex items-center gap-2.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7.5 7.5 0 0 1 13 0"/></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-5 w-5"
+                    >
+                      <circle cx="12" cy="7" r="4" />
+                      <path d="M5.5 21a7.5 7.5 0 0 1 13 0" />
+                    </svg>
                     {L.nav.about}
                   </span>
                 </TabsTrigger>
-                <TabsTrigger value="contact" className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
+                <TabsTrigger
+                  value="contact"
+                  className="justify-start border border-transparent rounded-md px-3 py-2 lg:py-2.5 text-[0.95rem] lg:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand"
+                >
                   <span className="flex items-center gap-2.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M4 4h16v16H4z"/><path d="M22 6 12 13 2 6"/></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-5 w-5"
+                    >
+                      <path d="M4 4h16v16H4z" />
+                      <path d="M22 6 12 13 2 6" />
+                    </svg>
                     {L.nav.contact}
                   </span>
                 </TabsTrigger>
@@ -108,12 +202,14 @@ export default function AdminPage() {
                 <ButtonAdmin
                   confirm
                   confirmTitle={L.actions.logout}
-                  confirmMessage={"You are about to log out of the admin panel."}
+                  confirmMessage={
+                    "You are about to log out of the admin panel."
+                  }
                   confirmConfirmLabel={"Log out"}
                   confirmCancelLabel={"Cancel"}
                   onClick={async () => {
-                    const supabase = createSupabaseBrowserClient()
-                    await supabase.auth.signOut()
+                    const supabase = createSupabaseBrowserClient();
+                    await supabase.auth.signOut();
                   }}
                 >
                   {L.actions.logout}
@@ -123,31 +219,95 @@ export default function AdminPage() {
           </aside>
 
           {/* Content area */}
-          <main className="min-w-0 w-full px-2 lg:px-6 h-full overflow-auto overscroll-contain">
+          <main className="min-w-0 w-full px-2 lg:px-6 h-[calc(100vh-105px)] overflow-hidden overscroll-contain">
             {/* Mobile page switcher */}
             <div className="lg:hidden mb-4 px-2">
               <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
-                <TabsTrigger value="home" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
+                <TabsTrigger
+                  value="home"
+                  className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand"
+                >
                   <span className="flex items-center justify-center gap-2.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 21V12h6v9"/></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-5 w-5"
+                    >
+                      <path d="M3 10.5 12 3l9 7.5" />
+                      <path d="M5 10v10h14V10" />
+                      <path d="M9 21V12h6v9" />
+                    </svg>
                     {L.nav.home}
                   </span>
                 </TabsTrigger>
-                <TabsTrigger value="projets" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
+                <TabsTrigger
+                  value="projets"
+                  onClick={() => handleTabChange("projets")}
+                  className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand"
+                >
                   <span className="flex items-center justify-center gap-2.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-5 w-5"
+                    >
+                      <rect x="3" y="3" width="7" height="7" />
+                      <rect x="14" y="3" width="7" height="7" />
+                      <rect x="14" y="14" width="7" height="7" />
+                      <rect x="3" y="14" width="7" height="7" />
+                    </svg>
                     {L.nav.projects}
                   </span>
                 </TabsTrigger>
-                <TabsTrigger value="a-propos" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
+                <TabsTrigger
+                  value="a-propos"
+                  className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand"
+                >
                   <span className="flex items-center justify-center gap-2.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7.5 7.5 0 0 1 13 0"/></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-5 w-5"
+                    >
+                      <circle cx="12" cy="7" r="4" />
+                      <path d="M5.5 21a7.5 7.5 0 0 1 13 0" />
+                    </svg>
                     {L.nav.about}
                   </span>
                 </TabsTrigger>
-                <TabsTrigger value="contact" className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand">
+                <TabsTrigger
+                  value="contact"
+                  className="border border-transparent rounded-md px-2.5 py-2 text-[0.95rem] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:border-brand"
+                >
                   <span className="flex items-center justify-center gap-2.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M4 4h16v16H4z"/><path d="M22 6 12 13 2 6"/></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-5 w-5"
+                    >
+                      <path d="M4 4h16v16H4z" />
+                      <path d="M22 6 12 13 2 6" />
+                    </svg>
                     {L.nav.contact}
                   </span>
                 </TabsTrigger>
@@ -161,12 +321,18 @@ export default function AdminPage() {
 
             {/* PROJETS */}
             <TabsContent value="projets" className="mt-0">
-              <AdminProjectsPage />
+              {/* Use ProjectsManager directly for consistency */}
+              <ProjectsManager />
             </TabsContent>
 
             {/* A PROPOS */}
             <TabsContent value="a-propos" className="mt-0">
-              <AdminAboutPage />
+              <ProjectsManager />
+            </TabsContent>
+
+            {/* SERVICES */}
+            <TabsContent value="services" className="mt-0">
+              <ServicesManager />
             </TabsContent>
 
             {/* CONTACT */}
@@ -177,7 +343,55 @@ export default function AdminPage() {
         </div>
       </Tabs>
     </div>
-  )
+  );
+}
+
+export default function AdminPage() {
+  const [checking, setChecking] = useState(true);
+  const [session, setSession] = useState<any>(null);
+  const { t } = useLanguage();
+  const L = t.admin;
+
+  useEffect(() => {
+    const supabase = createSupabaseBrowserClient();
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setChecking(false);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event: any, sess: any) => {
+        setSession(sess);
+      }
+    );
+    return () => {
+      // @ts-ignore optional unsubscribe
+      listener?.subscription?.unsubscribe?.();
+    };
+  }, []);
+
+  if (checking) {
+    return (
+      <div className=" min-h-screen grid place-items-center bg-background/60 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
+        <div className="text-sm text-muted-foreground">{L.loading}</div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return <LoginInline />;
+  }
+
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen grid place-items-center bg-background/60 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
+          <div className="text-sm text-muted-foreground">{L.loading}</div>
+        </div>
+      }
+    >
+      <AdminContent />
+    </Suspense>
+  );
 }
 
 function LoginInline() {
@@ -239,14 +453,22 @@ function LoginInline() {
   }
 
   return (
-    <div className="min-h-screen grid place-items-center bg-background/60 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60 p-4">
+    <div className="min-h-screen grid place-items-center bg-background/60 backdrop-blur-sm supports-backdrop-filter:bg-background/60 p-4">
       <div className="w-full max-w-sm rounded-xl border-2 border-border bg-card p-6 shadow-sm">
         <div className="mb-5 flex items-center gap-3">
-          <Image src="/logo-dark.svg" alt="Logo" width={128} height={32} className="h-8 w-auto" />
+          <Image
+            src="/logo-dark.svg"
+            alt="Logo"
+            width={128}
+            height={32}
+            className="h-8 w-auto"
+          />
         </div>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-              <label className="block text-sm text-muted-foreground mb-1">{L.emailLabel}</label>
+            <label className="block text-sm text-muted-foreground mb-1">
+              {L.emailLabel}
+            </label>
             <input
               type="email"
               required
@@ -258,7 +480,9 @@ function LoginInline() {
             />
           </div>
           <div>
-            <label className="block text-sm text-muted-foreground mb-1">{L.passwordLabel}</label>
+            <label className="block text-sm text-muted-foreground mb-1">
+              {L.passwordLabel}
+            </label>
             <input
               type="password"
               required
@@ -281,14 +505,24 @@ function LoginInline() {
           )}
           <button
             type="submit"
-            disabled={loading || (cooldownUntil !== null && Date.now() < cooldownUntil)}
+            disabled={
+              loading || (cooldownUntil !== null && Date.now() < cooldownUntil)
+            }
             className="w-full rounded-md border border-brand bg-brand text-white px-4 py-2 font-medium hover:opacity-90 disabled:opacity-60"
           >
-            {loading ? L.submitting : remaining > 0 ? `${L.retryIn} ${remaining}s` : L.submit}
+            {loading
+              ? L.submitting
+              : remaining > 0
+              ? `${L.retryIn} ${remaining}s`
+              : L.submit}
           </button>
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">{L.restricted}</span>
-            <button type="button" onClick={onForgot} className="text-brand hover:underline">
+            <button
+              type="button"
+              onClick={onForgot}
+              className="text-brand hover:underline"
+            >
               {L.forgotPasswordLink}
             </button>
           </div>
@@ -296,5 +530,5 @@ function LoginInline() {
         <p className="mt-4 text-xs text-muted-foreground">{L.noSignup}</p>
       </div>
     </div>
-  )
+  );
 }
