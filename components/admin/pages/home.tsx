@@ -26,7 +26,7 @@ export function AdminHomePage() {
       },
       {
         key: "services",
-        title: t.admin.nav.projects,
+        title: t.admin.nav.services,
         desc: t.admin.descriptions?.services ?? "",
       },
       {

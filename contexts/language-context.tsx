@@ -132,6 +132,7 @@ interface Translations {
       projects: string;
       about: string;
       contact: string;
+      services: string;
     };
     descriptions: {
       hero: string;
@@ -533,6 +534,7 @@ const translations: Record<Language, Translations> = {
         projects: "Projets",
         about: "A propos",
         contact: "Contact",
+        services: "Services",
       },
       descriptions: {
         hero: "Gerez les images et textes de la section Hero.",
@@ -939,6 +941,7 @@ const translations: Record<Language, Translations> = {
         projects: "Projects",
         about: "About",
         contact: "Contact",
+        services: "Services",
       },
       descriptions: {
         hero: "Manage the images and text for the Hero section.",
