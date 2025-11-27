@@ -218,11 +218,12 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
             const isPlaceholder = data?.isPlaceholder || !member
             return (
               <div
-                className="group rounded-2xl overflow-hidden cursor-pointer [perspective:1000px]"
+                className="group cursor-pointer [perspective:1000px]"
                 style={{ width: `${width}px`, height: `${height}px` }}
               >
-                <div className="relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
-                  <div className="absolute inset-0 w-full h-full rounded-xl overflow-hidden [backface-visibility:hidden] bg-black">
+                <div className="relative w-full h-full [transform-style:preserve-3d]">
+                  {/* Face avant */}
+                  <div className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden bg-black [backface-visibility:hidden] transition-transform duration-700 [transform:rotateY(0deg)] group-hover:[transform:rotateY(180deg)]">
                     {isSkeleton ? (
                       <div className="relative w-full h-full bg-brand-surface-deep">
                         <div className="absolute inset-0">
@@ -237,7 +238,7 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="flex w-full h-full items-center justify-center bg-brand-surface-dark px-4 text-center  overflow-hidden">
+                      <div className="flex w-full h-full items-center justify-center bg-brand-surface-dark px-4 text-center overflow-hidden">
                         <AvailableSlotCard
                           title="Slot available"
                           description=""
@@ -246,7 +247,8 @@ export default function TeamIntroSection({ initialMembers }: TeamIntroSectionPro
                     )}
                   </div>
 
-                  <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-brand to-brand-soft  [backface-visibility:hidden] [transform:rotateY(180deg)] p-4 flex flex-col items-center justify-center">
+                  {/* Face arrière */}
+                  <div className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden bg-gradient-to-br from-brand to-brand-soft [backface-visibility:hidden] transition-transform duration-700 [transform:rotateY(-180deg)] group-hover:[transform:rotateY(0deg)] p-4 flex flex-col items-center justify-center">
                     {isSkeleton ? null : member ? (
                       <div className="w-full flex flex-col items-center justify-center text-center space-y-2">
                         <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-18 md:h-18 rounded-full bg-black/15 shadow-inner flex items-center justify-center ring-1 ring-white/25 mb-1">

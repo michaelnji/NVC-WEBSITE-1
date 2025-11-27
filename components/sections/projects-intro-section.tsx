@@ -194,9 +194,11 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
   return (
     <div
       ref={sectionRef}
-      className="relative bg-[url('/Calque_1.png')] py-50 sm:py-32 lg:py-40 xl:py-48 px-4 md:px-8 lg:px-12 xl:px-16 -my-35  sm:-my-32 lg:-my-16 lg:min-h-[75vh] xl:min-h-[80vh] bg-brand-cream"
+      className="relative  py-50 sm:py-32 lg:py-40 xl:py-48 px-4 md:px-8 lg:px-12 xl:px-16 -my-35  sm:-my-32 lg:-my-16 lg:min-h-[75vh] xl:min-h-[80vh] bg-brand-cream"
       style={{
-        backgroundColor: "var(--brand-cream)",
+        backgroundImage: "url('/Calque_1.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
         zIndex: 1,
       }}
     >

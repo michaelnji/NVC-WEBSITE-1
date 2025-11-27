@@ -8,6 +8,7 @@ import { useLanguage } from "@/contexts/language-context";
 import type { Project } from "@/lib/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { AngledPanel } from "../angled-panel";
 
 interface Category {
   id: string;
@@ -28,7 +29,6 @@ export default function ProjectsListSection() {
   const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE);
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Intersection Observer
   useEffect(() => {
     const node = sectionRef.current;
     if (!node) return;
@@ -47,7 +47,6 @@ export default function ProjectsListSection() {
     return () => observer.disconnect();
   }, []);
 
-  // Fetch projects
   useEffect(() => {
     if (!hasEntered) return;
 
@@ -142,7 +141,6 @@ export default function ProjectsListSection() {
     };
   }, [hasEntered]);
 
-  // Filter projects
   const filteredProjects =
     activeFilter === "all"
       ? projects
@@ -161,11 +159,11 @@ export default function ProjectsListSection() {
   };
 
   return (
-    <section
+         <section
       ref={sectionRef}
-      className="relative overflow-hidden bg-white py-20 md:py-28 lg:py-32 px-6 md:px-12 lg:px-16 xl:px-24 2xl:px-32"
+      className="relative overflow-hidden bg-white py-20 md:pt-28 lg:py-70 px-6 md:px-12 lg:px-16 xl:px-24 2xl:px-32"
     >
-      <div className="w-full max-w-[1600px] mx-auto">
+      <div className="w-full  mx-auto">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

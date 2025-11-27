@@ -84,6 +84,24 @@ export function Navbar() {
     const handleScroll = () => {
       const currentScrollY = window.scrollY
 
+      // Ne pas afficher la navbar quand la section ProjectsStoriesSection est visible sur la page projets
+      let inProjectsStoriesSection = false
+      if (pathname === "/projets") {
+        const sectionEl = document.getElementById("projects-stories-section")
+        if (sectionEl) {
+          const rect = sectionEl.getBoundingClientRect()
+          const vh = window.innerHeight || 0
+          // Section visible si elle chevauche le viewport
+          inProjectsStoriesSection = rect.top < vh && rect.bottom > 0
+        }
+      }
+
+      if (inProjectsStoriesSection) {
+        setIsNavbarVisible(false)
+        setLastScrollY(currentScrollY)
+        return
+      }
+
       // Only hide/show navbar after scrolling past 100px
       if (currentScrollY < 100) {
         setIsNavbarVisible(true)
@@ -105,7 +123,7 @@ export function Navbar() {
 
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [lastScrollY])
+  }, [lastScrollY, pathname])
 
   useEffect(() => {
     const handleResize = () => {
