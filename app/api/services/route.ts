@@ -15,13 +15,38 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const supabase = createAdminClient()
+    const body = await request.json();
+    const supabase = createAdminClient();
 
-    const { data, error } = await supabase.from("services").insert([body]).select()
+    // Normalize title to lowercase
+    const normalizedTitle = body.title?.toLowerCase() || "";
 
-    if (error) throw error
-    return NextResponse.json(data[0])
+    // Check for duplicate title
+    const { data: existingService } = await supabase
+      .from("services")
+      .select("id")
+      .eq("title", normalizedTitle)
+      .single();
+
+    if (existingService) {
+      return NextResponse.json(
+        { error: "A service with this name already exists" },
+        { status: 409 }
+      );
+    }
+
+    const normalizedBody = {
+      ...body,
+      title: normalizedTitle,
+    };
+
+    const { data, error } = await supabase
+      .from("services")
+      .insert([normalizedBody])
+      .select();
+
+    if (error) throw error;
+    return NextResponse.json(data[0]);
   } catch (error) {
     return NextResponse.json({ error: "Failed to create" }, { status: 500 })
   }

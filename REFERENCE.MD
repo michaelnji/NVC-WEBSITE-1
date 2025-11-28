@@ -57,6 +57,34 @@
   - `fetch("/api/projects")` in client components
   - Data mapped to UI, categories generated dynamically
 
-## 7. Patterns & Best Practices
+## 7. Notifications & Feedback
+- **Toast System (react-hot-toast):**
+  - **Setup:** `<Toaster />` component added in `app/layout.tsx`
+  - **Import:** `import toast from "react-hot-toast"`
+  - **Usage:**
+    - Success: `toast.success("Message", { style: { background: '#1a1a1a', color: '#fff', border: '1px solid #333' } })`
+    - Error: `toast.error("Message", { style: { background: '#1a1a1a', color: '#fff', border: '1px solid #333' } })`
+    - Info: `toast("Message", { style: { background: '#1a1a1a', color: '#fff', border: '1px solid #333' } })`
+  - **Dark Theme Styling:**
+    - Background: `#1a1a1a`
+    - Text color: `#fff`
+    - Border: `1px solid #333`
+  - **Best Practices:**
+    - Always apply dark theme styling to match the UI
+    - Use for user feedback (success, errors, warnings)
+    - Avoid native `alert()` or `confirm()` - use toast or custom modals
+    - Keep messages concise and actionable
+  - **Example:**
+    ```tsx
+    toast.error("Service name already exists", {
+      style: {
+        background: '#1a1a1a',
+        color: '#fff',
+        border: '1px solid #333',
+      },
+    });
+    ```
+
+## 8. Patterns & Best Practices
 - **Client Components:**
   - `

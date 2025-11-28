@@ -1,11 +1,11 @@
 "use client"
 
 import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal";
-import ImageWithSkeleton from "@/components/image-with-skeleton"
+import ImageWithSkeleton from "@/components/image-with-skeleton";
 import { useLanguage } from "@/contexts/language-context";
 import type React from "react";
-import { AdminItemCard } from "./admin-item-card"
-import { AdminItemsListCard } from "./admin-items-list-card"
+import { AdminItemCard } from "./admin-item-card";
+import { AdminItemsListCard } from "./admin-items-list-card";
 import { ButtonAdmin } from "./button-admin";
 
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { Service } from "@/lib/types";
+import { toastStyles } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { ImageUploader } from "./image-uploader";
 
 export function ServicesManager() {
@@ -79,13 +81,34 @@ export function ServicesManager() {
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to save");
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 409) {
+          toast.error(
+            errorData.error || "A service with this name already exists",
+            { style: toastStyles() }
+          );
+        } else {
+          throw new Error("Failed to save");
+        }
+        return;
+      }
+
+      toast.success(
+        editingServiceId
+          ? "Service updated successfully"
+          : "Service created successfully",
+        { style: toastStyles() }
+      );
 
       setServiceForm({ title: "", description: "", image_url: "" });
       setEditingServiceId(null);
       await fetchServices();
     } catch (error) {
       console.error("Error:", error);
+      toast.error("An error occurred while saving the service", {
+        style: toastStyles(),
+      });
     } finally {
       setIsLoading(false);
     }

@@ -6,14 +6,41 @@ export async function PUT(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params
-    const body = await request.json()
-    const supabase = createAdminClient()
+    const { id } = await context.params;
+    const body = await request.json();
+    const supabase = createAdminClient();
 
-    const { data, error } = await supabase.from("services").update(body).eq("id", id).select()
+    // Normalize title to lowercase
+    const normalizedTitle = body.title?.toLowerCase() || "";
 
-    if (error) throw error
-    return NextResponse.json(data[0])
+    // Check for duplicate title (excluding current service)
+    const { data: existingService } = await supabase
+      .from("services")
+      .select("id")
+      .eq("title", normalizedTitle)
+      .neq("id", id)
+      .single();
+
+    if (existingService) {
+      return NextResponse.json(
+        { error: "A service with this name already exists" },
+        { status: 409 }
+      );
+    }
+
+    const normalizedBody = {
+      ...body,
+      title: normalizedTitle,
+    };
+
+    const { data, error } = await supabase
+      .from("services")
+      .update(normalizedBody)
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+    return NextResponse.json(data[0]);
   } catch (error) {
     return NextResponse.json({ error: "Failed to update" }, { status: 500 })
   }
