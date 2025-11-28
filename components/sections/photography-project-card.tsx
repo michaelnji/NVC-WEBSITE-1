@@ -3,6 +3,7 @@
 import ImageWithSkeleton from "@/components/image-with-skeleton";
 import { useLanguage } from "@/contexts/language-context";
 import type { Project } from "@/lib/types";
+import { getPrimaryImage } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
@@ -40,7 +41,7 @@ export default function PhotographyProjectCard({
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
           <ImageWithSkeleton
-            src={project.image_url || "/placeholder.svg"}
+            src={getPrimaryImage(project.image_url)}
             alt={project.title}
             wrapperClassName="w-full h-full"
             className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -78,8 +79,8 @@ export default function PhotographyProjectCard({
             <p className="text-brand-gray-muted md:text-background uppercase tracking-wider text-xs md:text-xl md:font-display font-semibold mb-2">
               {language === "En" ? "THEME" : "THEME"}
             </p>
-            <p className="text-brand-ink font-medium text-base">
-              {project.description || "N/A"}
+            <p className="text-brand-ink capitalize font-medium text-base">
+              {project.theme || "N/A"}
             </p>
           </div>
         </div>

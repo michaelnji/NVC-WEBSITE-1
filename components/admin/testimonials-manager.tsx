@@ -13,8 +13,11 @@ import { AdminItemCard } from "./admin-item-card";
 import { AdminItemsListCard } from "./admin-items-list-card";
 import { ButtonAdmin } from "./button-admin";
 import {
+  existingImagesToUrls,
   ImageUploader,
   uploadFiles,
+  urlsToExistingImages,
+  type ExistingImage,
   type SelectedFile,
 } from "./image-uploader";
 
@@ -35,6 +38,7 @@ export function TestimonialsManager() {
     rating: 5,
   });
   const [selectedImage, setSelectedImage] = useState<SelectedFile[]>([]);
+  const [existingImage, setExistingImage] = useState<ExistingImage[]>([]);
 
   useEffect(() => {
     fetchTestimonials();
@@ -58,13 +62,20 @@ export function TestimonialsManager() {
     setIsLoading(true);
 
     try {
-      // Upload image if new file selected
-      let photoUrl = formData.photo_url;
+      // Start with existing image if not removed
+      let photoUrl = existingImagesToUrls(existingImage);
+
+      // Upload new image if selected, using author name as filename
       if (selectedImage.length > 0) {
-        const uploaded = await uploadFiles(selectedImage);
+        const uploaded = await uploadFiles(selectedImage, formData.author_name);
         if (uploaded.length > 0) {
           photoUrl = uploaded[0].url;
         }
+      }
+
+      // Fallback to form value if no existing or new image
+      if (!photoUrl) {
+        photoUrl = formData.photo_url;
       }
 
       const url = editingId
@@ -95,6 +106,7 @@ export function TestimonialsManager() {
         rating: 5,
       });
       setSelectedImage([]);
+      setExistingImage([]);
       setEditingId(null);
       await fetchTestimonials();
     } catch (error) {
@@ -148,6 +160,8 @@ export function TestimonialsManager() {
                 photo_url: testimonial.photo_url || "",
                 rating: testimonial.rating,
               });
+              setExistingImage(urlsToExistingImages(testimonial.photo_url));
+              setSelectedImage([]);
             }}
             onDelete={() => handleDelete(testimonial.id)}
             imageSizeClass="h-16 w-16 mr-3 rounded-full"
@@ -234,6 +248,8 @@ export function TestimonialsManager() {
             <ImageUploader
               value={selectedImage}
               onChange={setSelectedImage}
+              existingImages={existingImage}
+              onExistingImagesChange={setExistingImage}
               disabled={isLoading}
             />
           </div>
@@ -252,6 +268,8 @@ export function TestimonialsManager() {
                 className="bg-transparent text-muted-foreground border-transparent hover:bg-muted/30 h-9 px-4"
                 onClick={() => {
                   setEditingId(null);
+                  setSelectedImage([]);
+                  setExistingImage([]);
                   setFormData({
                     author_name: "",
                     title: "",

@@ -3,6 +3,7 @@
 import ImageWithSkeleton from "@/components/image-with-skeleton";
 import { useLanguage } from "@/contexts/language-context";
 import type { Project } from "@/lib/types";
+import { getPrimaryImage } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
@@ -37,7 +38,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
           <ImageWithSkeleton
-            src={project.image_url || "/placeholder.svg"}
+            src={getPrimaryImage(project.image_url)}
             alt={project.title}
             wrapperClassName="w-full h-full"
             className="object-cover transition-transform duration-700 group-hover:scale-110"

@@ -5,7 +5,7 @@ import ProjectCard from "@/components/sections/project-card";
 import ProjectCardSkeleton from "@/components/sections/project-card-skeleton";
 import Shimmer from "@/components/shimmer";
 import { useLanguage } from "@/contexts/language-context";
-import type { Project } from "@/lib/types";
+import type { Project, Service } from "@/lib/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
@@ -21,6 +21,7 @@ const ITEMS_PER_PAGE = 6;
 export default function ProjectsListSection() {
   const { language } = useLanguage();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(true);
@@ -53,81 +54,53 @@ export default function ProjectsListSection() {
     setIsLoading(true);
     (async () => {
       try {
-        const response = await fetch("/api/projects", { cache: "no-store" });
+        // Fetch both services and projects in parallel
+        const [servicesRes, projectsRes] = await Promise.all([
+          fetch("/api/services", { cache: "no-store" }),
+          fetch("/api/projects", { cache: "no-store" }),
+        ]);
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch projects");
+        if (!servicesRes.ok || !projectsRes.ok) {
+          throw new Error("Failed to fetch data");
         }
 
-        const data: Project[] = await response.json();
+        const servicesData: Service[] = await servicesRes.json();
+        const projectsData: Project[] = await projectsRes.json();
 
         if (mounted) {
-          setProjects(data);
+          setServices(servicesData);
+          setProjects(projectsData);
 
-          // Generate categories with counts
+          // Generate categories from services with project counts
           const categoryCounts: Record<string, number> = {};
-          data.forEach((project: Project) => {
+          projectsData.forEach((project: Project) => {
             const cat = project.service_id || "uncategorized";
             categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
           });
 
+          // Build categories from services
           const cats: Category[] = [
             {
               id: "all",
               label: "All",
               labelFr: "Tous",
-              count: data.length,
+              count: projectsData.length,
             },
-            {
-              id: "brand-design",
-              label: "Brand Design",
-              labelFr: "Design de Marque",
-              count: categoryCounts["brand-design"] || 0,
-            },
-            {
-              id: "product-design",
-              label: "Product Design",
-              labelFr: "Design Produit",
-              count: categoryCounts["product-design"] || 0,
-            },
-            {
-              id: "graphic-design",
-              label: "Graphic Design",
-              labelFr: "Design Graphique",
-              count: categoryCounts["graphic-design"] || 0,
-            },
-            {
-              id: "communication",
-              label: "Communication",
-              labelFr: "Communication",
-              count: categoryCounts["communication"] || 0,
-            },
-            {
-              id: "photography",
-              label: "Photography",
-              labelFr: "Photographie",
-              count: categoryCounts["photography"] || 0,
-            },
-            {
-              id: "motion-design",
-              label: "Motion Design",
-              labelFr: "Motion Design",
-              count: categoryCounts["motion-design"] || 0,
-            },
-            {
-              id: "videography",
-              label: "Videography",
-              labelFr: "Videographie",
-              count: categoryCounts["videography"] || 0,
-            },
+            ...servicesData.map((service) => ({
+              id: service.id,
+              label: service.title,
+              labelFr: service.title, // Service titles are already in French
+              count: categoryCounts[service.id] || 0,
+            })),
           ];
 
           setCategories(cats);
         }
       } catch (error) {
-        console.error("Error fetching projects:", error);
+        console.error("Error fetching data:", error);
         if (mounted) {
           setProjects([]);
+          setServices([]);
           setCategories([]);
         }
       } finally {
@@ -224,7 +197,7 @@ export default function ProjectsListSection() {
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.98 }}
                   className={`
-                    relative px-4 py-2 rounded-full text-xs md:text-sm  font-semibold
+                    relative px-4 py-2 rounded-full text-xs md:text-sm  font-semibold capitalize!
                     transition-all duration-300 overflow-hidden
                     ${
                       activeFilter === category.id
@@ -276,11 +249,16 @@ export default function ProjectsListSection() {
                 className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 lg:gap-16"
               >
                 {visibleProjects.map((project, idx) => {
+                  // Check if project belongs to photography service
+                  const projectService = services.find(
+                    (s) => s.id === project.service_id
+                  );
+                  const isPhotography = projectService?.title
+                    ?.toLowerCase()
+                    .includes("photo");
+
                   // Use special card for photography projects
-                  if (
-                    activeFilter === "photography" ||
-                    project.service_id === "photography"
-                  ) {
+                  if (isPhotography) {
                     return (
                       <PhotographyProjectCard
                         key={project.id}

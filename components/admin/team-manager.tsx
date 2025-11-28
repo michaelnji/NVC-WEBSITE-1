@@ -13,8 +13,11 @@ import { AdminItemCard } from "./admin-item-card";
 import { AdminItemsListCard } from "./admin-items-list-card";
 import { ButtonAdmin } from "./button-admin";
 import {
+  existingImagesToUrls,
   ImageUploader,
   uploadFiles,
+  urlsToExistingImages,
+  type ExistingImage,
   type SelectedFile,
 } from "./image-uploader";
 
@@ -32,6 +35,7 @@ export function TeamManager() {
     photo_url: "",
   });
   const [selectedImage, setSelectedImage] = useState<SelectedFile[]>([]);
+  const [existingImage, setExistingImage] = useState<ExistingImage[]>([]);
 
   useEffect(() => {
     fetchMembers();
@@ -61,13 +65,20 @@ export function TeamManager() {
     setIsLoading(true);
 
     try {
-      // Upload image if new file selected
-      let photoUrl = formData.photo_url;
+      // Start with existing image if not removed
+      let photoUrl = existingImagesToUrls(existingImage);
+
+      // Upload new image if selected, using member name as filename
       if (selectedImage.length > 0) {
-        const uploaded = await uploadFiles(selectedImage);
+        const uploaded = await uploadFiles(selectedImage, formData.name);
         if (uploaded.length > 0) {
           photoUrl = uploaded[0].url;
         }
+      }
+
+      // Fallback to form value if no existing or new image
+      if (!photoUrl) {
+        photoUrl = formData.photo_url;
       }
 
       const url = editingId
@@ -90,6 +101,7 @@ export function TeamManager() {
 
       setFormData({ name: "", position: "", description: "", photo_url: "" });
       setSelectedImage([]);
+      setExistingImage([]);
       setEditingId(null);
       await fetchMembers();
     } catch (error) {
@@ -144,6 +156,8 @@ export function TeamManager() {
                   description: member.description || "",
                   photo_url: member.photo_url || "",
                 });
+                setExistingImage(urlsToExistingImages(member.photo_url));
+                setSelectedImage([]);
               }}
               onDelete={() => handleDelete(member.id)}
             />
@@ -196,6 +210,8 @@ export function TeamManager() {
             <ImageUploader
               value={selectedImage}
               onChange={setSelectedImage}
+              existingImages={existingImage}
+              onExistingImagesChange={setExistingImage}
               disabled={isLoading}
             />
           </div>
@@ -212,6 +228,8 @@ export function TeamManager() {
                 className="bg-transparent text-muted-foreground border-transparent hover:bg-muted/30 h-9 px-4"
                 onClick={() => {
                   setEditingId(null);
+                  setSelectedImage([]);
+                  setExistingImage([]);
                   setFormData({
                     name: "",
                     position: "",

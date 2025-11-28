@@ -3,13 +3,19 @@
 import { useLanguage } from "@/contexts/language-context";
 import { cn } from "@/lib/utils";
 import { ImagePlus, Upload, X } from "lucide-react";
-import type React from "react"
+import type React from "react";
 import { useCallback, useRef, useState } from "react";
 
 export interface SelectedFile {
   id: string;
   file: File;
   previewUrl: string;
+}
+
+/** Represents an existing image from the backend */
+export interface ExistingImage {
+  id: string;
+  url: string;
 }
 
 interface ImageUploaderProps {
@@ -19,10 +25,14 @@ interface ImageUploaderProps {
   maxFiles?: number;
   /** Maximum file size in bytes (default: 5MB) */
   maxFileSize?: number;
-  /** Current selected files */
+  /** Current selected files (new uploads) */
   value?: SelectedFile[];
   /** Callback when files change */
   onChange?: (files: SelectedFile[]) => void;
+  /** Existing image URLs from the backend (for edit mode) */
+  existingImages?: ExistingImage[];
+  /** Callback when existing images are removed */
+  onExistingImagesChange?: (images: ExistingImage[]) => void;
   /** Whether the uploader is disabled */
   disabled?: boolean;
   /** Custom class name for the container */
@@ -38,6 +48,8 @@ export function ImageUploader({
   maxFileSize = MAX_FILE_SIZE_DEFAULT,
   value = [],
   onChange,
+  existingImages = [],
+  onExistingImagesChange,
   disabled = false,
   className,
 }: ImageUploaderProps) {
@@ -53,6 +65,8 @@ export function ImageUploader({
   };
 
   const effectiveMaxFiles = multiple ? maxFiles : 1;
+  // Total images = existing + new uploads
+  const totalImages = existingImages.length + value.length;
 
   const validateFiles = useCallback(
     (files: File[]): { valid: File[]; errors: string[] } => {
@@ -94,8 +108,8 @@ export function ImageUploader({
 
       if (valid.length === 0) return;
 
-      // Calculate how many we can add
-      const remainingSlots = effectiveMaxFiles - value.length;
+      // Calculate how many we can add (accounting for existing images)
+      const remainingSlots = effectiveMaxFiles - totalImages;
       const filesToAdd = valid.slice(0, remainingSlots);
 
       if (valid.length > remainingSlots) {
@@ -112,15 +126,25 @@ export function ImageUploader({
         previewUrl: URL.createObjectURL(file),
       }));
 
-      // In single mode, replace existing file
-      if (!multiple && value.length > 0) {
+      // In single mode, replace existing file and clear existing images
+      if (!multiple && (value.length > 0 || existingImages.length > 0)) {
         value.forEach((f) => URL.revokeObjectURL(f.previewUrl));
+        onExistingImagesChange?.([]); // Clear existing images
         onChange?.(newFiles);
       } else {
         onChange?.([...value, ...newFiles]);
       }
     },
-    [validateFiles, effectiveMaxFiles, value, multiple, onChange]
+    [
+      validateFiles,
+      effectiveMaxFiles,
+      totalImages,
+      value,
+      existingImages,
+      multiple,
+      onChange,
+      onExistingImagesChange,
+    ]
   );
 
   const removeFile = useCallback(
@@ -133,6 +157,14 @@ export function ImageUploader({
       setError(null);
     },
     [value, onChange]
+  );
+
+  const removeExistingImage = useCallback(
+    (id: string) => {
+      onExistingImagesChange?.(existingImages.filter((img) => img.id !== id));
+      setError(null);
+    },
+    [existingImages, onExistingImagesChange]
   );
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -173,10 +205,47 @@ export function ImageUploader({
     }
   };
 
-  const canAddMore = value.length < effectiveMaxFiles;
+  const canAddMore = totalImages < effectiveMaxFiles;
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
+      {/* Existing images preview */}
+      {existingImages.length > 0 && (
+        <div
+          className={cn("grid gap-2", multiple ? "grid-cols-2" : "grid-cols-1")}
+        >
+          {existingImages.map((img) => (
+            <div
+              key={img.id}
+              className="relative group aspect-square rounded-lg overflow-hidden border border-border bg-muted"
+            >
+              <img
+                src={img.url}
+                alt="Existing image"
+                className="w-full h-full object-cover"
+              />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeExistingImage(img.id);
+                }}
+                disabled={disabled}
+                className="absolute top-2 right-2 p-1.5 rounded-full bg-black/70 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/90 disabled:opacity-50"
+                aria-label="Remove image"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+              <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/70 to-transparent px-2 py-1.5">
+                <p className="text-[10px] text-white/90 truncate">
+                  Existing image
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Dropzone */}
       <div
         onClick={() => canAddMore && !disabled && inputRef.current?.click()}
@@ -282,16 +351,28 @@ export function ImageUploader({
 /**
  * Helper function to upload files to the backend
  * Use this in your form submit handler
+ * @param files - Array of selected files
+ * @param customName - Optional custom name for the uploaded files (will be slugified)
  */
 export async function uploadFiles(
-  files: SelectedFile[]
+  files: SelectedFile[],
+  customName?: string
 ): Promise<{ url: string; name: string; size: number; type: string }[]> {
   const results: { url: string; name: string; size: number; type: string }[] =
     [];
 
-  for (const sf of files) {
+  for (let i = 0; i < files.length; i++) {
+    const sf = files[i];
     const formData = new FormData();
     formData.append("file", sf.file);
+
+    if (customName) {
+      formData.append("customName", customName);
+      // Add index for multiple files (1-based for readability)
+      if (files.length > 1) {
+        formData.append("index", String(i + 1));
+      }
+    }
 
     const response = await fetch("/api/upload", {
       method: "POST",
@@ -306,7 +387,7 @@ export async function uploadFiles(
     const data = await response.json();
     results.push({
       url: data.url,
-      name: sf.file.name,
+      name: data.filename,
       size: sf.file.size,
       type: sf.file.type,
     });
@@ -316,9 +397,40 @@ export async function uploadFiles(
 }
 
 /**
-/**
  * Helper function to clean up preview URLs when component unmounts or files are cleared
  */
 export function cleanupFiles(files: SelectedFile[]) {
   files.forEach((f) => URL.revokeObjectURL(f.previewUrl));
+}
+
+/**
+ * Helper function to convert image URL(s) to ExistingImage array
+ * Handles both single URLs and comma-separated multiple URLs
+ *
+ * @param imageUrl - Single URL or comma-separated URLs
+ * @returns Array of ExistingImage objects
+ */
+export function urlsToExistingImages(
+  imageUrl: string | null | undefined
+): ExistingImage[] {
+  if (!imageUrl) return [];
+
+  return imageUrl
+    .split(",")
+    .map((url) => url.trim())
+    .filter(Boolean)
+    .map((url, index) => ({
+      id: `existing-${index}-${Date.now()}`,
+      url,
+    }));
+}
+
+/**
+ * Helper function to convert ExistingImage array back to comma-separated URLs
+ *
+ * @param images - Array of ExistingImage objects
+ * @returns Comma-separated URL string
+ */
+export function existingImagesToUrls(images: ExistingImage[]): string {
+  return images.map((img) => img.url).join(",");
 }

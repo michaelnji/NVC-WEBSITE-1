@@ -1,19 +1,18 @@
 "use client"
 
-import type React from "react"
-import { Button } from "@/components/ui/button"
-import ImageWithSkeleton from "@/components/image-with-skeleton"
+import ImageWithSkeleton from "@/components/image-with-skeleton";
+import { getPrimaryImage } from "@/lib/utils";
 
 export type AdminItemCardProps = {
-  imageUrl?: string | null
-  title: string | null
-  description?: string | null
-  selected?: boolean
-  onSelect?: () => void
-  onDelete?: () => void
-  imageSizeClass?: string
-  imageClassName?: string
-}
+  imageUrl?: string | null;
+  title: string | null;
+  description?: string | null;
+  selected?: boolean;
+  onSelect?: () => void;
+  onDelete?: () => void;
+  imageSizeClass?: string;
+  imageClassName?: string;
+};
 
 export function AdminItemCard({
   imageUrl,
@@ -54,7 +53,7 @@ export function AdminItemCard({
       >
         <div className="flex   items-start">
           <ImageWithSkeleton
-            src={imageUrl || "/placeholder.svg"}
+            src={getPrimaryImage(imageUrl)}
             alt={title || "Item"}
             wrapperClassName={imageSizeClass}
             className={imageClassName}
@@ -77,9 +76,6 @@ export function AdminItemCard({
       )}
     </div>
   );
-  
-  
-  
 }
 
 

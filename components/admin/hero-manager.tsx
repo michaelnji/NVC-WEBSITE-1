@@ -17,6 +17,8 @@ import { useEffect, useState } from "react";
 import {
   ImageUploader,
   uploadFiles,
+  urlsToExistingImages,
+  type ExistingImage,
   type SelectedFile,
 } from "./image-uploader";
 
@@ -33,6 +35,7 @@ export function HeroManager() {
     description: "",
   });
   const [selectedImages, setSelectedImages] = useState<SelectedFile[]>([]);
+  const [existingImages, setExistingImages] = useState<ExistingImage[]>([]);
   const MAX_TILES = 8;
 
   useEffect(() => {
@@ -67,9 +70,12 @@ export function HeroManager() {
         return;
       }
 
-      // Upload images if new files selected
+      // Upload images if new files selected, using 'hero' as filename prefix
       if (selectedImages.length > 0) {
-        const uploaded = await uploadFiles(selectedImages);
+        const uploaded = await uploadFiles(
+          selectedImages,
+          formData.title || "hero"
+        );
 
         if (editingId) {
           // In edit mode, use the first uploaded image
@@ -177,6 +183,8 @@ export function HeroManager() {
                     title: image.title || "",
                     description: image.description || "",
                   });
+                  setExistingImages(urlsToExistingImages(image.image_url));
+                  setSelectedImages([]);
                 }}
                 onDelete={() => handleDelete(image.id)}
               />
@@ -195,6 +203,8 @@ export function HeroManager() {
                 maxFiles={Math.max(1, MAX_TILES - images.length)}
                 value={selectedImages}
                 onChange={setSelectedImages}
+                existingImages={existingImages}
+                onExistingImagesChange={setExistingImages}
                 disabled={isLoading}
               />
             </div>
@@ -256,6 +266,8 @@ export function HeroManager() {
                     className="text-muted-foreground hover:bg-muted/30 h-9 px-4"
                     onClick={() => {
                       setEditingId(null);
+                      setSelectedImages([]);
+                      setExistingImages([]);
                       setFormData({
                         image_url: "",
                         title: "",

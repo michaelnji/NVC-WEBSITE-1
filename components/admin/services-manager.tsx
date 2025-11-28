@@ -17,8 +17,11 @@ import { toastStyles } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
+  existingImagesToUrls,
   ImageUploader,
   uploadFiles,
+  urlsToExistingImages,
+  type ExistingImage,
   type SelectedFile,
 } from "./image-uploader";
 
@@ -30,6 +33,7 @@ export function ServicesManager() {
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<SelectedFile[]>([]);
+  const [existingImage, setExistingImage] = useState<ExistingImage[]>([]);
   const MAX_SERVICES = 6;
 
   const [serviceForm, setServiceForm] = useState({
@@ -70,13 +74,20 @@ export function ServicesManager() {
     setIsLoading(true);
 
     try {
-      // Upload image if new file selected
-      let imageUrl = serviceForm.image_url;
+      // Start with existing image if not removed
+      let imageUrl = existingImagesToUrls(existingImage);
+
+      // Upload new image if selected, using service title as filename
       if (selectedImage.length > 0) {
-        const uploaded = await uploadFiles(selectedImage);
+        const uploaded = await uploadFiles(selectedImage, serviceForm.title);
         if (uploaded.length > 0) {
           imageUrl = uploaded[0].url;
         }
+      }
+
+      // Fallback to form value if no existing or new image
+      if (!imageUrl) {
+        imageUrl = serviceForm.image_url;
       }
 
       const url = editingServiceId
@@ -117,6 +128,7 @@ export function ServicesManager() {
 
       setServiceForm({ title: "", description: "", image_url: "" });
       setSelectedImage([]);
+      setExistingImage([]);
       setEditingServiceId(null);
       await fetchServices();
     } catch (error) {
@@ -172,6 +184,8 @@ export function ServicesManager() {
                     description: service.description,
                     image_url: service.image_url || "",
                   });
+                  setExistingImage(urlsToExistingImages(service.image_url));
+                  setSelectedImage([]);
                 }}
                 onDelete={() => handleDeleteService(service.id)}
               />
@@ -189,6 +203,8 @@ export function ServicesManager() {
               <ImageUploader
                 value={selectedImage}
                 onChange={setSelectedImage}
+                existingImages={existingImage}
+                onExistingImagesChange={setExistingImage}
                 disabled={isLoading}
               />
             </div>
@@ -243,6 +259,7 @@ export function ServicesManager() {
                   onClick={() => {
                     setEditingServiceId(null);
                     setSelectedImage([]);
+                    setExistingImage([]);
                     setServiceForm({
                       title: "",
                       description: "",

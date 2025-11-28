@@ -1,10 +1,11 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
-import { motion, useAnimationFrame, useMotionValue } from "framer-motion"
-import ImageWithSkeleton from "@/components/image-with-skeleton"
 import { AvailableSlotCard } from "@/components/available-slot-card"
+import ImageWithSkeleton from "@/components/image-with-skeleton";
 import type { Project } from "@/lib/types"
+import { getPrimaryImage } from "@/lib/utils";
+import { motion, useAnimationFrame, useMotionValue } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type PresentationProjetSectionProps = {
   initialProjects?: Project[]
@@ -206,7 +207,7 @@ export function PresentationProjetSection({ initialProjects }: PresentationProje
       transition={{ type: "spring", stiffness: 200, damping: 24 }}
     >
       <ImageWithSkeleton
-        src={project.image_url || "/placeholder.svg"}
+        src={getPrimaryImage(project.image_url)}
         alt={project.title}
         wrapperClassName="w-full h-full"
         className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
@@ -221,7 +222,7 @@ export function PresentationProjetSection({ initialProjects }: PresentationProje
         </h3>
       </div>
     </motion.div>
-  )
+  );
 
   const renderPlaceholderCard = (key: string) => (
     <motion.div

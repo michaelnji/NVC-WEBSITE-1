@@ -1,15 +1,16 @@
 "use client"
 
-import { useState, useEffect, useMemo, useRef } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import ImageWithSkeleton from "@/components/image-with-skeleton"
-import { AvailableSlotCard } from "@/components/available-slot-card"
-import Shimmer from "@/components/shimmer"
+import { AvailableSlotCard } from "@/components/available-slot-card";
+import ImageWithSkeleton from "@/components/image-with-skeleton";
+import Shimmer from "@/components/shimmer";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import { useLanguage } from "@/contexts/language-context"
 import { SecondaryCTAButton } from "@/components/cta-buttons"
-import { ArrowUpRight } from "lucide-react"
+import { useLanguage } from "@/contexts/language-context";
 import type { Project, Service } from "@/lib/types"
+import { getPrimaryImage } from "@/lib/utils";
+import { ArrowUpRight } from "lucide-react";
 
 type ProjectsIntroSectionProps = {
   initialServices?: Service[]
@@ -113,9 +114,9 @@ export default function ProjectsIntroSection({ initialServices }: ProjectsIntroS
               id: p.id,
               title: p.title,
               category: activeService?.title || "Other",
-              image: p.image_url || "/placeholder.svg",
+              image: getPrimaryImage(p.image_url),
             }))
-          : []
+          : [];
 
         if (mounted) {
           setProjects(mapped)

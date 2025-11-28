@@ -21,8 +21,11 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Project, Service } from "@/lib/types";
 import { useEffect, useState } from "react";
 import {
+  existingImagesToUrls,
   ImageUploader,
   uploadFiles,
+  urlsToExistingImages,
+  type ExistingImage,
   type SelectedFile,
 } from "./image-uploader";
 
@@ -57,8 +60,14 @@ export function ProjectsManager() {
   const [selectedServiceImage, setSelectedServiceImage] = useState<
     SelectedFile[]
   >([]);
+  const [existingServiceImages, setExistingServiceImages] = useState<
+    ExistingImage[]
+  >([]);
   const [selectedProjectImage, setSelectedProjectImage] = useState<
     SelectedFile[]
+  >([]);
+  const [existingProjectImages, setExistingProjectImages] = useState<
+    ExistingImage[]
   >([]);
 
   useEffect(() => {
@@ -159,14 +168,24 @@ export function ProjectsManager() {
     if (!serviceId) return;
     setIsLoading(true);
     try {
-      // Upload image if new file selected
-      let imageUrl = projectForm.image_url;
+      // Start with existing images that weren't removed
+      const existingUrls = existingImagesToUrls(existingProjectImages);
+
+      // Upload new image(s) if selected, using project title as filename
+      let newUploadedUrls = "";
       if (selectedProjectImage.length > 0) {
-        const uploaded = await uploadFiles(selectedProjectImage);
+        const uploaded = await uploadFiles(
+          selectedProjectImage,
+          projectForm.title
+        );
         if (uploaded.length > 0) {
-          imageUrl = uploaded[0].url;
+          newUploadedUrls = uploaded.map((u) => u.url).join(",");
         }
       }
+
+      // Combine existing and new URLs
+      const allUrls = [existingUrls, newUploadedUrls].filter(Boolean).join(",");
+      const imageUrl = allUrls || projectForm.image_url;
 
       const url = editingProjectId
         ? `/api/projects/${editingProjectId}`
@@ -192,6 +211,7 @@ export function ProjectsManager() {
         theme: "",
       });
       setSelectedProjectImage([]);
+      setExistingProjectImages([]);
       setEditingProjectId(null);
       setIsCreatingNewTheme(false);
       await fetchProjects(serviceId);
@@ -232,7 +252,7 @@ export function ProjectsManager() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Service filter select */}
       <div className="mb-4 max-w-xs">
         <Label className="pb-2">{t.admin.projects.filterByService}</Label>
@@ -243,7 +263,11 @@ export function ProjectsManager() {
           <SelectContent>
             <SelectItem value="ALL">{t.admin.projects.allServices}</SelectItem>
             {services.map((service) => (
-              <SelectItem key={service.id} value={service.id}>
+              <SelectItem
+                className="capitalize!"
+                key={service.id}
+                value={service.id}
+              >
                 {service.title}
               </SelectItem>
             ))}
@@ -254,200 +278,9 @@ export function ProjectsManager() {
         value={tab}
         onValueChange={(v) => setTab(v as "categories" | "projects")}
       >
-        {/* <TabsList className="mb-4 flex flex-wrap gap-2 rounded-md bg-muted/40 p-1.5 border border-border/60">
-          <TabsTrigger
-            value="categories"
-            className="px-3 py-1.5 text-xs sm:text-sm rounded-full border border-transparent data-[state=active]:border-brand data-[state=active]:bg-brand data-[state=active]:text-white text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-          >
-            Catégories
-          </TabsTrigger>
-          <TabsTrigger
-            value="projects"
-            className="px-3 py-1.5 text-xs sm:text-sm rounded-full border border-transparent data-[state=active]:border-brand data-[state=active]:bg-brand data-[state=active]:text-white text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-          >
-            Projets
-          </TabsTrigger>
-        </TabsList> */}
-
-        {/* Categories Tab */}
-        {/* <TabsContent value="categories">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <AdminItemsListCard
-              title="Catégories (Services)"
-              count={services.length}
-              max={services.length || 0}
-              isFetching={isFetchingServices}
-              emptyMessage="Aucune catégorie pour l’instant."
-            >
-              {services.map((service) => {
-                const selected = editingServiceId === service.id;
-                return (
-                  <AdminItemCard
-                    key={service.id}
-                    imageUrl={service.image_url || undefined}
-                    title={service.title}
-                    description={service.description}
-                    selected={selected}
-                    onSelect={() => {
-                      setEditingServiceId(service.id);
-                      setServiceForm({
-                        title: service.title,
-                        description: service.description,
-                        image_url: service.image_url || "",
-                      });
-                    }}
-                    onDelete={() => setDeleteServiceId(service.id)}
-                  />
-                );
-              })}
-            </AdminItemsListCard>
-
-            <Card className="p-6">
-              <div className="mb-2 text-xs text-muted-foreground">
-                Créez ou modifiez une catégorie (service). Les catégories sont
-                utilisées pour organiser les projets.
-              </div>
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  setIsLoading(true);
-                  try {
-                    // Upload image if new file selected
-                    let imageUrl = serviceForm.image_url;
-                    if (selectedServiceImage.length > 0) {
-                      const uploaded = await uploadFiles(selectedServiceImage);
-                      if (uploaded.length > 0) {
-                        imageUrl = uploaded[0].url;
-                      }
-                    }
-
-                    const url = editingServiceId
-                      ? `/api/services/${editingServiceId}`
-                      : "/api/services";
-                    const method = editingServiceId ? "PUT" : "POST";
-                    const response = await fetch(url, {
-                      method,
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        ...serviceForm,
-                        image_url: imageUrl,
-                        order_index: services.length,
-                      }),
-                    });
-                    if (!response.ok) throw new Error("Failed to save");
-                    setServiceForm({
-                      title: "",
-                      description: "",
-                      image_url: "",
-                    });
-                    setSelectedServiceImage([]);
-                    setEditingServiceId(null);
-                    await fetchServices();
-                  } catch (error) {
-                    console.error("Error:", error);
-                  } finally {
-                    setIsLoading(false);
-                  }
-                }}
-                className="space-y-4"
-              >
-                <div>
-                  <Label className="pb-2">Image</Label>
-                  <ImageUploader
-                    value={selectedServiceImage}
-                    onChange={setSelectedServiceImage}
-                    disabled={isLoading}
-                  />
-                </div>
-
-                <div>
-                  <Label className="pb-2">Titre de la Catégorie</Label>
-                  <Input
-                    value={serviceForm.title}
-                    onChange={(e) =>
-                      setServiceForm({ ...serviceForm, title: e.target.value })
-                    }
-                    placeholder="Titre de la catégorie"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label className="pb-2">Description</Label>
-                  <Textarea
-                    value={serviceForm.description}
-                    onChange={(e) =>
-                      setServiceForm({
-                        ...serviceForm,
-                        description: e.target.value,
-                      })
-                    }
-                    placeholder="Description de la catégorie"
-                    required
-                  />
-                </div>
-
-                <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
-                  <ButtonAdmin
-                    type="submit"
-                    fullWidth={false}
-                    disabled={
-                      !serviceForm.title ||
-                      !serviceForm.description ||
-                      isLoading
-                    }
-                  >
-                    {editingServiceId
-                      ? "Mettre à jour Catégorie"
-                      : "Ajouter Catégorie"}
-                  </ButtonAdmin>
-                  {editingServiceId && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      className="text-muted-foreground hover:bg-muted/30 h-9 px-4"
-                      onClick={() => {
-                        setEditingServiceId(null);
-                        setServiceForm({
-                          title: "",
-                          description: "",
-                          image_url: "",
-                        });
-                      }}
-                    >
-                      Annuler
-                    </Button>
-                  )}
-                </div>
-              </form>
-            </Card>
-          </div>
-          <AdminConfirmModal
-            open={deleteServiceId !== null}
-            title="Supprimer cette catégorie ?"
-            message="Cette action est irréversible. La catégorie sera définitivement supprimée."
-            confirmLabel="Supprimer"
-            cancelLabel="Annuler"
-            onCancel={() => setDeleteServiceId(null)}
-            onConfirm={async () => {
-              if (!deleteServiceId) return;
-              try {
-                await fetch(`/api/services/${deleteServiceId}`, {
-                  method: "DELETE",
-                });
-                await fetchServices();
-              } catch (error) {
-                console.error("Delete failed:", error);
-              } finally {
-                setDeleteServiceId(null);
-              }
-            }}
-          />
-        </TabsContent> */}
-
         {/* Projects Tab (existing) */}
         <TabsContent value="projects">
-          <div className="grid grid-cols-1 h-[calc(100vh-250px)] overflow-auto lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 h-[calc(100vh-290px)] overflow-auto lg:grid-cols-2 gap-4">
             <AdminItemsListCard
               title={
                 activeService === "ALL"
@@ -482,6 +315,11 @@ export function ProjectsManager() {
                         service_id: project.service_id || activeService || "",
                         theme: project.theme || "",
                       });
+                      // Load existing images for preview
+                      setExistingProjectImages(
+                        urlsToExistingImages(project.image_url)
+                      );
+                      setSelectedProjectImage([]); // Clear any new uploads
                       setIsCreatingNewTheme(false);
                     }}
                     onDelete={() => handleDeleteProject(project.id)}
@@ -494,7 +332,7 @@ export function ProjectsManager() {
               <div className="mb-2 text-xs text-muted-foreground">
                 {t.admin.projects.createOrEditProject}
               </div>
-              <form onSubmit={handleProjectSubmit} className="space-y-4">
+              <form onSubmit={handleProjectSubmit} className="space-y-8">
                 <div>
                   <Label className="pb-2">
                     {t.admin.projects.projectCategory}
@@ -640,12 +478,19 @@ export function ProjectsManager() {
                   <ImageUploader
                     value={selectedProjectImage}
                     onChange={setSelectedProjectImage}
+                    existingImages={existingProjectImages}
+                    onExistingImagesChange={setExistingProjectImages}
                     disabled={isLoading}
                     multiple={(() => {
                       const selectedService = services.find(
-                        (s) => s.id === (projectForm.service_id || activeService)
+                        (s) =>
+                          s.id === (projectForm.service_id || activeService)
                       );
-                      return selectedService?.title?.toLowerCase().includes("photo") ?? false;
+                      return (
+                        selectedService?.title
+                          ?.toLowerCase()
+                          .includes("photo") ?? false
+                      );
                     })()}
                     maxFiles={4}
                   />
@@ -656,7 +501,9 @@ export function ProjectsManager() {
                     type="submit"
                     fullWidth={false}
                     disabled={
-                      !projectForm.image_url ||
+                      (existingProjectImages.length === 0 &&
+                        selectedProjectImage.length === 0 &&
+                        !projectForm.image_url) ||
                       !projectForm.service_id ||
                       isLoading
                     }
@@ -679,6 +526,8 @@ export function ProjectsManager() {
                           service_id: "",
                           theme: "",
                         });
+                        setSelectedProjectImage([]);
+                        setExistingProjectImages([]);
                         setIsCreatingNewTheme(false);
                       }}
                     >
