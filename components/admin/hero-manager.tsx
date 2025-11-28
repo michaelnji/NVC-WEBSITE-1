@@ -1,11 +1,10 @@
 "use client"
 
 import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal";
-import ImageWithSkeleton from "@/components/image-with-skeleton"
 import { useLanguage } from "@/contexts/language-context";
 import type React from "react";
-import { AdminItemCard } from "./admin-item-card"
-import { AdminItemsListCard } from "./admin-items-list-card"
+import { AdminItemCard } from "./admin-item-card";
+import { AdminItemsListCard } from "./admin-items-list-card";
 import { ButtonAdmin } from "./button-admin";
 
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { HeroImage } from "@/lib/types";
 import { useEffect, useState } from "react";
-import { ImageUploader } from "./image-uploader";
+import {
+  ImageUploader,
+  uploadFiles,
+  type SelectedFile,
+} from "./image-uploader";
 
 export function HeroManager() {
   const { t } = useLanguage();
@@ -29,6 +32,7 @@ export function HeroManager() {
     title: "",
     description: "",
   });
+  const [selectedImages, setSelectedImages] = useState<SelectedFile[]>([]);
   const MAX_TILES = 8;
 
   useEffect(() => {
@@ -62,26 +66,63 @@ export function HeroManager() {
       if (!editingId && images.length >= MAX_TILES) {
         return;
       }
-      const url = editingId
-        ? `/api/hero-images/${editingId}`
-        : "/api/hero-images";
 
-      const method = editingId ? "PUT" : "POST";
-      const payload = editingId
-        ? { ...formData }
-        : { ...formData, order_index: images.length };
+      // Upload images if new files selected
+      if (selectedImages.length > 0) {
+        const uploaded = await uploadFiles(selectedImages);
 
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+        if (editingId) {
+          // In edit mode, use the first uploaded image
+          const first = uploaded[0];
+          if (first) {
+            const fileName = first.name.replace(/\.[^/.]+$/, "");
+            const payload = {
+              ...formData,
+              image_url: first.url,
+              title: formData.title || fileName,
+            };
+            await fetch(`/api/hero-images/${editingId}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+          }
+        } else {
+          // In create mode, create multiple hero images
+          const remaining = Math.max(0, MAX_TILES - images.length);
+          const toCreate = uploaded.slice(0, remaining);
+          const payload = toCreate.map((f, i) => ({
+            image_url: f.url,
+            title: f.name.replace(/\.[^/.]+$/, ""),
+            description: "",
+            order_index: images.length + i,
+          }));
+          await fetch("/api/hero-images", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+        }
 
-      if (!response.ok) throw new Error("Failed to save");
+        setFormData({ image_url: "", title: "", description: "" });
+        setSelectedImages([]);
+        setEditingId(null);
+        await fetchImages();
+        return;
+      }
 
-      setFormData({ image_url: "", title: "", description: "" });
-      setEditingId(null);
-      await fetchImages();
+      // If no new images selected but editing existing
+      if (editingId && formData.image_url) {
+        await fetch(`/api/hero-images/${editingId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+        setFormData({ image_url: "", title: "", description: "" });
+        setSelectedImages([]);
+        setEditingId(null);
+        await fetchImages();
+      }
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -151,62 +192,11 @@ export function HeroManager() {
             <div>
               <ImageUploader
                 multiple
-                onUploadMeta={(file) => {
-                  const fileName = file.name.replace(/\.[^/.]+$/, "");
-                  setFormData({
-                    ...formData,
-                    image_url: file.url,
-                    title: formData.title || fileName,
-                  });
-                }}
-                onUploadManyMeta={async (files) => {
-                  if (editingId) {
-                    // En mode édition, on prend le premier fichier pour l'update via le formulaire
-                    const first = files[0];
-                    if (first) {
-                      const fileName = first.name.replace(/\.[^/.]+$/, "");
-                      setFormData({
-                        ...formData,
-                        image_url: first.url,
-                        title: formData.title || fileName,
-                      });
-                    }
-                    return;
-                  }
-                  const remaining = Math.max(0, MAX_TILES - images.length);
-                  const toCreate = files.slice(0, remaining);
-                  try {
-                    const payload = toCreate.map((f, i) => ({
-                      image_url: f.url,
-                      title: f.name.replace(/\.[^/.]+$/, ""),
-                      description: "",
-                      order_index: images.length + i,
-                    }));
-                    await fetch("/api/hero-images", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify(payload),
-                    });
-                  } catch (e) {
-                    console.error("Batch upload error", e);
-                  }
-                  await fetchImages();
-                }}
+                maxFiles={Math.max(1, MAX_TILES - images.length)}
+                value={selectedImages}
+                onChange={setSelectedImages}
+                disabled={isLoading}
               />
-              {formData.image_url && (
-                <ImageWithSkeleton
-                  src={formData.image_url || "/placeholder.svg"}
-                  alt="Preview"
-                  wrapperClassName="mt-2 h-32 w-32"
-                  className="w-full h-full object-cover rounded"
-                  sizes="128px"
-                  eager
-                  priority
-                  unoptimized={(formData.image_url || "").includes(
-                    ".public.blob.vercel-storage.com"
-                  )}
-                />
-              )}
             </div>
 
             <div>

@@ -1,102 +1,119 @@
 "use client"
 
 import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal";
-import ImageWithSkeleton from "@/components/image-with-skeleton";
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/contexts/language-context";
 import type { TeamMember } from "@/lib/types";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { AdminItemCard } from "./admin-item-card";
 import { AdminItemsListCard } from "./admin-items-list-card";
-import { ButtonAdmin } from "./button-admin"
-import { ImageUploader } from "./image-uploader";
+import { ButtonAdmin } from "./button-admin";
+import {
+  ImageUploader,
+  uploadFiles,
+  type SelectedFile,
+} from "./image-uploader";
 
 export function TeamManager() {
   const { t } = useLanguage();
-  const [members, setMembers] = useState<TeamMember[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [isFetching, setIsFetching] = useState(true)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [members, setMembers] = useState<TeamMember[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     position: "",
     description: "",
     photo_url: "",
-  })
+  });
+  const [selectedImage, setSelectedImage] = useState<SelectedFile[]>([]);
 
   useEffect(() => {
-    fetchMembers()
-  }, [])
+    fetchMembers();
+  }, []);
 
   const fetchMembers = async () => {
     try {
-      setIsFetching(true)
-      const res = await fetch("/api/team-members", { cache: "no-store" })
+      setIsFetching(true);
+      const res = await fetch("/api/team-members", { cache: "no-store" });
       if (!res.ok) {
-        console.error("Failed to fetch members:", res.status)
-        setMembers([])
-        return
+        console.error("Failed to fetch members:", res.status);
+        setMembers([]);
+        return;
       }
-      const data = await res.json()
-      setMembers(Array.isArray(data) ? data : [])
+      const data = await res.json();
+      setMembers(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Failed to fetch members:", error)
-      setMembers([])
+      console.error("Failed to fetch members:", error);
+      setMembers([]);
     } finally {
-      setIsFetching(false)
+      setIsFetching(false);
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
-      const url = editingId ? `/api/team-members/${editingId}` : "/api/team-members"
+      // Upload image if new file selected
+      let photoUrl = formData.photo_url;
+      if (selectedImage.length > 0) {
+        const uploaded = await uploadFiles(selectedImage);
+        if (uploaded.length > 0) {
+          photoUrl = uploaded[0].url;
+        }
+      }
 
-      const method = editingId ? "PUT" : "POST"
+      const url = editingId
+        ? `/api/team-members/${editingId}`
+        : "/api/team-members";
+
+      const method = editingId ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          photo_url: photoUrl,
           order_index: members.length,
         }),
-      })
+      });
 
-      if (!response.ok) throw new Error("Failed to save")
+      if (!response.ok) throw new Error("Failed to save");
 
-      setFormData({ name: "", position: "", description: "", photo_url: "" })
-      setEditingId(null)
-      await fetchMembers()
+      setFormData({ name: "", position: "", description: "", photo_url: "" });
+      setSelectedImage([]);
+      setEditingId(null);
+      await fetchMembers();
     } catch (error) {
-      console.error("Error:", error)
+      console.error("Error:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleDelete = (id: string) => {
-    setDeleteId(id)
-  }
+    setDeleteId(id);
+  };
 
   const handleConfirmDelete = async () => {
-    if (!deleteId) return
+    if (!deleteId) return;
     try {
-      await fetch(`/api/team-members/${deleteId}`, { method: "DELETE" })
-      await fetchMembers()
+      await fetch(`/api/team-members/${deleteId}`, { method: "DELETE" });
+      await fetchMembers();
     } catch (error) {
-      console.error("Delete failed:", error)
+      console.error("Delete failed:", error);
     } finally {
-      setDeleteId(null)
+      setDeleteId(null);
     }
-  }
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -177,16 +194,10 @@ export function TeamManager() {
           <div>
             <Label>{t.admin.team.photo}</Label>
             <ImageUploader
-              onUpload={(url) => setFormData({ ...formData, photo_url: url })}
+              value={selectedImage}
+              onChange={setSelectedImage}
+              disabled={isLoading}
             />
-            {formData.photo_url && (
-              <ImageWithSkeleton
-                src={formData.photo_url || "/placeholder.svg"}
-                alt="Preview"
-                wrapperClassName="mt-2 h-32 w-32"
-                className="w-full h-full object-cover rounded"
-              />
-            )}
           </div>
 
           <div className="flex flex-wrap items-center justify-end gap-2 pt-2">

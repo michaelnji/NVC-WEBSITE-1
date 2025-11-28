@@ -1,7 +1,6 @@
 "use client"
 
 import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal";
-import ImageWithSkeleton from "@/components/image-with-skeleton";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,16 +12,20 @@ import { useEffect, useState } from "react";
 import { AdminItemCard } from "./admin-item-card";
 import { AdminItemsListCard } from "./admin-items-list-card";
 import { ButtonAdmin } from "./button-admin";
-import { ImageUploader } from "./image-uploader";
+import {
+  ImageUploader,
+  uploadFiles,
+  type SelectedFile,
+} from "./image-uploader";
 
 export function TestimonialsManager() {
   const { t } = useLanguage();
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [isFetching, setIsFetching] = useState(true)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [deleteId, setDeleteId] = useState<string | null>(null)
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [formData, setFormData] = useState({
     author_name: "",
     title: "",
@@ -30,46 +33,58 @@ export function TestimonialsManager() {
     position: "",
     photo_url: "",
     rating: 5,
-  })
+  });
+  const [selectedImage, setSelectedImage] = useState<SelectedFile[]>([]);
 
   useEffect(() => {
-    fetchTestimonials()
-  }, [])
+    fetchTestimonials();
+  }, []);
 
   const fetchTestimonials = async () => {
     try {
-      setIsFetching(true)
-      const res = await fetch("/api/testimonials")
-      const data = await res.json()
-      setTestimonials(data)
+      setIsFetching(true);
+      const res = await fetch("/api/testimonials");
+      const data = await res.json();
+      setTestimonials(data);
     } catch (error) {
-      console.error("Failed to fetch testimonials:", error)
+      console.error("Failed to fetch testimonials:", error);
     } finally {
-      setIsFetching(false)
+      setIsFetching(false);
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
-      const url = editingId ? `/api/testimonials/${editingId}` : "/api/testimonials"
+      // Upload image if new file selected
+      let photoUrl = formData.photo_url;
+      if (selectedImage.length > 0) {
+        const uploaded = await uploadFiles(selectedImage);
+        if (uploaded.length > 0) {
+          photoUrl = uploaded[0].url;
+        }
+      }
 
-      const method = editingId ? "PUT" : "POST"
+      const url = editingId
+        ? `/api/testimonials/${editingId}`
+        : "/api/testimonials";
+
+      const method = editingId ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          // rating est déjà un nombre controlé, inutile de le reconvertir ici
+          photo_url: photoUrl,
           rating: formData.rating,
           order_index: testimonials.length,
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to save")
+      if (!response.ok) throw new Error("Failed to save");
 
       setFormData({
         author_name: "",
@@ -78,33 +93,34 @@ export function TestimonialsManager() {
         position: "",
         photo_url: "",
         rating: 5,
-      })
-      setEditingId(null)
-      await fetchTestimonials()
+      });
+      setSelectedImage([]);
+      setEditingId(null);
+      await fetchTestimonials();
     } catch (error) {
-      console.error("Error:", error)
+      console.error("Error:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleDelete = (id: string) => {
-    setDeleteId(id)
-    setShowDeleteModal(true)
-  }
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
 
   const handleConfirmDelete = async () => {
-    if (!deleteId) return
+    if (!deleteId) return;
     try {
-      await fetch(`/api/testimonials/${deleteId}`, { method: "DELETE" })
-      await fetchTestimonials()
+      await fetch(`/api/testimonials/${deleteId}`, { method: "DELETE" });
+      await fetchTestimonials();
     } catch (error) {
-      console.error("Delete failed:", error)
+      console.error("Delete failed:", error);
     } finally {
-      setDeleteId(null)
-      setShowDeleteModal(false)
+      setDeleteId(null);
+      setShowDeleteModal(false);
     }
-  }
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -216,16 +232,10 @@ export function TestimonialsManager() {
           <div>
             <Label>{t.admin.team.photo}</Label>
             <ImageUploader
-              onUpload={(url) => setFormData({ ...formData, photo_url: url })}
+              value={selectedImage}
+              onChange={setSelectedImage}
+              disabled={isLoading}
             />
-            {formData.photo_url && (
-              <ImageWithSkeleton
-                src={formData.photo_url || "/placeholder.svg"}
-                alt="Preview"
-                wrapperClassName="mt-2 h-32 w-32 rounded-full"
-                className="w-full h-full object-cover rounded-full"
-              />
-            )}
           </div>
 
           <div className="flex flex-wrap items-center justify-end gap-2 pt-2">

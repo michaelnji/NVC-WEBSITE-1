@@ -1,7 +1,6 @@
 "use client"
 
 import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal";
-import ImageWithSkeleton from "@/components/image-with-skeleton";
 import { useLanguage } from "@/contexts/language-context";
 import type React from "react";
 import { AdminItemCard } from "./admin-item-card";
@@ -17,7 +16,11 @@ import type { Service } from "@/lib/types";
 import { toastStyles } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { ImageUploader } from "./image-uploader";
+import {
+  ImageUploader,
+  uploadFiles,
+  type SelectedFile,
+} from "./image-uploader";
 
 export function ServicesManager() {
   const { t } = useLanguage();
@@ -26,6 +29,7 @@ export function ServicesManager() {
   const [isFetching, setIsFetching] = useState(true);
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<SelectedFile[]>([]);
   const MAX_SERVICES = 6;
 
   const [serviceForm, setServiceForm] = useState({
@@ -66,6 +70,15 @@ export function ServicesManager() {
     setIsLoading(true);
 
     try {
+      // Upload image if new file selected
+      let imageUrl = serviceForm.image_url;
+      if (selectedImage.length > 0) {
+        const uploaded = await uploadFiles(selectedImage);
+        if (uploaded.length > 0) {
+          imageUrl = uploaded[0].url;
+        }
+      }
+
       const url = editingServiceId
         ? `/api/services/${editingServiceId}`
         : "/api/services";
@@ -77,6 +90,7 @@ export function ServicesManager() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...serviceForm,
+          image_url: imageUrl,
           order_index: services.length,
         }),
       });
@@ -102,6 +116,7 @@ export function ServicesManager() {
       );
 
       setServiceForm({ title: "", description: "", image_url: "" });
+      setSelectedImage([]);
       setEditingServiceId(null);
       await fetchServices();
     } catch (error) {
@@ -172,18 +187,10 @@ export function ServicesManager() {
             <div>
               <Label className="pb-2">{t.admin.services.imageGif}</Label>
               <ImageUploader
-                onUpload={(url) =>
-                  setServiceForm({ ...serviceForm, image_url: url })
-                }
+                value={selectedImage}
+                onChange={setSelectedImage}
+                disabled={isLoading}
               />
-              {serviceForm.image_url && (
-                <ImageWithSkeleton
-                  src={serviceForm.image_url || "/placeholder.svg"}
-                  alt="Preview"
-                  wrapperClassName="mt-2 h-32 w-32"
-                  className="w-full h-full object-cover rounded"
-                />
-              )}
             </div>
             <div>
               <Label className="pb-2">{t.admin.services.title}</Label>
@@ -218,7 +225,7 @@ export function ServicesManager() {
                 fullWidth={false}
                 disabled={
                   isLoading ||
-                  !serviceForm.image_url ||
+                  (selectedImage.length === 0 && !serviceForm.image_url) ||
                   (!editingServiceId && services.length >= MAX_SERVICES)
                 }
               >
@@ -235,6 +242,7 @@ export function ServicesManager() {
                   className="text-muted-foreground hover:bg-muted/30 h-9 px-4"
                   onClick={() => {
                     setEditingServiceId(null);
+                    setSelectedImage([]);
                     setServiceForm({
                       title: "",
                       description: "",

@@ -1,6 +1,5 @@
 "use client"
 import { AdminConfirmModal } from "@/components/admin/admin-confirm-modal";
-import ImageWithSkeleton from "@/components/image-with-skeleton";
 import { useLanguage } from "@/contexts/language-context";
 import { AdminItemCard } from "./admin-item-card";
 import { AdminItemsListCard } from "./admin-items-list-card";
@@ -21,7 +20,11 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import type { Project, Service } from "@/lib/types";
 import { useEffect, useState } from "react";
-import { ImageUploader } from "./image-uploader";
+import {
+  ImageUploader,
+  uploadFiles,
+  type SelectedFile,
+} from "./image-uploader";
 
 export function ProjectsManager() {
   const { t } = useLanguage();
@@ -51,6 +54,12 @@ export function ProjectsManager() {
     description: "",
     image_url: "",
   });
+  const [selectedServiceImage, setSelectedServiceImage] = useState<
+    SelectedFile[]
+  >([]);
+  const [selectedProjectImage, setSelectedProjectImage] = useState<
+    SelectedFile[]
+  >([]);
 
   useEffect(() => {
     fetchServices();
@@ -150,6 +159,15 @@ export function ProjectsManager() {
     if (!serviceId) return;
     setIsLoading(true);
     try {
+      // Upload image if new file selected
+      let imageUrl = projectForm.image_url;
+      if (selectedProjectImage.length > 0) {
+        const uploaded = await uploadFiles(selectedProjectImage);
+        if (uploaded.length > 0) {
+          imageUrl = uploaded[0].url;
+        }
+      }
+
       const url = editingProjectId
         ? `/api/projects/${editingProjectId}`
         : "/api/projects";
@@ -159,6 +177,7 @@ export function ProjectsManager() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...projectForm,
+          image_url: imageUrl,
           service_id: serviceId,
           theme: projectForm.theme || null,
           order_index: projects.length,
@@ -172,6 +191,7 @@ export function ProjectsManager() {
         service_id: "",
         theme: "",
       });
+      setSelectedProjectImage([]);
       setEditingProjectId(null);
       setIsCreatingNewTheme(false);
       await fetchProjects(serviceId);
@@ -292,6 +312,15 @@ export function ProjectsManager() {
                   e.preventDefault();
                   setIsLoading(true);
                   try {
+                    // Upload image if new file selected
+                    let imageUrl = serviceForm.image_url;
+                    if (selectedServiceImage.length > 0) {
+                      const uploaded = await uploadFiles(selectedServiceImage);
+                      if (uploaded.length > 0) {
+                        imageUrl = uploaded[0].url;
+                      }
+                    }
+
                     const url = editingServiceId
                       ? `/api/services/${editingServiceId}`
                       : "/api/services";
@@ -301,6 +330,7 @@ export function ProjectsManager() {
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({
                         ...serviceForm,
+                        image_url: imageUrl,
                         order_index: services.length,
                       }),
                     });
@@ -310,6 +340,7 @@ export function ProjectsManager() {
                       description: "",
                       image_url: "",
                     });
+                    setSelectedServiceImage([]);
                     setEditingServiceId(null);
                     await fetchServices();
                   } catch (error) {
@@ -323,18 +354,10 @@ export function ProjectsManager() {
                 <div>
                   <Label className="pb-2">Image</Label>
                   <ImageUploader
-                    onUpload={(url) =>
-                      setServiceForm({ ...serviceForm, image_url: url })
-                    }
+                    value={selectedServiceImage}
+                    onChange={setSelectedServiceImage}
+                    disabled={isLoading}
                   />
-                  {serviceForm.image_url && (
-                    <ImageWithSkeleton
-                      src={serviceForm.image_url || "/placeholder.svg"}
-                      alt="Preview"
-                      wrapperClassName="mt-2 h-32 w-32"
-                      className="w-full h-full object-cover rounded"
-                    />
-                  )}
                 </div>
 
                 <div>
@@ -584,23 +607,6 @@ export function ProjectsManager() {
                 })()}
 
                 <div>
-                  <Label className="pb-2">{t.admin.projects.image}</Label>
-                  <ImageUploader
-                    onUpload={(url) =>
-                      setProjectForm({ ...projectForm, image_url: url })
-                    }
-                  />
-                  {projectForm.image_url && (
-                    <ImageWithSkeleton
-                      src={projectForm.image_url || "/placeholder.svg"}
-                      alt="Preview"
-                      wrapperClassName="mt-2 h-32 w-32"
-                      className="w-full h-full object-cover rounded"
-                    />
-                  )}
-                </div>
-
-                <div>
                   <Label className="pb-2">
                     {t.admin.projects.projectTitle}
                   </Label>
@@ -626,6 +632,22 @@ export function ProjectsManager() {
                     }
                     placeholder={t.admin.projects.projectDescriptionPlaceholder}
                     required
+                  />
+                </div>
+
+                <div>
+                  <Label className="pb-2">{t.admin.projects.image}</Label>
+                  <ImageUploader
+                    value={selectedProjectImage}
+                    onChange={setSelectedProjectImage}
+                    disabled={isLoading}
+                    multiple={(() => {
+                      const selectedService = services.find(
+                        (s) => s.id === (projectForm.service_id || activeService)
+                      );
+                      return selectedService?.title?.toLowerCase().includes("photo") ?? false;
+                    })()}
+                    maxFiles={4}
                   />
                 </div>
 

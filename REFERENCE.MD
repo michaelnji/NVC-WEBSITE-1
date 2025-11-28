@@ -85,6 +85,72 @@
     });
     ```
 
-## 8. Patterns & Best Practices
+## 8. Image Upload Component
+- **Component:** `ImageUploader` in `components/admin/image-uploader.tsx`
+- **Features:**
+  - Single or multiple file upload mode (default: single)
+  - Drag & drop support with dropzone UI
+  - 5MB max file size per image
+  - Preview grid (2x2 for multiple mode)
+  - Max 4 files in multiple upload mode
+  - Remove individual images from selection
+  - Upload to backend is handled externally via `uploadFiles()` helper
+
+- **Props:**
+  ```tsx
+  interface ImageUploaderProps {
+    multiple?: boolean          // Enable multi-file mode (default: false)
+    maxFiles?: number           // Max files in multiple mode (default: 4)
+    maxFileSize?: number        // Max size in bytes (default: 5MB)
+    value?: SelectedFile[]      // Controlled state for selected files
+    onChange?: (files: SelectedFile[]) => void  // Callback when files change
+    disabled?: boolean          // Disable the uploader
+    className?: string          // Custom container class
+  }
+  ```
+
+- **Usage Pattern:**
+  ```tsx
+  import { ImageUploader, uploadFiles, type SelectedFile } from "./image-uploader";
+  
+  // In component:
+  const [selectedImage, setSelectedImage] = useState<SelectedFile[]>([]);
+  
+  // In form submit handler:
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    let imageUrl = formData.image_url;
+    if (selectedImage.length > 0) {
+      const uploaded = await uploadFiles(selectedImage);
+      if (uploaded.length > 0) {
+        imageUrl = uploaded[0].url;
+      }
+    }
+    // ... use imageUrl in API call
+  };
+  
+  // In JSX:
+  <ImageUploader
+    value={selectedImage}
+    onChange={setSelectedImage}
+    disabled={isLoading}
+  />
+  ```
+
+- **Multiple Files Example:**
+  ```tsx
+  <ImageUploader
+    multiple
+    maxFiles={4}
+    value={selectedImages}
+    onChange={setSelectedImages}
+  />
+  ```
+
+- **Helper Functions:**
+  - `uploadFiles(files: SelectedFile[])` - Uploads files to `/api/upload` and returns URLs
+  - `cleanupFiles(files: SelectedFile[])` - Revokes object URLs to prevent memory leaks
+
+## 9. Patterns & Best Practices
 - **Client Components:**
   - `
